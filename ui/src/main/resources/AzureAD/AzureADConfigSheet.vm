@@ -1,0 +1,105 @@
+{{include reference="IdentityOAuth.IdentityOAuthConfigMacros" /}}{{velocity}}
+#if(!$xwiki.hasAdminRights())
+  Admin rights are needed.
+#else
+  ## defines formId, propNamePrefixIO, propNamePrefixO, configDoc, objIO, objO
+  #set($configDocName="AzureAD.AzureADConfig")
+  #initConfigObjects(${configDocName}, "AzureAD.AzureADConfigClass",
+    "azureAD.AzureADConfigClass_")
+  ## use stylesheet and JavaScript extensions
+  #ioIncludeUIX()
+  {{html clean="false" wiki=false}}
+  <script>window.identityOAuthProvider = "AzureAD";</script>
+  <p>#t('config.explanation')</p>
+
+  <form id="$formId" method="post" action="$xwiki.getURL($configDoc, 'saveandcontinue')" class="xform">
+      <dl>
+          <dt>#displayInput ("active", $objIO) <label for="${propNamePrefixIO}_active">#t ("active")</label></dt>
+          <dd></dd>
+      </dl>
+
+      <fieldset>
+          <legend>#t ('communicate')</legend>
+
+          <dl>
+              <dt><span class="xHint">
+                #tp ("communicate.hint",  ['<a href="https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RegisteredApps">', '</a>'])<br>
+                #tp ('communicate.hint2', ['<a href="https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration#installation">',
+                  '</a>'])</span>
+              </dt>
+              <dd></dd>
+              <dt><label for="${propNamePrefixIO}_clientid">#t ('clientid')</label>
+                  <span class="xHint">#t ("clientid.hint")</span></dt>
+              <dd> #displayInput ('clientid', $objIO)</dd>
+
+              <dt><label for="${propNamePrefixIO}_secret">#t ('secret')</label>
+                  <span class="xHint">#t("secret.hint")</span></dt>
+              <dd> #displayInput ("secret", $objIO)</dd>
+
+              <dt><label for="${propNamePrefixO}_tenantid">#t ('tenantid')</label>
+                  <span class="xHint">#t ("tenantid.hint")</span></dt>
+              <dd> #displayInput ('tenantid', $objO)</dd>
+
+              <dt><label for="${propNamePrefixIO}_redirectUrl">#t ('redirectUrl')</label>
+                  <span class="xHint">#t ("redirectUrl.hint")</span>
+              </dt>
+              <dd> #displayInput ('redirectUrl', $objIO)<br/>
+                  <span class="xHint" id="redirectUrlAsExpected">#t('redirectUrl.asExpected')</span>
+                  <span class="xHint" id="redirectUrlNotAsExpected">#t('redirectUrl.notAsExpected')
+                      (<a href="#" onclick="resetRedirectUrl(); return false">#t('redirectUrl.recalc'))</a>
+                    </span>
+              </dd>
+
+            ## checkboxes for scope, needs JS
+              <dt><label>#t ('scope')</label>
+                  <span class="xHint">#t ('scope.hint')</span></dt>
+              <dd>
+                  <label title="#t ('checkbox_mandatory')">
+                      <input type="checkbox" name="scope_openid " disabled="true" checked class="mandatory">#t ('scope_identity')</label>
+                  <label title="#t ('checkbox_mandatory')">
+                      <input type="checkbox" name="scope_User.Read" disabled="true" checked class="mandatory">#t ("scope_email")</label><br/>
+                  <label title="#t('checkbox_notyetdone')">
+                      <input type="checkbox" name="scope_avatar">#t ('scope_avatar')</label>
+                  #set($p=$configDocName.length()+1)
+                  <input type="hidden" name="${propNamePrefixIO.substring($p)}_scope" value="${objIO.getValue('scope')}"/>
+                  (#tp('scope_avatar.onlyOutlook',["<a href='https://docs.microsoft.com/en-us/graph/known-issues#photo-restrictions'>","</a>"]))
+              </dd>
+          </dl>
+      </fieldset>
+
+    ## <fieldset>
+    ##    <legend>#t ('loginbehaviour')</legend>
+
+    ##    <dl>
+    ## TODO: add domains' limitation
+
+    ## TODO: add cookie's support
+    ##    </dl>
+    ## </fieldset>
+
+
+    ## Hidden form elements
+    #set ($params = "editor=${escapetool.url(${editor})}&amp;section=${escapetool.url(${section})}")
+    #set ($params = "${params}&amp;space=${escapetool.url(${currentSpace})}")
+    #set ($continueURL = $xwiki.getURL($currentDoc, 'admin', $params))
+      <input type="hidden" name="form_token" value="$!{services.csrf.getToken()}"/>
+      <input type="hidden" name="xcontinue" value="${continueURL}"/>
+      <input type="hidden" name="xredirect" value="${continueURL}"/>
+
+    ## submit
+      <div class="bottombuttons">
+          <p><span id="warningIncomplete">#t("warningIncomplete")</span>&nbsp;</p>
+          <p class="admin-buttons">
+        <span class="buttonwrapper">
+            <input class="button" type="submit" name="formactionsac"
+                   value="$services.localization.render('admin.save')"/></span>
+          </p>
+      </div>
+  </form>
+  <div id="appOnNowWhat">
+      <p>#tp ('nowWhat1', ["<a href='${xwiki.getURL('AzureAD.SitesList')}'>","</a>"])</p>
+      <p>#tp ('nowWhat2', [])</p>
+  </div>
+#end
+{{/html}}
+{{/velocity}}
