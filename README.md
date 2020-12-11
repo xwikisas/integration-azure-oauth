@@ -7,6 +7,6 @@
 * [Development Practices](http://dev.xwiki.org)
 * Minimal XWiki version supported: XWiki 10.2
 * License: LGPL 2.1+
-* Translations: (done in the source within the translations of [AzureAD](src/main/resources/AzureAD))
+* Translations: (done in the source within the `.properties` files of [AzureAD](ui/src/main/resources/AzureAD))
 * Sonar Dashboard: N/A
 * Continuous Integration Status: ...
