@@ -97,8 +97,8 @@
       </div>
   </form>
   <div id="appOnNowWhat">
-      <p>#tp ('nowWhat1', ["<a href='${xwiki.getURL('AzureAD.SitesList')}'>","</a>"])</p>
-      <p>#tp ('nowWhat2', [])</p>
+      <p>#t ('nowWhat1')</p>
+      <p>#t ('nowWhat2')</p>
   </div>
 #end
 {{/html}}

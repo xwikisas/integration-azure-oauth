@@ -51,6 +51,7 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xwiki.identityoauth.IdentityOAuthException;
+import com.xwiki.identityoauth.IdentityOAuthManager;
 import com.xwiki.identityoauth.IdentityOAuthProvider;
 import com.xwiki.licensing.Licensor;
 
@@ -65,32 +66,56 @@ import com.xwiki.licensing.Licensor;
 @Singleton
 public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
 {
-    private static final String TENANT_ID = "tenantid";
+    /**
+     * The string tenant_id.
+     */
+    public static final String TENANT_ID = "tenantid";
 
-    private static final String PROVIDERNAME = "AzureAD";
+    /**
+     * The string AzureAD.
+     */
+    public static final String PROVIDERNAME = "AzureAD";
 
-    private static final String EXCEPTIONUNLICENSED = "This extension is not licensed.";
+    /**
+     * The string "This extension is not licensed".
+     */
+    public static final String EXCEPTIONUNLICENSED = "This extension is not licensed.";
+
+    protected static Class deepestClassOfHierarchy;
 
     @Inject
-    private Logger logger;
+    protected Provider<XWikiContext> contextProvider;
 
     @Inject
-    private Provider<XWikiContext> contextProvider;
+    protected DocumentReferenceResolver<String> documentResolver;
 
     @Inject
-    private DocumentReferenceResolver<String> documentResolver;
+    protected Logger logger;
 
     @Inject
-    private Provider<Licensor> licensorProvider;
+    protected Provider<Licensor> licensorProvider;
+
+    @Inject
+    protected Provider<IdentityOAuthManager> identityOAuthManager;
+
+    protected DocumentReference configPageRef;
+
+    protected static AzureADIdentityOAuthProvider deepestInstance = null;
+    /**
+     * The wiki reference to the WebPreferences page of the AzureAD space.
+     */
+    protected DocumentReference azureADWebPrefsRef;
 
     /**
      * The connection service to the azure Active-Directory API.
      */
     private OAuth20Service service;
 
-    private DocumentReference webPrefsRef;
-
     private List<String> scopes;
+
+    private ThreadLocal<String> currentlyRequestedUrl = new ThreadLocal<>();
+
+    private ThreadLocal<Map> currentlyObtainedJson = new ThreadLocal<>();
 
     /**
      * AD administrators can create users without email. If this setting is true, users that show up with a record that
@@ -99,8 +124,6 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
      */
     private boolean acceptUserWithoutEmail = true;
 
-    // THINKME: use a more abstract way to read the documents?
-
     /**
      * Reads initialization from objects expecting key-names clientid, secret, scopes, redirectUrl and tenantid.
      *
@@ -108,11 +131,26 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
      */
     public void initialize(Map<String, String> config)
     {
+        Class clz = this.getClass();
+        if (deepestClassOfHierarchy != null) {
+            if (deepestClassOfHierarchy.isAssignableFrom(clz)) {
+                if (logger != null) {
+                    logger.warn("Class " + clz + " is a specialization of " + deepestClassOfHierarchy
+                            + "... marking IdentityOAuthProvider of class "
+                            + deepestClassOfHierarchy + " as inactive.");
+                }
+                deepestInstance = this;
+                deepestClassOfHierarchy = clz;
+            }
+        } else {
+            deepestClassOfHierarchy = clz;
+        }
         this.initialize(config.get("clientid"), config.get("secret"), config.get("scopes"),
-                config.get("redirectUrl"), config.get(TENANT_ID));
+                config.get("redirectUrl"), config.get(TENANT_ID), config.get("configurationObjectsPage"));
     }
 
-    private void initialize(String clientId, String secret, String scopesParam, String redirectUrl, String tenantId)
+    private void initialize(String clientId, String secret, String scopesParam,
+            String redirectUrl, String tenantId, String configPage)
     {
         if (scopesParam == null || scopesParam.trim().length() == 0) {
             scopes = getMinimumScopes();
@@ -123,7 +161,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
         for (String s : scopes) {
             usedScopes.append(s).append(" ");
         }
-        logger.debug("Scopes: " + usedScopes);
+        //logger.debug("Scopes: " + usedScopes);
         service = new ServiceBuilder(clientId)
                 .apiSecret(secret)
                 .defaultScope(usedScopes.toString())
@@ -131,9 +169,27 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
                 .callback(redirectUrl)
                 .build(MicrosoftAzureActiveDirectory20Api.custom(tenantId));
 
-        webPrefsRef = documentResolver.resolve("xwiki:AzureAD.WebPreferences");
+        configPageRef = documentResolver.resolve(configPage);
+        azureADWebPrefsRef = documentResolver.resolve("xwiki:AzureAD.WebPreferences");
 
-        logger.debug("MS-AD-Service configured: " + this);
+        if (logger != null) {
+            logger.debug("MS-AD-Service configured: " + this);
+        }
+    }
+
+    /**
+     * Verifies that the configured object is activated, that the license is current, and that this object is the only
+     * object of this class hierarchy, thus ensuring that the presence of a configured provider implementing a subclass
+     * "neutralizes" any parent class. Note that this behaviour bases on the fact that all providers are instantiated
+     * before being consulted for being active and that the class hierarchy does not have multiple leaves (in this case,
+     * the elected subclass is not deterministic).
+     *
+     * @return true if the verification succeeded.
+     */
+    @Override public boolean isActive()
+    {
+        return licensorProvider.get().hasLicensure(azureADWebPrefsRef)
+                && this.getClass().equals(deepestClassOfHierarchy);
     }
 
     @Override
@@ -142,10 +198,23 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
         return Arrays.asList("openid", "User.Read");
     }
 
+    public static AzureADIdentityOAuthProvider getDeepestInstance() {
+        return deepestInstance;
+    }
+
+    public DocumentReference getConfigPageRef() {
+        return configPageRef;
+    }
+
+    public List<String> getConfigObjectsClasses() {
+        return Arrays.asList("IdentityOAuth.IdentityOAuthConfigClass",
+                "AzureAD.AzureADConfigClass");
+    }
+
     @Override
     public String getRemoteAuthorizationUrl(String redirectUrl)
     {
-        if (!licensorProvider.get().hasLicensure(webPrefsRef)) {
+        if (!licensorProvider.get().hasLicensure(azureADWebPrefsRef)) {
             throw new IllegalStateException(EXCEPTIONUNLICENSED);
         }
         String authorizationUrl = service.getAuthorizationUrl();
@@ -153,11 +222,12 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
         return authorizationUrl;
     }
 
+
     @Override
     public Pair<String, Date> createToken(String authCode)
     {
         try {
-            if (!licensorProvider.get().hasLicensure(webPrefsRef)) {
+            if (!licensorProvider.get().hasLicensure(azureADWebPrefsRef)) {
                 throw new IllegalStateException(EXCEPTIONUNLICENSED);
             }
 
@@ -180,11 +250,60 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
         return code;
     }
 
+    /**
+     * Method for use by sub-classes to perform signed API-calls signed by a current authorization token.
+     *
+     * @param url the service URL.
+     * @return a map of values as parsed by a plain Jackson's {@link ObjectMapper}.
+     */
+    protected Map makeApiCall(String url)
+    {
+        Map returnValue;
+        try {
+            currentlyRequestedUrl.set(url);
+            identityOAuthManager.get().requestCurrentToken(getProviderName());
+            returnValue = currentlyObtainedJson.get();
+        } catch (Exception e) {
+            if (e instanceof IdentityOAuthException) {
+                throw (IdentityOAuthException) e;
+            } else {
+                throw new IdentityOAuthException("Trouble at API call.", e);
+            }
+        } finally {
+            currentlyRequestedUrl.remove();
+            currentlyObtainedJson.remove();
+        }
+        return returnValue;
+    }
+
+    /**
+     * Inner part of {@link #makeApiCall(String)}, using the token.
+     *
+     * @param token a currently valid token used to sign the API call
+     */
+    @Override public void receiveFreshToken(String token)
+    {
+        try {
+            OAuthRequest request =
+                    new OAuthRequest(Verb.GET, currentlyRequestedUrl.get());
+            service.signRequest(token, request);
+            Response response = service.execute(request);
+            String responseBody = response.getBody();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Response received: " + responseBody);
+            }
+            Map json = new ObjectMapper().readValue(responseBody, Map.class);
+            currentlyObtainedJson.set(json);
+        } catch (Exception e) {
+            throw new IdentityOAuthException("Failure at API call.", e);
+        }
+    }
+
     @Override
     public IdentityDescription fetchIdentityDetails(String token)
     {
         try {
-            if (!licensorProvider.get().hasLicensure(webPrefsRef)) {
+            if (!licensorProvider.get().hasLicensure(azureADWebPrefsRef)) {
                 throw new IllegalStateException(EXCEPTIONUNLICENSED);
             }
 

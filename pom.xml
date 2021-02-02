@@ -23,7 +23,7 @@
   <parent>
     <groupId>com.xwiki.parent</groupId>
     <artifactId>xwikisas-parent-platform</artifactId>
-    <version>9.11-5</version>
+    <version>10.8</version>
   </parent>
   <groupId>com.xwiki.integration-azure-oauth</groupId>
   <artifactId>integration-azure-oauth-parent</artifactId>
@@ -39,7 +39,7 @@
     <url>https://github.com/xwikisas/integration-azure-oauth/issues</url>
   </issueManagement>
   <scm>
-    <connection>https://github.com/xwikisas/integration-azure-oauth.git</connection>
+    <connection>scm:https://github.com/xwikisas/integration-azure-oauth.git</connection>
     <developerConnection>scm:git@github.com:xwikisas/integration-azure-oauth.git</developerConnection>
     <url>https://github.com/xwikisas/integration-azure-oauth/tree/master</url>
     <tag>HEAD</tag>

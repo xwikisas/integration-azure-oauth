@@ -70,7 +70,7 @@
     <url>https://github.com/xwikisas/integration-azure-oauth/issues</url>
   </issueManagement>
   <scm>
-    <connection>https://github.com/xwikisas/integration-azure-oauth.git</connection>
+    <connection>scm:https://github.com/xwikisas/integration-azure-oauth.git</connection>
     <developerConnection>scm:git@github.com:xwikisas/integration-azure-oauth.git</developerConnection>
     <url>https://github.com/xwikisas/integration-azure-oauth/tree/master</url>
     <tag>HEAD</tag>
