@@ -83,6 +83,8 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
 
     protected static Class deepestClassOfHierarchy;
 
+    protected static AzureADIdentityOAuthProvider deepestInstance;
+
     @Inject
     protected Provider<XWikiContext> contextProvider;
 
@@ -100,7 +102,6 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
 
     protected DocumentReference configPageRef;
 
-    protected static AzureADIdentityOAuthProvider deepestInstance = null;
     /**
      * The wiki reference to the WebPreferences page of the AzureAD space.
      */
@@ -123,6 +124,14 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
      * not be a valid email address.
      */
     private boolean acceptUserWithoutEmail = true;
+
+    /**
+     * @return The subclass instance of this class that is deeper than this class (it should be a single class).
+     */
+    public static AzureADIdentityOAuthProvider getDeepestInstance()
+    {
+        return deepestInstance;
+    }
 
     /**
      * Reads initialization from objects expecting key-names clientid, secret, scopes, redirectUrl and tenantid.
@@ -192,21 +201,38 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
                 && this.getClass().equals(deepestClassOfHierarchy);
     }
 
+    /**
+     * @return Returns "openid", "User.Read.
+     */
     @Override
     public List<String> getMinimumScopes()
     {
         return Arrays.asList("openid", "User.Read");
     }
 
-    public static AzureADIdentityOAuthProvider getDeepestInstance() {
-        return deepestInstance;
-    }
-
-    public DocumentReference getConfigPageRef() {
+    /**
+     * @return the reference to the page.
+     */
+    public DocumentReference getConfigPageRef()
+    {
         return configPageRef;
     }
 
-    public List<String> getConfigObjectsClasses() {
+    /**
+     * Receives the reference to the page from the provider.
+     *
+     * @param page the string reference
+     */
+    @Override public void setConfigPage(String page)
+    {
+        this.configPageRef = documentResolver.resolve(page);
+    }
+
+    /**
+     * @return The list of objects' classes to be found in the config page (used for the admin screen).
+     */
+    public List<String> getConfigObjectsClasses()
+    {
         return Arrays.asList("IdentityOAuth.IdentityOAuthConfigClass",
                 "AzureAD.AzureADConfigClass");
     }
@@ -221,7 +247,6 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
         logger.debug("Authorization URL: " + authorizationUrl);
         return authorizationUrl;
     }
-
 
     @Override
     public Pair<String, Date> createToken(String authCode)
