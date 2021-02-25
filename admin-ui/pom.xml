@@ -17,13 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
 		<groupId>com.xwiki.integration-azure-oauth</groupId>
 		<artifactId>integration-azure-oauth-parent</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0_RC1</version>
   </parent>
 	<artifactId>integration-azure-oauth-admin-ui</artifactId>
 	<packaging>xar</packaging>
@@ -47,12 +46,12 @@
     <dependency>
 			<groupId>com.xwiki.integration-azure-oauth</groupId>
 			<artifactId>integration-azure-oauth-api</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0_RC1</version>
     </dependency>
     <dependency>
       <groupId>com.xwiki.identity-oauth</groupId>
       <artifactId>identity-oauth-ui</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0-RC1</version>
       <type>xar</type>
     </dependency>
   </dependencies>
@@ -64,7 +63,7 @@
     <connection>scm:git:git://github.com/xwikisas/integration-azure-oauth.git</connection>
     <developerConnection>scm:git:git@github.com:xwikisas/integration-azure-oauth.git</developerConnection>
     <url>scm:https://github.com/xwikisas/integration-azure-oauth/tree/master</url>
-    <tag>HEAD</tag>
+    <tag>integration-azure-oauth-parent-1.0_RC1</tag>
   </scm>
   <!-- Even though this repository is already declared in the parent POM, we still explicitly redeclare it for
        convenience. This makes it simpler to build this project without having to declare this repository in one's own
