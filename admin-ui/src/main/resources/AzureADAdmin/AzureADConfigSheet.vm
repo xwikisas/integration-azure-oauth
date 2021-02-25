@@ -2,14 +2,15 @@
 #if(!$xwiki.hasAdminRights())
   Admin rights are needed.
 #else
-  ## defines formId, propNamePrefixIO, propNamePrefixO, configDoc, objIO, objO
-  #set($configDocName="AzureAD.AzureADConfig")
-  #initConfigObjects(${configDocName}, "AzureAD.AzureADConfigClass",
-    "azureAD.AzureADConfigClass_")
+  ## defines formId, propNamePrefixIO, configDoc, objIO, objO
+  ## #set($configDocName="AzureAD.AzureADConfig")
+  ## set($providerHint = "AzureAD")
+  ## #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration")
+  #initConfigObjects(${configDocName}, ${extraObjectClassPropPrefixes},${translationPrefix})
   ## use stylesheet and JavaScript extensions
   #ioIncludeUIX()
   {{html clean="false" wiki=false}}
-  <script>window.identityOAuthProvider = "AzureAD";</script>
+  <script>window.identityOAuthProvider = "${providerHint}";</script>
   <p>#t('config.explanation')</p>
 
   <form id="$formId" method="post" action="$xwiki.getURL($configDoc, 'saveandcontinue')" class="xform">
@@ -24,7 +25,7 @@
           <dl>
               <dt><span class="xHint">
                 #tp ("communicate.hint",  ['<a href="https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RegisteredApps">', '</a>'])<br>
-                #tp ('communicate.hint2', ['<a href="https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration#installation">',
+                #tp ('communicate.hint2', ['<a href="${productPage}#installation">',
                   '</a>'])</span>
               </dt>
               <dd></dd>
@@ -36,18 +37,26 @@
                   <span class="xHint">#t("secret.hint")</span></dt>
               <dd> #displayInput ("secret", $objIO)</dd>
 
-              <dt><label for="${propNamePrefixO}_tenantid">#t ('tenantid')</label>
-                  <span class="xHint">#t ("tenantid.hint")</span></dt>
-              <dd> #displayInput ('tenantid', $objO)</dd>
+              #foreach($x in $extraObjectClassPropPrefixes)
+                  <dt><label for="${x[2]}_0_${x[1]}">#t ($x[1])</label>
+                      <span class="xHint">#t ("${x[1]}.hint")</span></dt>
+                  <dd> #displayInput ("${x[1]}", $x[0])</dd>
+              #end
 
               <dt><label for="${propNamePrefixIO}_redirectUrl">#t ('redirectUrl')</label>
                   <span class="xHint">#t ("redirectUrl.hint")</span>
               </dt>
-              <dd> #displayInput ('redirectUrl', $objIO)<br/>
-                  <span class="xHint" id="redirectUrlAsExpected">#t('redirectUrl.asExpected')</span>
-                  <span class="xHint" id="redirectUrlNotAsExpected">#t('redirectUrl.notAsExpected')
-                      (<a href="#" onclick="resetRedirectUrl(); return false">#t('redirectUrl.recalc'))</a>
-                    </span>
+            #*
+            Four cases:
+            - redirectUrl browsers' matches servers'
+              - 1) value as expected
+            - redirectUrl browsers' unequal servers'
+              - 2) value as browser's
+              - 3) value as server's
+            - 4) independent
+             *#
+              #calcReturnUrlsJS()
+              <dd> #renderRedirectUrlInputAndHints()
               </dd>
 
             ## checkboxes for scope, needs JS
@@ -59,7 +68,7 @@
                   <label title="#t ('checkbox_mandatory')">
                       <input type="checkbox" name="scope_User.Read" disabled="true" checked class="mandatory">#t ("scope_email")</label><br/>
                   <label title="#t('checkbox_notyetdone')">
-                      <input type="checkbox" name="scope_avatar">#t ('scope_avatar')</label>
+                      <input type="checkbox" name="scope_User.ReadBasic.All">#t ('scope_avatar')</label>
                   #set($p=$configDocName.length()+1)
                   <input type="hidden" name="${propNamePrefixIO.substring($p)}_scope" value="${objIO.getValue('scope')}"/>
                   (#tp('scope_avatar.onlyOutlook',["<a href='https://docs.microsoft.com/en-us/graph/known-issues#photo-restrictions'>","</a>"]))

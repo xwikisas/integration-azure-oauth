@@ -19,29 +19,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
+
 <xwikidoc>
-  <web>AzureAD</web>
-  <name>AzureADConfigSheet</name>
+  <web>AzureADAdmin</web>
+  <name>WebHome</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>AzureAD.WebHome</parent>
+  <parent>xwiki:Main.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>AzureAD Configuration Sheet</title>
+  <title>MicroSoft Azure Active Directory Single Sign-On (SSO)</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
-      #set($configDocName="AzureAD.AzureADConfig")
-      #set($providerHint = "AzureAD")
-      #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration")
-      #set($extraObjectClassPropPrefixes = [["AzureADAdmin.AzureADConfigClass","tenantid"]])
-      #set($translationPrefix = "azureADAdmin.AzureADConfigClass_")
-    {{/velocity}}
-    {{include reference="AzureADAdmin.AzureADConfigSheet" /}}
-  </content>
+  <content>{{include reference="Licenses.Code.VelocityMacros"/}}
+
+{{velocity}}
+#set ($reference = $services.model.createDocumentReference("xwiki", ["AzureADAdmin"], "WebPreferences"))
+#if (!$services.licensing.licensor.hasLicensureForEntity($references))
+  {{error}}#getMissingLicenseMessage('azureADAdmin.extension.name'){{/error}}
+#else
+This space contains the administration code for the Azure Active Directory Integration of XWiki.
+    This extensions currently allows users to login with XWiki by authorizing the transmission
+    of profile information from an Azure Active Directory node. It uses the OAuth protocol
+    and, thus, the OpenID basic derivative.
+    #end
+{{/velocity}}</content>
 </xwikidoc>

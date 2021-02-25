@@ -23,7 +23,7 @@
   <parent>
     <groupId>com.xwiki.parent</groupId>
     <artifactId>xwikisas-parent-platform</artifactId>
-    <version>10.8</version>
+    <version>10.11</version>
   </parent>
   <groupId>com.xwiki.integration-azure-oauth</groupId>
   <artifactId>integration-azure-oauth-parent</artifactId>
@@ -33,6 +33,7 @@
   <description>This extension allows users to authenticate to the wiki using Azure Active Directory</description>
   <properties>
     <licensing.version>1.16</licensing.version>
+    <xwiki.minversion>10.11</xwiki.minversion>
   </properties>
   <issueManagement>
     <system>GitHub</system>
@@ -46,6 +47,7 @@
   </scm>
   <modules>
     <module>api</module>
+    <module>admin-ui</module>
     <module>ui</module>
   </modules>
 </project>

@@ -19,22 +19,23 @@
  */
 package com.xwiki.azureoauth;
 
-import java.io.File;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -66,24 +67,13 @@ import com.xwiki.licensing.Licensor;
 @Singleton
 public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
 {
-    /**
-     * The string tenant_id.
-     */
-    public static final String TENANT_ID = "tenantid";
+    private static final String TENANT_ID = "tenantid";
 
-    /**
-     * The string AzureAD.
-     */
-    public static final String PROVIDERNAME = "AzureAD";
+    private static final String PROVIDERHINT = "AzureAD";
 
-    /**
-     * The string "This extension is not licensed".
-     */
-    public static final String EXCEPTIONUNLICENSED = "This extension is not licensed.";
+    private static final String EXCEPTIONUNLICENSED = "This extension is not licensed.";
 
-    protected static Class deepestClassOfHierarchy;
-
-    protected static AzureADIdentityOAuthProvider deepestInstance;
+    private static final String IMAGE_JPEG = "image/jpeg";
 
     @Inject
     protected Provider<XWikiContext> contextProvider;
@@ -114,24 +104,11 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
 
     private List<String> scopes;
 
+    private boolean active;
+
     private ThreadLocal<String> currentlyRequestedUrl = new ThreadLocal<>();
 
     private ThreadLocal<Map> currentlyObtainedJson = new ThreadLocal<>();
-
-    /**
-     * AD administrators can create users without email. If this setting is true, users that show up with a record that
-     * has no email will have their email field be defined from the "user-principal", username@domain, which may or may
-     * not be a valid email address.
-     */
-    private boolean acceptUserWithoutEmail = true;
-
-    /**
-     * @return The subclass instance of this class that is deeper than this class (it should be a single class).
-     */
-    public static AzureADIdentityOAuthProvider getDeepestInstance()
-    {
-        return deepestInstance;
-    }
 
     /**
      * Reads initialization from objects expecting key-names clientid, secret, scopes, redirectUrl and tenantid.
@@ -140,25 +117,18 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
      */
     public void initialize(Map<String, String> config)
     {
-        Class clz = this.getClass();
-        if (deepestClassOfHierarchy != null) {
-            if (deepestClassOfHierarchy.isAssignableFrom(clz)) {
-                if (logger != null) {
-                    logger.warn("Class " + clz + " is a specialization of " + deepestClassOfHierarchy
-                            + "... marking IdentityOAuthProvider of class "
-                            + deepestClassOfHierarchy + " as inactive.");
-                }
-                deepestInstance = this;
-                deepestClassOfHierarchy = clz;
-            }
-        } else {
-            deepestClassOfHierarchy = clz;
+        this.active = false;
+        try {
+            this.initialize(config.get("active"), config.get("clientid"), config.get("secret"), config.get("scope"),
+                    config.get("redirectUrl"), config.get(TENANT_ID),
+                    config.get("configurationObjectsPage"));
+        } catch (Exception e) {
+            logger.warn("Configuration reading failed.", e);
+            throw new IdentityOAuthException("Trouble at reading configuration.", e);
         }
-        this.initialize(config.get("clientid"), config.get("secret"), config.get("scopes"),
-                config.get("redirectUrl"), config.get(TENANT_ID), config.get("configurationObjectsPage"));
     }
 
-    private void initialize(String clientId, String secret, String scopesParam,
+    private void initialize(String activeParam, String clientId, String secret, String scopesParam,
             String redirectUrl, String tenantId, String configPage)
     {
         if (scopesParam == null || scopesParam.trim().length() == 0) {
@@ -170,7 +140,9 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
         for (String s : scopes) {
             usedScopes.append(s).append(" ");
         }
-        //logger.debug("Scopes: " + usedScopes);
+        this.active = activeParam.equals("1") || Boolean.parseBoolean(activeParam);
+        logger.debug("Configuring class " + this.getClass().getSimpleName()
+                + " with: \n - scopes: " + scopes + "\n - clientId " + clientId);
         service = new ServiceBuilder(clientId)
                 .apiSecret(secret)
                 .defaultScope(usedScopes.toString())
@@ -180,25 +152,17 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
 
         configPageRef = documentResolver.resolve(configPage);
         azureADWebPrefsRef = documentResolver.resolve("xwiki:AzureAD.WebPreferences");
-
-        if (logger != null) {
-            logger.debug("MS-AD-Service configured: " + this);
-        }
+        logger.debug("MS-AD-Service configured: " + this);
     }
 
     /**
-     * Verifies that the configured object is activated, that the license is current, and that this object is the only
-     * object of this class hierarchy, thus ensuring that the presence of a configured provider implementing a subclass
-     * "neutralizes" any parent class. Note that this behaviour bases on the fact that all providers are instantiated
-     * before being consulted for being active and that the class hierarchy does not have multiple leaves (in this case,
-     * the elected subclass is not deterministic).
+     * Verifies that the configured object is activated, that the license is current.
      *
      * @return true if the verification succeeded.
      */
     @Override public boolean isActive()
     {
-        return licensorProvider.get().hasLicensure(azureADWebPrefsRef)
-                && this.getClass().equals(deepestClassOfHierarchy);
+        return licensorProvider.get().hasLicensure(azureADWebPrefsRef) && active;
     }
 
     /**
@@ -270,7 +234,14 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     @Override
     public String readAuthorizationFromReturn(Map<String, String[]> params)
     {
-        String code = params.get("code")[0];
+        String errorDescription = "error_description";
+        if (params.containsKey(errorDescription)) {
+            throw new IdentityOAuthException("An error occurred at AzureAD:"
+                    + " " + Arrays.asList(params.get("error"))
+                    + " " + Arrays.asList(params.get(errorDescription)));
+        }
+        String codeP = "code";
+        String code = params != null && params.containsKey(codeP) ? params.get(codeP)[0] : null;
         logger.debug("Obtained authorization-code from MS-AD Services.");
         return code;
     }
@@ -286,7 +257,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
         Map returnValue;
         try {
             currentlyRequestedUrl.set(url);
-            identityOAuthManager.get().requestCurrentToken(getProviderName());
+            identityOAuthManager.get().requestCurrentToken(getProviderHint());
             returnValue = currentlyObtainedJson.get();
         } catch (Exception e) {
             if (e instanceof IdentityOAuthException) {
@@ -333,7 +304,6 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
             }
 
             OAuthRequest request;
-
             request = new OAuthRequest(Verb.GET, "https://graph.microsoft.com/v1.0/me");
             service.signRequest(token, request);
             Response response = service.execute(request);
@@ -341,37 +311,63 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
             Map json = new ObjectMapper().readValue(responseBody, Map.class);
             IdentityDescription id = new MSADIdentityDescription(json);
 
-            // add photo metadata
-            // https://docs.microsoft.com/en-us/graph/api/profilephoto-get?view=graph-rest-1.0
-            try {
-                if (scopes.contains("avatar")) {
-                    final List<String> supportedMediaTypes = Arrays.asList("image/jpeg");
-                    request = new OAuthRequest(Verb.GET,
-                            "https://graph.microsoft.com/v1.0/users/" + id.internalId + "/photo");
-                    service.signRequest(token, request);
-                    Response photoResponse = service.execute(request);
-                    String mediaType = photoResponse.getHeader("Content-Type");
-                    if (photoResponse.isSuccessful()
-                            && supportedMediaTypes.contains(mediaType))
-                    {
-                        File tmpFile = File.createTempFile("photo", ".jpg");
-                        InputStream in = photoResponse.getStream();
-                        FileUtils.copyInputStreamToFile(in, tmpFile);
-                        id.fetchedUserImage = tmpFile.toURL();
-                    } else {
-                        logger.warn("Fetching photo failed: " + photoResponse.getMessage());
-                        logger.debug("Photo response: " + photoResponse.getBody());
-                    }
-                }
-            } catch (Throwable e) {
-                logger.warn("Can't save photo.", e);
-            }
-
             return id;
         } catch (Exception e) {
             logger.warn("Trouble at fetchIdentityDetails:", e);
             throw new IdentityOAuthException("Trouble at fetchIdentityDetails.", e);
         }
+    }
+
+    /**
+     * Opens the stream of the user image file if it was modified later than the given date.
+     *
+     * @param ifModifiedSince Only fetch the file if it is modified after this date.
+     * @param id              the currently collected identity-description.
+     * @param token           the currently valid token.
+     * @return A triple made of inputstream, media-type, and possibly guessed filename.
+     */
+    public Triple<InputStream, String, String> fetchUserImage(Date ifModifiedSince, IdentityDescription id,
+            String token)
+    {
+        // add photo metadata
+        // https://docs.microsoft.com/en-us/graph/api/profilephoto-get?view=graph-rest-1.0
+        try {
+            if (scopes.contains("User.ReadBasic.All") || scopes.contains("User.Read.All")) {
+                OAuthRequest request;
+                final List<String> supportedMediaTypes = Arrays.asList(IMAGE_JPEG);
+                request = new OAuthRequest(Verb.GET, id.userImageUrl);
+                if (ifModifiedSince != null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+                    sdf.setTimeZone(TimeZone.getTimeZone("CET"));
+                    String ifms = sdf.format(ifModifiedSince);
+                    request.addHeader("If-Modified-Since", ifms);
+                }
+                logger.debug("will request " + request);
+                service.signRequest(token, request);
+                Response photoResponse = service.execute(request);
+                String mediaType = photoResponse.getHeader("Content-Type");
+                logger.debug("Request done " + mediaType);
+                if (photoResponse.isSuccessful()
+                        && supportedMediaTypes.contains(mediaType))
+                {
+                    String contentDispo = photoResponse.getHeader("Content-Disposition");
+                    String fileName = "image.jpeg";
+                    String at = "attachment; ";
+                    if (contentDispo != null && contentDispo.startsWith(at)) {
+                        fileName = contentDispo.substring(at.length());
+                    }
+                    logger.debug("Obtained content of file " + fileName);
+                    return Triple.of(photoResponse.getStream(), IMAGE_JPEG, fileName);
+                } else {
+                    logger.warn("Fetching photo failed: " + photoResponse.getMessage());
+                    logger.debug("Photo response: " + photoResponse.getBody());
+                    return null;
+                }
+            }
+        } catch (Throwable e) {
+            logger.warn("Can't save photo.", e);
+        }
+        return null;
     }
 
     @Override
@@ -389,16 +385,16 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     }
 
     @Override
-    public String getProviderName()
+    public String getProviderHint()
     {
-        return PROVIDERNAME;
+        return PROVIDERHINT;
     }
 
     @Override
-    public void setProviderName(String name)
+    public void setProviderHint(String hint)
     {
-        if (!this.PROVIDERNAME.equals(name)) {
-            throw new IllegalStateException("Only \"AzureAD\" is accepted as name.");
+        if (!this.PROVIDERHINT.equals(hint)) {
+            throw new IllegalStateException("Only \"AzureAD\" is accepted as hint.");
         }
     }
 
@@ -424,9 +420,15 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
             String providedEmail = (String) json.get("mail");
             if (providedEmail != null) {
                 emails = Collections.singletonList(providedEmail);
-            } else if (acceptUserWithoutEmail) {
+            } else {
+                /*
+                 * AD administrators can create users without email. If this entering here, users that show up
+                 * with a record that has no email will have their email field be defined from the "user-principal",
+                 * username@domain, which may or may not be a valid email address.
+                 */
                 emails = Collections.singletonList(json.get("userPrincipalName").toString());
             }
+            this.userImageUrl = "https://graph.microsoft.com/v1.0/users/" + internalId + "/photo/$value";
         }
     }
 }

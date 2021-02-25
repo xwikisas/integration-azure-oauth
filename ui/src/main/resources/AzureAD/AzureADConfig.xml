@@ -40,10 +40,10 @@
   <object>
     <name>AzureAD.AzureADConfig</name>
     <number>0</number>
-    <className>AzureAD.AzureADConfigClass</className>
+    <className>AzureADAdmin.AzureADConfigClass</className>
     <guid>fb26f78a-59cf-4279-ad2e-536dd1d02303</guid>
     <class>
-      <name>AzureAD.AzureADConfigClass</name>
+      <name>AzureADAdmin.AzureADConfigClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -54,10 +54,10 @@
       <tenantid>
         <customDisplay/>
         <disabled>0</disabled>
-        <name>tenant id</name>
+        <name>tenantid</name>
         <number>0</number>
         <picker>0</picker>
-        <prettyName>clientid</prettyName>
+        <prettyName>tenant id</prettyName>
         <size>60</size>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
@@ -160,10 +160,13 @@
       <clientid></clientid>
     </property>
     <property>
-      <scope>openid User.Read</scope>
+      <scope>openid User.Read User.ReadBasic.All</scope>
     </property>
     <property>
       <secret></secret>
+    </property>
+    <property>
+      <redirectUrl></redirectUrl>
     </property>
     <property>
       <useCookies>1</useCookies>
@@ -374,7 +377,7 @@
       <displayInSection>Azure AD</displayInSection>
     </property>
     <property>
-      <heading>$services.localization.render('azureAD.config.heading')</heading>
+      <heading>$services.localization.render('azureADAdmin.config.heading')</heading>
     </property>
     <property>
       <iconAttachment/>

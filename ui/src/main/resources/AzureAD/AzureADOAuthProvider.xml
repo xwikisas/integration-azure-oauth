@@ -95,20 +95,20 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
       </orderHint>
-      <providerName>
+      <providerHint>
         <customDisplay/>
         <disabled>0</disabled>
         <hint/>
-        <name>providerName</name>
+        <name>providerHint</name>
         <number>1</number>
         <picker>1</picker>
-        <prettyName>providerName</prettyName>
+        <prettyName>providerHint</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </providerName>
+      </providerHint>
       <configurationObjectsPage>
         <cache>0</cache>
         <classname/>
@@ -139,13 +139,13 @@
       </configurationObjectsPage>
     </class>
     <property>
-      <loginTemplate>[[[[image:AzureAD.WebHome@AzureAD-logo.svg||width='18px' alt="Logo MicroSoft 365" margin-bottom:2px]]  {{translation key="azureAD.loginWithAzureAD"/}}&gt;&gt;path:-URL-&amp;provider=-PROVIDER-||class="btn btn-primary col-xs-12" style="background:white; border: #333 solid 1px; color: #808080; font-family: 'SegoeUI','Lato','Helvetica Neue',Helvetica,Arial,sans-serif; font-size:110%; text-align:left"]]</loginTemplate>
+      <loginTemplate/>
     </property>
     <property>
       <orderHint>10</orderHint>
     </property>
     <property>
-      <providerName>AzureAD</providerName>
+      <providerHint>AzureAD</providerHint>
     </property>
     <property>
       <active>1</active>

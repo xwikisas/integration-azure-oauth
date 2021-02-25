@@ -19,29 +19,22 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
+
 <xwikidoc>
-  <web>AzureAD</web>
-  <name>AzureADConfigSheet</name>
+  <web>AzureADAdmin</web>
+  <name>AzureADConfigClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>AzureAD.WebHome</parent>
+  <parent>xwiki:AzureADAdmin.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>AzureAD Configuration Sheet</title>
+  <title/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
-      #set($configDocName="AzureAD.AzureADConfig")
-      #set($providerHint = "AzureAD")
-      #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration")
-      #set($extraObjectClassPropPrefixes = [["AzureADAdmin.AzureADConfigClass","tenantid"]])
-      #set($translationPrefix = "azureADAdmin.AzureADConfigClass_")
-    {{/velocity}}
-    {{include reference="AzureADAdmin.AzureADConfigSheet" /}}
-  </content>
+  <content/>
 </xwikidoc>

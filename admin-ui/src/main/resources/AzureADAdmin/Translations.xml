@@ -21,13 +21,13 @@
 -->
 
 <xwikidoc>
-  <web>AzureAD</web>
+  <web>AzureADAdmin</web>
   <name>Translations</name>
   <language/>
   <defaultLanguage>en</defaultLanguage>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>AzureAD.WebHome</parent>
+  <parent>AzureADAdmin.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>AzureAD.Translations</name>
+    <name>AzureADAdmin.Translations</name>
     <number>0</number>
     <className>XWiki.TranslationDocumentClass</className>
     <guid>01d84622-baf7-448b-96a4-93fcd4276764</guid>
