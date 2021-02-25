@@ -40,9 +40,9 @@
     <url>https://github.com/xwikisas/integration-azure-oauth/issues</url>
   </issueManagement>
   <scm>
-    <connection>scm:https://github.com/xwikisas/integration-azure-oauth.git</connection>
-    <developerConnection>scm:git@github.com:xwikisas/integration-azure-oauth.git</developerConnection>
-    <url>https://github.com/xwikisas/integration-azure-oauth/tree/master</url>
+    <connection>scm:git:git://github.com/xwikisas/integration-azure-oauth.git</connection>
+    <developerConnection>scm:git:git@github.com:xwikisas/integration-azure-oauth.git</developerConnection>
+    <url>scm:https://github.com/xwikisas/integration-azure-oauth/tree/master</url>
     <tag>HEAD</tag>
   </scm>
   <modules>
