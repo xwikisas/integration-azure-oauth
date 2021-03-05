@@ -38,11 +38,11 @@
   <hidden>false</hidden>
   <content>
     = OAuth Logout =
-
-    TODO
+    Cleaning your session of AzureAD information...
 
     {{velocity}}
-      $response.sendRedirect('../../logout/XWiki/XWikiLogout')
+      $services.identityoauth.clearAllSessionInfos()
+      $response.sendRedirect($xwiki.getDocument("XWiki.XWikiLogout").getURL("logout"))
     {{/velocity}}
   </content>
 </xwikidoc>

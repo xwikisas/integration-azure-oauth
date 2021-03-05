@@ -35,13 +35,15 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
+  <content>{{velocity output=false}}
       #set($configDocName="AzureAD.AzureADConfig")
       #set($providerHint = "AzureAD")
       #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration")
       #set($extraObjectClassPropPrefixes = [["AzureADAdmin.AzureADConfigClass","tenantid"]])
       #set($translationPrefix = "azureADAdmin.AzureADConfigClass_")
+      #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration")
     {{/velocity}}
+
     {{include reference="AzureADAdmin.AzureADConfigSheet" /}}
   </content>
 </xwikidoc>
