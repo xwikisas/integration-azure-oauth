@@ -45,6 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.apis.MicrosoftAzureActiveDirectory20Api;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
@@ -57,7 +58,7 @@ import com.xwiki.identityoauth.IdentityOAuthProvider;
 import com.xwiki.licensing.Licensor;
 
 /**
- * A provider to read identity based on OAuth/OpenID from MicroSoft Azure Active Directory.
+ * A provider to read identity based on OAuth/OpenID from Microsoft Azure Active Directory.
  *
  * @version $Id$
  * @since 1.0
@@ -225,9 +226,14 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
             // TODO: change return type to an object that contains expiry (and is serializable...)
             Date expiry = new Date(System.currentTimeMillis() + 1000 * accessToken.getExpiresIn());
             return new ImmutablePair<>(accessToken.getAccessToken(), expiry);
+        } catch (OAuth2AccessTokenErrorResponse e) {
+            String msg = "OAuth trouble at creating token:" + e.getErrorDescription();
+            logger.warn(msg, e);
+            throw new IdentityOAuthException(msg, e);
         } catch (Exception e) {
-            logger.warn("Trouble at creating Token:", e);
-            throw new IdentityOAuthException("Trouble at creating Token.", e);
+            String msg = "Generic trouble at creating Token: " + e.toString();
+            logger.warn(msg, e);
+            throw new IdentityOAuthException(msg, e);
         }
     }
 
