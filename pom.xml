@@ -28,7 +28,7 @@
   <artifactId>integration-azure-oauth-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>MicroSoft Azure Active Directory Single Sign-On (SSO) (pro) parent POM</name>
+  <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro) parent POM</name>
   <description>This extension allows users to authenticate to the wiki using Azure Active Directory</description>
   <properties>
     <licensing.version>1.16</licensing.version>

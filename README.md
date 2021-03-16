@@ -1,4 +1,4 @@
-# MicroSoft Azure Active Directory Single Sign-On (SSO) (Pro)
+# Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)
 
 * Project Lead: [Paul Libbrecht](https://github.com/polx)
 * Communication: [Web Forum](http://dev.xwiki.org/xwiki/bin/view/Community/Discuss), 

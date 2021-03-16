@@ -27,7 +27,7 @@
   <groupId>com.xwiki.integration-azure-oauth</groupId>
   <artifactId>integration-azure-oauth-api</artifactId>
   <packaging>jar</packaging>
-  <name>MicroSoft Azure Active Directory Single Sign-On (SSO) (pro) API</name>
+  <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro) API</name>
   <description>This extension allows users to authenticate to the wiki using Azure Active Directory</description>
   <properties>
   </properties>

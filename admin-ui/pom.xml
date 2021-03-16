@@ -26,11 +26,11 @@
   </parent>
 	<artifactId>integration-azure-oauth-admin-ui</artifactId>
 	<packaging>xar</packaging>
-  <name>Administration Classes for MicroSoft Azure Active Directory Single Sign-On (SSO) (pro)</name>
+  <name>Administration Classes for Microsoft Azure Active Directory Single Sign-On (SSO) (pro)</name>
   <description>This extension supports the authentication to the wiki using Azure Active Directory</description>
   <properties>
     <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>Configuration Pages for MicroSoft Azure Active Directory Single Sign-On (SSO) (Pro)</xwiki.extension.name>
+    <xwiki.extension.name>Configuration Pages for Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)</xwiki.extension.name>
     <!-- Don't run CLIRR here since there's no Java code. -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
     <!-- Don't run enforcer here since there's no Java code to avoid java7 requirement. -->
