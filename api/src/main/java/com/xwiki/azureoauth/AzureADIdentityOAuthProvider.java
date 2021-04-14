@@ -55,6 +55,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xwiki.identityoauth.IdentityOAuthException;
 import com.xwiki.identityoauth.IdentityOAuthManager;
 import com.xwiki.identityoauth.IdentityOAuthProvider;
+import com.xwiki.identityoauth.internal.IdentityOAuthConstants;
 import com.xwiki.licensing.Licensor;
 
 /**
@@ -107,6 +108,8 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
 
     private boolean active;
 
+    private String tenantId;
+
     private ThreadLocal<String> currentlyRequestedUrl = new ThreadLocal<>();
 
     private ThreadLocal<Map> currentlyObtainedJson = new ThreadLocal<>();
@@ -132,6 +135,9 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     private void initialize(String activeParam, String clientId, String secret, String scopesParam,
             String redirectUrl, String tenantId, String configPage)
     {
+
+        this.tenantId = tenantId;
+
         if (scopesParam == null || scopesParam.trim().length() == 0) {
             scopes = getMinimumScopes();
         } else {
@@ -144,11 +150,17 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
         this.active = activeParam.equals("1") || Boolean.parseBoolean(activeParam);
         logger.debug("Configuring class " + this.getClass().getSimpleName()
                 + " with: \n - scopes: " + scopes + "\n - clientId " + clientId);
+
+        String redir = redirectUrl;
+        if (redir == null || redir.trim().length() == 0) {
+            redir = IdentityOAuthConstants.CHANGE_ME_LOGIN_URL;
+        }
+
         service = new ServiceBuilder(clientId)
                 .apiSecret(secret)
                 .defaultScope(usedScopes.toString())
                 //.httpClientConfig(ApacheHttpClientConfig.defaultConfig())
-                .callback(redirectUrl)
+                .callback(redir)
                 .build(MicrosoftAzureActiveDirectory20Api.custom(tenantId));
 
         configPageRef = documentResolver.resolve(configPage);
@@ -302,7 +314,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     }
 
     @Override
-    public IdentityDescription fetchIdentityDetails(String token)
+    public AbstractIdentityDescription fetchIdentityDetails(String token)
     {
         try {
             if (!licensorProvider.get().hasLicensure(azureADWebPrefsRef)) {
@@ -315,7 +327,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
             Response response = service.execute(request);
             String responseBody = response.getBody();
             Map json = new ObjectMapper().readValue(responseBody, Map.class);
-            IdentityDescription id = new MSADIdentityDescription(json);
+            MSADIdentityDescription id = new MSADIdentityDescription(json);
 
             return id;
         } catch (Exception e) {
@@ -332,7 +344,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
      * @param token           the currently valid token.
      * @return A triple made of inputstream, media-type, and possibly guessed filename.
      */
-    public Triple<InputStream, String, String> fetchUserImage(Date ifModifiedSince, IdentityDescription id,
+    public Triple<InputStream, String, String> fetchUserImage(Date ifModifiedSince, AbstractIdentityDescription id,
             String token)
     {
         // add photo metadata
@@ -377,11 +389,9 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     }
 
     @Override
-    public boolean enrichUserObject(IdentityDescription idDescription, XWikiDocument doc)
+    public boolean enrichUserObject(AbstractIdentityDescription idDescription, XWikiDocument doc)
     {
         MSADIdentityDescription id = (MSADIdentityDescription) idDescription;
-        // TODO: explore the information that can be collected and be inserted in
-        //  the XWiki profile, e.g. photos, URLs, ...
         return false;
     }
 
@@ -410,7 +420,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
         return "ok";
     }
 
-    private final class MSADIdentityDescription extends IdentityDescription
+    private final class MSADIdentityDescription extends AbstractIdentityDescription
     {
         private final Map json;
 
@@ -435,6 +445,11 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
                 emails = Collections.singletonList(json.get("userPrincipalName").toString());
             }
             this.userImageUrl = "https://graph.microsoft.com/v1.0/users/" + internalId + "/photo/$value";
+        }
+
+        @Override public String getIssuerURL()
+        {
+            return "https://login.microsoftonline.com/" + tenantId + "/2.0";
         }
     }
 }
