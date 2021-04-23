@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.xwiki.integration-azure-oauth</groupId>
     <artifactId>integration-azure-oauth-parent</artifactId>
-    <version>1.0-RC4</version>
+    <version>1.0-SNAPSHOT</version>
   </parent>
   <groupId>com.xwiki.integration-azure-oauth</groupId>
   <artifactId>integration-azure-oauth-api</artifactId>
@@ -61,7 +61,7 @@
     <dependency>
       <groupId>com.xwiki.identity-oauth</groupId>
       <artifactId>identity-oauth-api</artifactId>
-      <version>1.0-RC4</version>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
 
     <!-- force Jackson versions to the currently supported. -->
