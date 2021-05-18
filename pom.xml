@@ -26,7 +26,7 @@
   </parent>
   <groupId>com.xwiki.integration-azure-oauth</groupId>
   <artifactId>integration-azure-oauth-parent</artifactId>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro) parent POM</name>
   <description>This extension allows users to authenticate to the wiki using Azure Active Directory</description>
@@ -42,7 +42,7 @@
     <connection>scm:git:git://github.com/xwikisas/integration-azure-oauth.git</connection>
     <developerConnection>scm:git:git@github.com:xwikisas/integration-azure-oauth.git</developerConnection>
     <url>scm:https://github.com/xwikisas/integration-azure-oauth/tree/master</url>
-    <tag>integration-azure-oauth-parent-1.0</tag>
+    <tag>HEAD</tag>
   </scm>
   <modules>
     <module>api</module>
