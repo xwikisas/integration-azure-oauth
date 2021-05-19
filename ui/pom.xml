@@ -24,7 +24,6 @@
 		<artifactId>integration-azure-oauth-parent</artifactId>
 		<version>1.1-SNAPSHOT</version>
   </parent>
-	<groupId>com.xwiki.integration-azure-oauth</groupId>
 	<artifactId>integration-azure-oauth-ui</artifactId>
 	<packaging>xar</packaging>
   <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro)</name>
@@ -59,34 +58,6 @@
       <version>${licensing.version}</version>
     </dependency>
   </dependencies>
-  <issueManagement>
-    <system>GitHub</system>
-    <url>https://github.com/xwikisas/integration-azure-oauth/issues</url>
-  </issueManagement>
-  <scm>
-    <connection>scm:git:git://github.com/xwikisas/integration-azure-oauth.git</connection>
-    <developerConnection>scm:git:git@github.com:xwikisas/integration-azure-oauth.git</developerConnection>
-    <url>scm:https://github.com/xwikisas/integration-azure-oauth/tree/master</url>
-    <tag>HEAD</tag>
-  </scm>
-  <!-- Even though this repository is already declared in the parent POM, we still explicitly redeclare it for
-       convenience. This makes it simpler to build this project without having to declare this repository in one's own
-       Maven settings.xml file. In the future We may decide to remove this in the future and make it a rule to have the
-       XWiki SAS Nexus repository in one's settings.xml -->
-  <repositories>
-    <repository>
-      <id>public-store-releases</id>
-      <name>XWiki SAS Public Store Repository for Releases</name>
-      <url>https://nexus.xwiki.com/nexus/content/repositories/public-store-releases/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
   <build>
     <plugins>
       <plugin>
