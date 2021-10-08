@@ -430,9 +430,9 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
             // found entries (2020-10-02):
             //   businessPhone, displayName, givenName, jobTitle, mail, mobilePhone, officeLocation,
             //   preferredLanguage, surname, userPrincipalName, id
-            firstName = json.get("givenName").toString();
-            lastName = json.get("surname").toString();
-            internalId = json.get("id").toString();
+            firstName = json.get("givenName") + "";
+            lastName = json.get("surname") + "";
+            internalId = json.get("id") + "";
             String providedEmail = (String) json.get("mail");
             if (providedEmail != null) {
                 emails = Collections.singletonList(providedEmail);
