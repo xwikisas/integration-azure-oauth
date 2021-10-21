@@ -24,10 +24,13 @@
 		<artifactId>integration-azure-oauth-parent</artifactId>
 		<version>1.4-SNAPSHOT</version>
   </parent>
+
 	<artifactId>integration-azure-oauth-ui</artifactId>
 	<packaging>xar</packaging>
+
   <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro)</name>
   <description>This extension allows users to authenticate to the wiki using Azure Active Directory</description>
+
   <properties>
     <!-- The list of documents that have an implicit unlimited free license. The users can view these documents without
       buying a license or getting a trial license, but they cannot edit or delete them. -->
@@ -45,11 +48,12 @@
     <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
     <xwiki.extension.category>application</xwiki.extension.category>
   </properties>
+
   <dependencies>
     <dependency>
 			<groupId>com.xwiki.integration-azure-oauth</groupId>
 			<artifactId>integration-azure-oauth-admin-ui</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>${project.version}</version>
       <type>xar</type>
     </dependency>
     <dependency>
@@ -58,12 +62,12 @@
       <version>${licensing.version}</version>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-        <version>11.4</version>
         <configuration>
           <transformations>
 
