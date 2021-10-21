@@ -24,10 +24,13 @@
 		<artifactId>integration-azure-oauth-parent</artifactId>
 		<version>1.4-SNAPSHOT</version>
   </parent>
+
 	<artifactId>integration-azure-oauth-admin-ui</artifactId>
 	<packaging>xar</packaging>
+
   <name>Administration Classes for Microsoft Azure Active Directory Single Sign-On (SSO) (pro)</name>
   <description>This extension supports the authentication to the wiki using Azure Active Directory</description>
+
   <properties>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Configuration Pages for Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)</xwiki.extension.name>
@@ -45,6 +48,7 @@
       AzureADAdmin.AzureADConfig
     </xwiki.extension.licensing.excludedDocuments>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.xwiki.licensing</groupId>
@@ -54,26 +58,21 @@
     <dependency>
 			<groupId>com.xwiki.integration-azure-oauth</groupId>
 			<artifactId>integration-azure-oauth-api</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.xwiki.identity-oauth</groupId>
       <artifactId>identity-oauth-ui</artifactId>
-      <version>1.1.1</version>
+      <version>${identity.oauth.version}</version>
       <type>xar</type>
     </dependency>
-    <dependency>
-      <groupId>com.github.scribejava</groupId>
-      <artifactId>scribejava-apis</artifactId>
-      <version>8.1.0</version>
-    </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-        <version>11.4</version>
         <configuration>
           <transformations>
 
