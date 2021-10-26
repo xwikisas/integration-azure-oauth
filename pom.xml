@@ -35,7 +35,7 @@
 
   <properties>
     <licensing.version>1.19</licensing.version>
-    <identity.oauth.version>1.1.2</identity.oauth.version>
+    <identity.oauth.version>1.2-SNAPSHOT</identity.oauth.version>
     <xwiki.minversion>11.10</xwiki.minversion>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>
@@ -74,5 +74,16 @@
     <module>admin-ui</module>
     <module>ui</module>
   </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <configuration>
+          <createChecksum>true</createChecksum>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

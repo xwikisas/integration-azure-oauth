@@ -92,6 +92,10 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     @Inject
     protected Provider<IdentityOAuthManager> identityOAuthManager;
 
+    protected long lastCheckedLicenseTime;
+
+    protected boolean lastCheckedLicensedResult;
+
     protected DocumentReference configPageRef;
 
     /**
@@ -169,13 +173,28 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     }
 
     /**
-     * Verifies that the configured object is activated, that the license is current.
+     * Verifies that the configured object is activated.
      *
      * @return true if the verification succeeded.
      */
     @Override public boolean isActive()
     {
-        return licensorProvider.get().hasLicensure(azureADWebPrefsRef) && active;
+        return active;
+    }
+
+    /**
+     * Verifies that the license is current every five minutes.
+     *
+     * @return true if license was valid in the last five minutes.
+     */
+    @Override public boolean isReady()
+    {
+        if (lastCheckedLicenseTime > System.currentTimeMillis() - (5 * 60 * 1000)) {
+            return lastCheckedLicensedResult;
+        } else {
+            lastCheckedLicensedResult = licensorProvider.get().hasLicensure(azureADWebPrefsRef);
+            return lastCheckedLicensedResult;
+        }
     }
 
     /**
@@ -217,7 +236,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     @Override
     public String getRemoteAuthorizationUrl(String redirectUrl)
     {
-        if (!licensorProvider.get().hasLicensure(azureADWebPrefsRef)) {
+        if (!isActive()) {
             throw new IllegalStateException(EXCEPTIONUNLICENSED);
         }
         String authorizationUrl = service.getAuthorizationUrl();
@@ -229,7 +248,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     public Pair<String, Date> createToken(String authCode)
     {
         try {
-            if (!licensorProvider.get().hasLicensure(azureADWebPrefsRef)) {
+            if (!isActive()) {
                 throw new IllegalStateException(EXCEPTIONUNLICENSED);
             }
 

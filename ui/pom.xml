@@ -89,6 +89,12 @@
           </transformations>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <configuration>
+          <createChecksum>true</createChecksum>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
