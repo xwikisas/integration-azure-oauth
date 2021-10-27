@@ -20,13 +20,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-		<groupId>com.xwiki.integration-azure-oauth</groupId>
-		<artifactId>integration-azure-oauth-parent</artifactId>
-		<version>1.4-SNAPSHOT</version>
+    <groupId>com.xwiki.integration-azure-oauth</groupId>
+    <artifactId>integration-azure-oauth-parent</artifactId>
+    <version>1.4-SNAPSHOT</version>
   </parent>
 
-	<artifactId>integration-azure-oauth-admin-ui</artifactId>
-	<packaging>xar</packaging>
+  <artifactId>integration-azure-oauth-admin-ui</artifactId>
+  <packaging>xar</packaging>
 
   <name>Administration Classes for Microsoft Azure Active Directory Single Sign-On (SSO) (pro)</name>
   <description>This extension supports the authentication to the wiki using Azure Active Directory</description>
@@ -34,10 +34,9 @@
   <properties>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Configuration Pages for Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)</xwiki.extension.name>
-    <!-- Don't run CLIRR here since there's no Java code. -->
+    <!-- Don't run CLIRR or Revapi here since there's no Java code. -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
-    <!-- Don't run enforcer here since there's no Java code to avoid java7 requirement. -->
-    <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
+    <xwiki.revapi.skip>true</xwiki.revapi.skip>
     <xwiki.extension.category>other</xwiki.extension.category>
     <!-- The list of documents that have an implicit unlimited free license. The users can view these documents without
       buying a license or getting a trial license, but they cannot edit or delete them. -->
@@ -56,8 +55,8 @@
       <version>${licensing.version}</version>
     </dependency>
     <dependency>
-			<groupId>com.xwiki.integration-azure-oauth</groupId>
-			<artifactId>integration-azure-oauth-api</artifactId>
+      <groupId>com.xwiki.integration-azure-oauth</groupId>
+      <artifactId>integration-azure-oauth-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

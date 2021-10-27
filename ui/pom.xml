@@ -20,13 +20,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-		<groupId>com.xwiki.integration-azure-oauth</groupId>
-		<artifactId>integration-azure-oauth-parent</artifactId>
-		<version>1.4-SNAPSHOT</version>
+    <groupId>com.xwiki.integration-azure-oauth</groupId>
+    <artifactId>integration-azure-oauth-parent</artifactId>
+    <version>1.4-SNAPSHOT</version>
   </parent>
 
-	<artifactId>integration-azure-oauth-ui</artifactId>
-	<packaging>xar</packaging>
+  <artifactId>integration-azure-oauth-ui</artifactId>
+  <packaging>xar</packaging>
 
   <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro)</name>
   <description>This extension allows users to authenticate to the wiki using Azure Active Directory</description>
@@ -42,17 +42,16 @@
     </xwiki.extension.licensing.excludedDocuments>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)</xwiki.extension.name>
-    <!-- Don't run CLIRR here since there's no Java code. -->
+    <!-- Don't run CLIRR or Revapi here since there's no Java code. -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
-    <!-- Don't run enforcer here since there's no Java code to avoid java7 requirement. -->
-    <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
+    <xwiki.revapi.skip>true</xwiki.revapi.skip>
     <xwiki.extension.category>application</xwiki.extension.category>
   </properties>
 
   <dependencies>
     <dependency>
-			<groupId>com.xwiki.integration-azure-oauth</groupId>
-			<artifactId>integration-azure-oauth-admin-ui</artifactId>
+      <groupId>com.xwiki.integration-azure-oauth</groupId>
+      <artifactId>integration-azure-oauth-admin-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
     </dependency>
