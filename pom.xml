@@ -34,8 +34,8 @@
   <description>This extension allows users to authenticate to the wiki using Azure Active Directory</description>
 
   <properties>
-    <licensing.version>1.19</licensing.version>
-    <identity.oauth.version>1.2-SNAPSHOT</identity.oauth.version>
+    <licensing.version>1.20</licensing.version>
+    <identity.oauth.version>1.2</identity.oauth.version>
     <xwiki.minversion>11.10</xwiki.minversion>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>
