@@ -20,37 +20,26 @@
 package com.xwiki.azureoauth;
 
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.scribejava.apis.MicrosoftAzureActiveDirectory20Api;
-import com.github.scribejava.core.builder.ServiceBuilder;
-import com.github.scribejava.core.model.OAuth2AccessToken;
-import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
-import com.github.scribejava.core.model.OAuthRequest;
-import com.github.scribejava.core.model.Response;
-import com.github.scribejava.core.model.Verb;
-import com.github.scribejava.core.oauth.OAuth20Service;
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xwiki.identityoauth.IdentityOAuthException;
 import com.xwiki.identityoauth.IdentityOAuthManager;
@@ -75,11 +64,6 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
 
     private static final String EXCEPTIONUNLICENSED = "This extension is not licensed.";
 
-    private static final String IMAGE_JPEG = "image/jpeg";
-
-    @Inject
-    protected Provider<XWikiContext> contextProvider;
-
     @Inject
     protected DocumentReferenceResolver<String> documentResolver;
 
@@ -92,21 +76,13 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     @Inject
     protected Provider<IdentityOAuthManager> identityOAuthManager;
 
-    protected long lastCheckedLicenseTime;
-
-    protected boolean lastCheckedLicensedResult;
-
     protected DocumentReference configPageRef;
 
-    /**
-     * The wiki reference to the WebPreferences page of the AzureAD space.
-     */
-    protected DocumentReference azureADWebPrefsRef;
+    @Inject
+    private AzureADOAuthClient oauthClient;
 
-    /**
-     * The connection service to the azure Active-Directory API.
-     */
-    private OAuth20Service service;
+    private ExtensionId thisExtensionId =
+            new ExtensionId("com.xwiki.integration-azure-oauth:integration-azure-oauth-ui");
 
     private List<String> scopes;
 
@@ -160,15 +136,9 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
             redir = IdentityOAuthConstants.CHANGE_ME_LOGIN_URL;
         }
 
-        service = new ServiceBuilder(clientId)
-                .apiSecret(secret)
-                .defaultScope(usedScopes.toString())
-                //.httpClientConfig(ApacheHttpClientConfig.defaultConfig())
-                .callback(redir)
-                .build(MicrosoftAzureActiveDirectory20Api.custom(tenantId));
+        oauthClient.buildService(clientId, secret, usedScopes.toString(), redir, tenantId);
 
         configPageRef = documentResolver.resolve(configPage);
-        azureADWebPrefsRef = documentResolver.resolve("xwiki:AzureAD.WebPreferences");
         logger.debug("MS-AD-Service configured: " + this);
     }
 
@@ -189,12 +159,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
      */
     @Override public boolean isReady()
     {
-        if (lastCheckedLicenseTime > System.currentTimeMillis() - (5 * 60 * 1000)) {
-            return lastCheckedLicensedResult;
-        } else {
-            lastCheckedLicensedResult = licensorProvider.get().hasLicensure(azureADWebPrefsRef);
-            return lastCheckedLicensedResult;
-        }
+        return licensorProvider.get().hasLicensure(thisExtensionId);
     }
 
     /**
@@ -236,10 +201,10 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     @Override
     public String getRemoteAuthorizationUrl(String redirectUrl)
     {
-        if (!isActive()) {
+        if (!isReady()) {
             throw new IllegalStateException(EXCEPTIONUNLICENSED);
         }
-        String authorizationUrl = service.getAuthorizationUrl();
+        String authorizationUrl = oauthClient.getAuthorizationUrl();
         logger.debug("Authorization URL: " + authorizationUrl);
         return authorizationUrl;
     }
@@ -247,40 +212,16 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     @Override
     public Pair<String, Date> createToken(String authCode)
     {
-        try {
-            if (!isActive()) {
-                throw new IllegalStateException(EXCEPTIONUNLICENSED);
-            }
-
-            OAuth2AccessToken accessToken = service.getAccessToken(authCode);
-            logger.debug("Obtained accessToken from MS-AD Services.");
-            // TODO: change return type to an object that contains expiry (and is serializable...)
-            Date expiry = new Date(System.currentTimeMillis() + 1000 * accessToken.getExpiresIn());
-            return new ImmutablePair<>(accessToken.getAccessToken(), expiry);
-        } catch (OAuth2AccessTokenErrorResponse e) {
-            String msg = "OAuth trouble at creating token:" + e.getErrorDescription();
-            logger.warn(msg, e);
-            throw new IdentityOAuthException(msg, e);
-        } catch (Exception e) {
-            String msg = "Generic trouble at creating Token: " + e.toString();
-            logger.warn(msg, e);
-            throw new IdentityOAuthException(msg, e);
+        if (!isReady()) {
+            throw new IllegalStateException(EXCEPTIONUNLICENSED);
         }
+        return oauthClient.createToken(authCode);
     }
 
     @Override
     public String readAuthorizationFromReturn(Map<String, String[]> params)
     {
-        String errorDescription = "error_description";
-        if (params.containsKey(errorDescription)) {
-            throw new IdentityOAuthException("An error occurred at AzureAD:"
-                    + " " + Arrays.asList(params.get("error"))
-                    + " " + Arrays.asList(params.get(errorDescription)));
-        }
-        String codeP = "code";
-        String code = params != null && params.containsKey(codeP) ? params.get(codeP)[0] : null;
-        logger.debug("Obtained authorization-code from MS-AD Services.");
-        return code;
+        return oauthClient.readAuthorizationFromReturn(params);
     }
 
     /**
@@ -317,11 +258,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     @Override public void receiveFreshToken(String token)
     {
         try {
-            OAuthRequest request =
-                    new OAuthRequest(Verb.GET, currentlyRequestedUrl.get());
-            service.signRequest(token, request);
-            Response response = service.execute(request);
-            String responseBody = response.getBody();
+            String responseBody = oauthClient.performApiRequest(token, currentlyRequestedUrl.get());
             if (logger.isDebugEnabled()) {
                 logger.debug("Response received: " + responseBody);
             }
@@ -335,24 +272,10 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     @Override
     public AbstractIdentityDescription fetchIdentityDetails(String token)
     {
-        try {
-            if (!licensorProvider.get().hasLicensure(azureADWebPrefsRef)) {
-                throw new IllegalStateException(EXCEPTIONUNLICENSED);
-            }
-
-            OAuthRequest request;
-            request = new OAuthRequest(Verb.GET, "https://graph.microsoft.com/v1.0/me");
-            service.signRequest(token, request);
-            Response response = service.execute(request);
-            String responseBody = response.getBody();
-            Map json = new ObjectMapper().readValue(responseBody, Map.class);
-            MSADIdentityDescription id = new MSADIdentityDescription(json);
-
-            return id;
-        } catch (Exception e) {
-            logger.warn("Trouble at fetchIdentityDetails:", e);
-            throw new IdentityOAuthException("Trouble at fetchIdentityDetails.", e);
+        if (!isReady()) {
+            throw new IllegalStateException(EXCEPTIONUNLICENSED);
         }
+        return oauthClient.fetchIdentityDetails(token, tenantId);
     }
 
     /**
@@ -366,45 +289,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     public Triple<InputStream, String, String> fetchUserImage(Date ifModifiedSince, AbstractIdentityDescription id,
             String token)
     {
-        // add photo metadata
-        // https://docs.microsoft.com/en-us/graph/api/profilephoto-get?view=graph-rest-1.0
-        try {
-            if (scopes.contains("User.ReadBasic.All") || scopes.contains("User.Read.All")) {
-                OAuthRequest request;
-                final List<String> supportedMediaTypes = Arrays.asList(IMAGE_JPEG);
-                request = new OAuthRequest(Verb.GET, id.userImageUrl);
-                if (ifModifiedSince != null) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-                    sdf.setTimeZone(TimeZone.getTimeZone("CET"));
-                    String ifms = sdf.format(ifModifiedSince);
-                    request.addHeader("If-Modified-Since", ifms);
-                }
-                logger.debug("will request " + request);
-                service.signRequest(token, request);
-                Response photoResponse = service.execute(request);
-                String mediaType = photoResponse.getHeader("Content-Type");
-                logger.debug("Request done " + mediaType);
-                if (photoResponse.isSuccessful()
-                        && supportedMediaTypes.contains(mediaType))
-                {
-                    String contentDispo = photoResponse.getHeader("Content-Disposition");
-                    String fileName = "image.jpeg";
-                    String at = "attachment; ";
-                    if (contentDispo != null && contentDispo.startsWith(at)) {
-                        fileName = contentDispo.substring(at.length());
-                    }
-                    logger.debug("Obtained content of file " + fileName);
-                    return Triple.of(photoResponse.getStream(), IMAGE_JPEG, fileName);
-                } else {
-                    logger.warn("Fetching photo failed: " + photoResponse.getMessage());
-                    logger.debug("Photo response: " + photoResponse.getBody());
-                    return null;
-                }
-            }
-        } catch (Throwable e) {
-            logger.warn("Can't save photo.", e);
-        }
-        return null;
+        return oauthClient.fetchUserImage(ifModifiedSince, id, token, scopes);
     }
 
     @Override
@@ -428,7 +313,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
     @Override
     public void setProviderHint(String hint)
     {
-        if (!this.PROVIDERHINT.equals(hint)) {
+        if (!PROVIDERHINT.equals(hint)) {
             throw new IllegalStateException("Only \"AzureAD\" is accepted as hint.");
         }
     }
@@ -439,12 +324,15 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
         return "ok";
     }
 
-    private final class MSADIdentityDescription extends AbstractIdentityDescription
+    static final class MSADIdentityDescription extends AbstractIdentityDescription
     {
         private final Map json;
 
-        private MSADIdentityDescription(Map jsonRecord)
+        private String issuerId;
+
+        MSADIdentityDescription(Map jsonRecord, String issuerId)
         {
+            this.issuerId = issuerId;
             this.json = jsonRecord;
             // found entries (2020-10-02):
             //   businessPhone, displayName, givenName, jobTitle, mail, mobilePhone, officeLocation,
@@ -468,7 +356,7 @@ public class AzureADIdentityOAuthProvider implements IdentityOAuthProvider
 
         @Override public String getIssuerURL()
         {
-            return "https://login.microsoftonline.com/" + tenantId + "/2.0";
+            return "https://login.microsoftonline.com/" + issuerId + "/2.0";
         }
     }
 }

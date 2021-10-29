@@ -1,1 +1,2 @@
 com.xwiki.azureoauth.AzureADIdentityOAuthProvider
+com.xwiki.azureoauth.AzureADOAuthClient
