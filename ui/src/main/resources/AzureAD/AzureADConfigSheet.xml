@@ -38,7 +38,7 @@
   <content>{{velocity output=false}}
       #set($configDocName="AzureAD.AzureADConfig")
       #set($providerHint = "AzureAD")
-      #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration")
+      #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/MicrosoftAzureSSO/")
       #set($extraObjectClassPropPrefixes = [["AzureADAdmin.AzureADConfigClass","tenantid"]])
       #set($translationPrefix = "azureADAdmin.AzureADConfigClass_")
       #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration")
