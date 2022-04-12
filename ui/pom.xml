@@ -29,7 +29,7 @@
   <packaging>xar</packaging>
 
   <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro)</name>
-  <description>This extension allows users to authenticate to the wiki using Azure Active Directory</description>
+  <description>This extension allows users to authenticate to the wiki using Azure Active Directory. The app can be purchased individually or part of the XWiki Pro package. Try it free.</description>
 
   <properties>
     <!-- The list of documents that have an implicit unlimited free license. The users can view these documents without
