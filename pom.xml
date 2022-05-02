@@ -34,8 +34,8 @@
   <description>This extension allows users to authenticate to the wiki using Azure Active Directory. The app can be purchased individually or part of the XWiki Pro package. Try it free.</description>
 
   <properties>
-    <licensing.version>1.22</licensing.version>
-    <identity.oauth.version>1.4-SNAPSHOT</identity.oauth.version>
+    <licensing.version>1.22.1</licensing.version>
+    <identity.oauth.version>1.4</identity.oauth.version>
     <xwiki.minversion>11.10</xwiki.minversion>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>

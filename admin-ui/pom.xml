@@ -62,7 +62,7 @@
     <dependency>
       <groupId>com.xwiki.identity-oauth</groupId>
       <artifactId>identity-oauth-ui</artifactId>
-      <version>1.4-SNAPSHOT</version>
+      <version>${identity.oauth.version}</version>
       <type>xar</type>
     </dependency>
   </dependencies>
