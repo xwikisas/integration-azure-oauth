@@ -35,7 +35,7 @@
 
   <properties>
     <licensing.version>1.22.1</licensing.version>
-    <identity.oauth.version>1.4.1</identity.oauth.version>
+    <identity.oauth.version>1.5</identity.oauth.version>
     <xwiki.minversion>11.10</xwiki.minversion>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>
