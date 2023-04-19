@@ -7,12 +7,12 @@
   #set ($portalLink = 'https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RegisteredApps')
   #set ($registrationLink = "<a href='${portalLink}'>${translation}</a>")
   #tp('communicate.hint',  ['__LINK__'], 'xml', $translation)
-  #set ($registrationHint = $translation.replace('__LINK__', "${registrationLink}"))
+  #set ($registrationHint = $translation.replace('__LINK__', $registrationLink))
   ## Installation instruction.
   #getTranslation('communicate.hint2.linkLabel', 'xml', $translation)
   #set ($documentationLink = "<a href='${productPage}#documentation'>${translation}</a>")
   #tp('communicate.hint2',  ['__LINK__'], 'xml', $translation)
-  #set ($documentationHint = $translation.replace('__LINK__', "${documentationLink}"))
+  #set ($documentationHint = $translation.replace('__LINK__', $documentationLink))
   ## Use outlook for avatars.
   #getTranslation('scope_avatar.onlyOutlook.linkLabel', 'xml', $translation)
   #set ($outlookLink =
