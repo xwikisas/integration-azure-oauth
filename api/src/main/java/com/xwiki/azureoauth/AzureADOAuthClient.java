@@ -48,6 +48,12 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import com.xwiki.identityoauth.IdentityOAuthException;
 import com.xwiki.identityoauth.IdentityOAuthProvider;
 
+/**
+ * Microsoft Azure Active Directory authentication client.
+ *
+ * @version $Id$
+ * @since 1.5
+ */
 @Component(roles = AzureADOAuthClient.class)
 @Singleton
 public class AzureADOAuthClient
