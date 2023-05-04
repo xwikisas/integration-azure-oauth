@@ -1,4 +1,28 @@
-{{include reference="IdentityOAuth.IdentityOAuthConfigMacros" /}}{{velocity}}
+{{include reference="IdentityOAuth.IdentityOAuthConfigMacros" /}}
+
+{{velocity output="false"}}
+#macro (getLinkTranslations $registrationHint $documentationHint $outlookHint)
+  ## Register for OAuth access on the Microsoft Azure portal.
+  #getTranslation('communicate.hint.linkLabel', 'xml', $translation)
+  #set ($portalLink = 'https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RegisteredApps')
+  #set ($registrationLink = "<a href='${portalLink}'>${translation}</a>")
+  #tp('communicate.hint',  ['__LINK__'], 'xml', $translation)
+  #set ($registrationHint = $translation.replace('__LINK__', $registrationLink))
+  ## Installation instruction.
+  #getTranslation('communicate.hint2.linkLabel', 'xml', $translation)
+  #set ($documentationLink = "<a href='${productPage}#documentation'>${translation}</a>")
+  #tp('communicate.hint2',  ['__LINK__'], 'xml', $translation)
+  #set ($documentationHint = $translation.replace('__LINK__', $documentationLink))
+  ## Use outlook for avatars.
+  #getTranslation('scope_avatar.onlyOutlook.linkLabel', 'xml', $translation)
+  #set ($outlookLink =
+    "<a href='https://docs.microsoft.com/en-us/graph/known-issues#photo-restrictions'>${translation}</a>")
+  #tp('scope_avatar.onlyOutlook',  ['__LINK__'], 'xml', $translation)
+  #set ($outlookHint = $translation.replace('__LINK__', "${outlookLink}"))
+#end
+{{/velocity}}
+
+{{velocity}}
 #if(!$xwiki.hasAdminRights())
   Admin rights are needed.
 #else
@@ -6,9 +30,10 @@
   ## #set($configDocName="AzureAD.AzureADConfig")
   ## set($providerHint = "AzureAD")
   ## #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration")
-  #initConfigObjects(${configDocName}, ${extraObjectClassPropPrefixes},${translationPrefix})
+  #initConfigObjects(${configDocName}, ${extraObjectClassPropPrefixes}, ${translationPrefix})
   ## use stylesheet and JavaScript extensions
   #ioIncludeUIX()
+  #getLinkTranslations($registrationHint $documentationHint $outlookHint)
   {{html clean="false" wiki=false}}
   <script>window.identityOAuthProvider = "${providerHint}";</script>
   <p>#t('config.explanation')</p>
@@ -24,8 +49,8 @@
 
           <dl>
               <dt><span class="xHint">
-                #tp ("communicate.hint",  ['<a href="https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RegisteredApps">', '</a>'])<br>
-                #tp ('communicate.hint2', ["<a href='${productPage}#documentation'>", "</a>"])</span>
+                $registrationHint<br>
+                $documentationHint</span>
               </dt>
               <dd></dd>
               <dt><label for="${propNamePrefixIO}_clientid">#t ('clientid')</label>
@@ -70,7 +95,7 @@
                       <input type="checkbox" name="scope_User.ReadBasic.All">#t ('scope_avatar')</label>
                   #set($p=$configDocName.length()+1)
                   <input type="hidden" name="${propNamePrefixIO.substring($p)}_scope" value="${objIO.getValue('scope')}"/>
-                  (#tp('scope_avatar.onlyOutlook',["<a href='https://docs.microsoft.com/en-us/graph/known-issues#photo-restrictions'>","</a>"]))
+                  ($outlookHint)
               </dd>
           </dl>
       </fieldset>
@@ -95,14 +120,15 @@
       <input type="hidden" name="xredirect" value="${continueURL}"/>
 
     ## submit
-      <div class="bottombuttons">
-          <p><span id="warningIncomplete">#t("warningIncomplete")</span>&nbsp;</p>
-          <p class="admin-buttons">
+    <div class="bottombuttons">
+      <p><span id="warningIncomplete">#t("warningIncomplete")</span>&nbsp;</p>
+      <p class="admin-buttons">
         <span class="buttonwrapper">
-            <input class="button" type="submit" name="formactionsac"
-                   value="$services.localization.render('admin.save')"/></span>
-          </p>
-      </div>
+          <input class="button" type="submit" name="formactionsac"
+            value="$escapetool.xml($services.localization.render('admin.save'))"/>
+        </span>
+      </p>
+    </div>
   </form>
   <div id="appOnNowWhat">
       <p>#t ('nowWhat1')</p>

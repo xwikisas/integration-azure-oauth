@@ -41,7 +41,6 @@
       #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/MicrosoftAzureSSO/")
       #set($extraObjectClassPropPrefixes = [["AzureADAdmin.AzureADConfigClass","tenantid"]])
       #set($translationPrefix = "azureADAdmin.AzureADConfigClass_")
-      #set($productPage = "https://store.xwiki.com/xwiki/bin/view/Extension/AzureADIntegration")
     {{/velocity}}
 
     {{include reference="AzureADAdmin.AzureADConfigSheet" /}}
