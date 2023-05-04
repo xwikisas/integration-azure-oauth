@@ -147,7 +147,14 @@
       <configurationObjectsPage>xwiki:AzureAD.AzureADConfig</configurationObjectsPage>
     </property>
     <property>
-      <loginTemplate/>
+      <loginTemplate>{{velocity}}
+{{html clean=false}}
+&lt;a href="-URL-&amp;provider=-PROVIDER-" class="btn provider-login-button"&gt;&lt;img alt="Logo Microsoft"
+    src="--image-base64--AzureAD.WebHome@AzureAD-logo.svg--"&gt;
+  $escapetool.xml($services.localization.render("azureADAdmin.loginWithAzureAD"))
+&lt;/a&gt;
+{{/html}}
+{{/velocity}}</loginTemplate>
     </property>
     <property>
       <orderHint>10</orderHint>

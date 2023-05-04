@@ -37,4 +37,27 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
+  <class>
+    <name>AzureADAdmin.AzureADConfigClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <tenantid>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>tenantid</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>tenant id</prettyName>
+      <size>60</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </tenantid>
+  </class>
 </xwikidoc>

@@ -36,5 +36,29 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content/>
+  <content>admin.azureAD=Azure AD
+# Login page
+azureADAdmin.loginWithAzureAD = Login mit Azure Active Directory
+
+# Admin (extras compared to IdentityOAuth/Translations
+azureADAdmin.config.heading=AzureAD Integration
+azureADAdmin.AzureADConfigClass_config.explanation=XWiki kann die Benutzer von eines Azure Active Directory Installation erkennen.
+azureAD.extension.name=Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)
+
+azureADAdmin.AzureADConfigClass_communicate=Verbindungen mit den Diensten von Azure Active Directory
+azureADAdmin.AzureADConfigClass_communicate.hint=Damit Sie Azure AD Integration aktivieren können, brauchen Sie {0} und die Kundenidentifizierung, Halteridentifizierung und Geheimschlüssel hier einfügen.
+azureADAdmin.AzureADConfigClass_communicate.hint.linkLabel=eine OAuth Applikation für OAuth Zugang bei der Microsoft Azure Console registrieren
+azureADAdmin.AzureADConfigClass_communicate.hint2=Sie erhalten mehr Information dazu bei den {0}.
+azureADAdmin.AzureADConfigClass_communicate.hint2.linkLabel=Installationsanweisungen
+
+azureADAdmin.AzureADConfigClass_tenantid=Halteridentifikator (Tenant-ID)
+azureADAdmin.AzureADConfigClass_tenantid.hint=In dem Übersicht von Azure zu finden.
+
+
+azureADAdmin.AzureADConfigClass_nowWhat1=Nachdem du die Konfiguration zu Ende geführt hast, solltest du ein Log-out und Log-in machen, indem du auf "Login mit Azure Active Directory" klickst.\
+azureADAdmin.AzureADConfigClass_nowWhat2=Im Fall von technische Schwierigkeiten kann das XWiki Support helfen, support@xwikisas.com.
+
+## a single change for avatar's setting
+azureADAdmin.AzureADConfigClass_scope_avatar.onlyOutlook = Diese Funktion ist nur aktiv mit Konten, die Outlook benutzen können, eine {0}bekannte{1} Begrenzung
+</content>
 </xwikidoc>
