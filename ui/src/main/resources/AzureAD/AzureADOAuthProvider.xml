@@ -1,4 +1,5 @@
-<?xml version='1.1' encoding='UTF-8'?>
+<?xml version="1.1" encoding="UTF-8"?>
+
 <!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,18 +19,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
-<xwikidoc>
+
+<xwikidoc version="1.4" reference="AzureAD.AzureADOAuthProvider" locale="">
   <web>AzureAD</web>
   <name>AzureADOAuthProvider</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
+  <parent>AzureAD.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
   <title/>
-  <parent>AzureAD.WebHome</parent>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -53,7 +55,7 @@
         <customDisplay/>
         <defaultValue/>
         <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
+        <displayFormType>checkbox</displayFormType>
         <displayType/>
         <hint/>
         <name>active</name>
@@ -64,6 +66,34 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </active>
+      <configurationObjectsPage>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <freeText/>
+        <hint/>
+        <idField/>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>configurationObjectsPage</name>
+        <number>4</number>
+        <picker>1</picker>
+        <prettyName>configurationObjectsPage</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>1</size>
+        <sort/>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+      </configurationObjectsPage>
       <loginTemplate>
         <contenttype>---</contenttype>
         <customDisplay/>
@@ -109,35 +139,13 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </providerHint>
-      <configurationObjectsPage>
-        <cache>0</cache>
-        <classname/>
-        <customDisplay/>
-        <defaultValue/>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <freeText/>
-        <hint/>
-        <idField/>
-        <largeStorage>0</largeStorage>
-        <multiSelect>0</multiSelect>
-        <name>configurationObjectsPage</name>
-        <number>4</number>
-        <picker>1</picker>
-        <prettyName>configurationObjectsPage</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators/>
-        <size>1</size>
-        <sort/>
-        <sql/>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <valueField/>
-        <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
-      </configurationObjectsPage>
     </class>
+    <property>
+      <active>1</active>
+    </property>
+    <property>
+      <configurationObjectsPage>xwiki:AzureAD.AzureADConfig</configurationObjectsPage>
+    </property>
     <property>
       <loginTemplate/>
     </property>
@@ -146,12 +154,6 @@
     </property>
     <property>
       <providerHint>AzureAD</providerHint>
-    </property>
-    <property>
-      <active>1</active>
-    </property>
-    <property>
-      <configurationObjectsPage>xwiki:AzureAD.AzureADConfig</configurationObjectsPage>
     </property>
   </object>
 </xwikidoc>
