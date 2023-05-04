@@ -61,39 +61,4 @@
       <version>${licensing.version}</version>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-        <configuration>
-          <transformations>
-
-            <!-- view code -->
-            <transformation>
-              <file>AzureAD/AzureADOAuthProvider.xml</file>
-              <xpath>/xwikidoc/object/property/loginTemplate</xpath>
-              <action>INSERT_TEXT</action>
-              <content>src/main/resources/AzureAD/AzureADOAuthProviderLoginCode.vm</content>
-            </transformation>
-
-            <transformation>
-              <file>AzureAD/WebHome.xml</file>
-              <xpath>/xwikidoc/attachment[/filename[text()='AzureAD-logo.svg']]</xpath>
-              <action>INSERT_ATTACHMENT_CONTENT</action>
-              <content>src/main/resources/AzureAD/AzureAD-logo.svg</content>
-            </transformation>
-
-          </transformations>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-install-plugin</artifactId>
-        <configuration>
-          <createChecksum>true</createChecksum>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

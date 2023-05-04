@@ -36,7 +36,31 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content/>
+  <content>admin.azureAD=Azure AD
+# Login page
+azureADAdmin.loginWithAzureAD = Login with Azure Active Directory
+
+# Admin (extras compared to IdentityOAuth/Translations
+azureADAdmin.config.heading=AzureAD Integration Configuration
+azureADAdmin.AzureADConfigClass_config.explanation=XWiki can be integrated to login XWiki users with Azure Active Directory
+azureAD.extension.name=Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)
+
+azureADAdmin.AzureADConfigClass_communicate=Communication with the Azure Active Directory services
+azureADAdmin.AzureADConfigClass_communicate.hint=To activate the Azure AD integration you need to {0} and to insert your client-Id, tenant-id and secret in the following settings.
+azureADAdmin.AzureADConfigClass_communicate.hint.linkLabel=register for OAuth access on the Microsoft Azure console
+azureADAdmin.AzureADConfigClass_communicate.hint2=For more information, please see {0}.
+azureADAdmin.AzureADConfigClass_communicate.hint2.linkLabel=the installation instructions
+
+azureADAdmin.AzureADConfigClass_tenantid=Tenant ID
+azureADAdmin.AzureADConfigClass_tenantid.hint=As provided in the Azure overview.
+
+
+azureADAdmin.AzureADConfigClass_nowWhat1=Once this is configured please log out and login by clicking "Login with Azure AD".
+azureADAdmin.AzureADConfigClass_nowWhat2=Should you have technical difficulties, please write to support@xwikisas.com .
+
+## a single change for avatar's setting
+azureADAdmin.AzureADConfigClass_scope_avatar.onlyOutlook = only works with Outlook-enabled-accounts, a {0} limitation
+azureADAdmin.AzureADConfigClass_scope_avatar.onlyOutlook.linkLabel=known</content>
   <object>
     <name>AzureADAdmin.Translations</name>
     <number>0</number>

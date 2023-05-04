@@ -36,5 +36,29 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content/>
+  <content>admin.azureAD=Azure AD
+# Login page
+azureADAdmin.loginWithAzureAD = Connexion avec Azure Active Directory
+
+# Admin (extras compared to IdentityOAuth/Translations
+azureADAdmin.config.heading=Configuration de AzureAD
+azureADAdmin.AzureADConfigClass_config.explanation=XWiki peut être intégré pour permettre la connexion des utilisateurs en utilisant ceux d'Azure Active Directory.
+azureAD.extension.name=Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)
+
+azureADAdmin.AzureADConfigClass_communicate=Communication avec les services Azure Active Directory
+azureADAdmin.AzureADConfigClass_communicate.hint=Pour activer l''intégration Azure AD vous devez {0} and insérer ici votre identifiant de client, de locataire (tenant) et la clé-secrete.
+azureADAdmin.AzureADConfigClass_communicate.hint.linkLabel=enregistrez une application OAuth sur la console Azure
+azureADAdmin.AzureADConfigClass_communicate.hint2=Pour plus d''informations, veuillez vous référer aux {0}.
+azureADAdmin.AzureADConfigClass_communicate.hint2.linkLabel=instructions d''installation
+
+azureADAdmin.AzureADConfigClass_tenantid=Identifiant de locataire (tenant-ID)
+azureADAdmin.AzureADConfigClass_tenantid.hint=Ainsi que fourni dans la vue d'ensemble Azure
+
+
+azureADAdmin.AzureADConfigClass_nowWhat1=Une fois la configuration effectuée et enregistrée, veuillez vous déconnecter et vous connecter en cliquant "Connexion avec Azure Active Directory".
+azureADAdmin.AzureADConfigClass_nowWhat2=Si vous avez des difficultés, veuillez contacter le support technique support@xwikisas.com .
+
+## a single change for avatar's setting
+azureADAdmin.AzureADConfigClass_scope_avatar.onlyOutlook = ne fonctionne qu''avec les comptes licensiés pour l''usage de'Outlook, une {0}limitation connue{1}
+</content>
 </xwikidoc>

@@ -1,8 +1,0 @@
-{{velocity}}
-{{html clean=false}}
-<a href="-URL-&provider=-PROVIDER-" class="btn provider-login-button"><img alt="Logo Microsoft"
-    src="--image-base64--AzureAD.WebHome@AzureAD-logo.svg--">
-  $escapetool.xml($services.localization.render("azureADAdmin.loginWithAzureAD"))
-</a>
-{{/html}}
-{{/velocity}}
