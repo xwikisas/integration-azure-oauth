@@ -27,7 +27,7 @@
 
   <groupId>com.xwiki.integration-azure-oauth</groupId>
   <artifactId>integration-azure-oauth-parent</artifactId>
-  <version>1.6.1-SNAPSHOT</version>
+  <version>1.7</version>
   <packaging>pom</packaging>
 
   <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro) parent POM</name>
@@ -48,7 +48,7 @@
     <connection>scm:git:git://github.com/xwikisas/integration-azure-oauth.git</connection>
     <developerConnection>scm:git:git@github.com:xwikisas/integration-azure-oauth.git</developerConnection>
     <url>https://github.com/xwikisas/integration-azure-oauth/tree/master</url>
-    <tag>HEAD</tag>
+    <tag>integration-azure-oauth-1.7</tag>
   </scm>
 
   <!-- Even though this repository is already declared in the parent POM, we still explicitly redeclare it for
