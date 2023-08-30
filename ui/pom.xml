@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.xwiki.integration-azure-oauth</groupId>
     <artifactId>integration-azure-oauth-parent</artifactId>
-    <version>1.7.1-SNAPSHOT</version>
+    <version>1.7.1</version>
   </parent>
 
   <artifactId>integration-azure-oauth-ui</artifactId>
