@@ -36,12 +36,10 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{include reference="Licenses.Code.VelocityMacros"/}}
-
-{{velocity}}
+  <content>{{velocity}}
 #set ($reference = $services.model.createDocumentReference("xwiki", ["AzureAD"], "WebPreferences"))
 #if (!$services.licensing.licensor.hasLicensureForEntity($references))
-  {{error}}#getMissingLicenseMessage('azureAD.extension.name'){{/error}}
+  {{missingLicenseMessage extensionName="azureAD.extension.name"/}}
 #else
 This space contains the code for the Azure Active Directory Integration of XWiki.
     This extensions currently allows users to login with XWiki by authorizing the transmission
