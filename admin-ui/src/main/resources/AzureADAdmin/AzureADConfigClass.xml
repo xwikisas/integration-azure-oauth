@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.4" reference="AzureADAdmin.AzureADConfigClass" locale="">
+<xwikidoc version="1.5" reference="AzureADAdmin.AzureADConfigClass" locale="">
   <web>AzureADAdmin</web>
   <name>AzureADConfigClass</name>
   <language/>
