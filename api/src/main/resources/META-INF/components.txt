@@ -1,2 +1,8 @@
 com.xwiki.azureoauth.AzureADIdentityOAuthProvider
 com.xwiki.azureoauth.AzureADOAuthClient
+com.xwiki.azureoauth.internal.AzureADUpgradeListener
+com.xwiki.azureoauth.internal.configuration.DefaultAzureConfiguration
+com.xwiki.azureoauth.internal.configuration.OIDCAzureClientConfigurationSource
+com.xwiki.azureoauth.internal.oldConfiguration.DefaultOldOAuthAzureConfiguration
+com.xwiki.azureoauth.internal.oldConfiguration.OldAzureConfigurationSource
+com.xwiki.azureoauth.internal.oldConfiguration.OldOAuthAzureConfigurationSource

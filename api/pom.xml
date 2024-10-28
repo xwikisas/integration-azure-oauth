@@ -57,6 +57,11 @@
       <artifactId>identity-oauth-api</artifactId>
       <version>${identity.oauth.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-configuration-default</artifactId>
+      <version>14.10</version>
+    </dependency>
   </dependencies>
 
 </project>
