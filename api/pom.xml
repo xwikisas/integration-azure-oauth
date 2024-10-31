@@ -60,7 +60,7 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-configuration-default</artifactId>
-      <version>14.10</version>
+      <version>${platform.version}</version>
     </dependency>
   </dependencies>
 

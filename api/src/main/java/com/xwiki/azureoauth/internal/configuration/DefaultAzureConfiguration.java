@@ -32,6 +32,12 @@ import org.xwiki.stability.Unstable;
 
 import com.xwiki.azureoauth.configuration.AzureConfiguration;
 
+/**
+ * Default implementation of {@link AzureConfiguration}.
+ *
+ * @version $Id$
+ * @since 2.0
+ */
 @Component
 @Singleton
 @Unstable
@@ -45,12 +51,6 @@ public class DefaultAzureConfiguration implements AzureConfiguration
     public void setConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
     {
         this.mainConfiguration.setProperties(properties);
-    }
-
-    @Override
-    public String getTenantID()
-    {
-        return "";
     }
 
     @Override

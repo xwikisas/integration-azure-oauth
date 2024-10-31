@@ -30,6 +30,12 @@ import org.xwiki.configuration.internal.AbstractWikisConfigurationSource;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.stability.Unstable;
 
+/**
+ * Azure configuration source corresponding to the OIDC configuration class.
+ *
+ * @version $Id$
+ * @since 2.0
+ */
 @Component
 @Named(OIDCAzureClientConfigurationSource.HINT)
 @Singleton
@@ -42,6 +48,7 @@ public class OIDCAzureClientConfigurationSource extends AbstractWikisConfigurati
     public static final String HINT = "azure.oidc.client.configuration";
 
     private static final String CONFIGURATION_SPACE = "AzureAD";
+
     private static final List<String> CLASS_SPACE = Arrays.asList("XWiki", "OIDC");
 
     private static final LocalDocumentReference CONFIG_DOC =

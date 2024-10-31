@@ -19,27 +19,33 @@
  */
 package com.xwiki.azureoauth.internal.oldConfiguration;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.configuration.ConfigurationSaveException;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.stability.Unstable;
 
 import com.xwiki.azureoauth.configuration.AzureConfiguration;
 
+/**
+ * Old AzureAD configuration properties from Identity OAuth integration.
+ *
+ * @version $Id$
+ * @since 2.0
+ */
 @Component
 @Singleton
-@Named(DefaultOldOAuthAzureConfiguration.HINT)
+@Named(OldOAuthAzureConfiguration.HINT)
 @Unstable
-public class DefaultOldOAuthAzureConfiguration implements AzureConfiguration
+public class OldOAuthAzureConfiguration implements AzureConfiguration
 {
+    /**
+     * Component hint.
+     */
+    public static final String HINT = "AZURE_OAUTH_OLD_CONFIGURATION";
 
-    public static final String HINT = "OLD_CONFIGURATION";
     @Inject
     @Named(OldAzureConfigurationSource.HINT)
     private ConfigurationSource azureConfiguration;
@@ -49,28 +55,32 @@ public class DefaultOldOAuthAzureConfiguration implements AzureConfiguration
     private ConfigurationSource oauthConfiguration;
 
     @Override
-    public void setConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
+    public String getTenantID()
     {
-    }
-
-    public String getTenantID() {
         return azureConfiguration.getProperty("tenantid", "");
     }
 
-    public String getClientID() {
+    @Override
+    public String getClientID()
+    {
         return oauthConfiguration.getProperty("clientid", "");
     }
 
-    public String getSecret() {
+    @Override
+    public String getSecret()
+    {
         return oauthConfiguration.getProperty("secret", "");
     }
-    public String getScope() {
+
+    @Override
+    public String getScope()
+    {
         return oauthConfiguration.getProperty("scope", "openid,User.Read");
     }
-    public String getURL() {
-        return oauthConfiguration.getProperty("redirectUrl", "");
-    }
-    public boolean isActive() {
+
+    @Override
+    public boolean isActive()
+    {
         return oauthConfiguration.getProperty("active", true);
     }
 }
