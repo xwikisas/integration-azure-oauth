@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.xwiki.parent</groupId>
     <artifactId>xwikisas-parent-platform</artifactId>
-    <version>13.10-3</version>
+    <version>14.10-1</version>
   </parent>
 
   <groupId>com.xwiki.integration-azure-oauth</groupId>
@@ -35,8 +35,8 @@
 
   <properties>
     <licensing.version>1.25</licensing.version>
-    <identity.oauth.version>1.7.5</identity.oauth.version>
-    <xwiki.minversion>13.10</xwiki.minversion>
+    <identity.oauth.version>1.8</identity.oauth.version>
+    <xwiki.minversion>14.10</xwiki.minversion>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>
 
