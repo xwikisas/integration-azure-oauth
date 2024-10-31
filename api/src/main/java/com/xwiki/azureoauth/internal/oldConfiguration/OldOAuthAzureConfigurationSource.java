@@ -27,6 +27,12 @@ import org.xwiki.configuration.internal.AbstractWikisConfigurationSource;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.stability.Unstable;
 
+/**
+ * Configuration source for Identity OAuth configuration class.
+ *
+ * @version $Id$
+ * @since 2.0
+ */
 @Component
 @Named(OldOAuthAzureConfigurationSource.HINT)
 @Singleton

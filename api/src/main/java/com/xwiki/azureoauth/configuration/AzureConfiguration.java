@@ -25,21 +25,61 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.configuration.ConfigurationSaveException;
 import org.xwiki.stability.Unstable;
 
+/**
+ * AzureAD configuration.
+ *
+ * @version $Id$
+ * @since 2.0
+ */
 @Role
 @Unstable
 public interface AzureConfiguration
 {
-    void setConfiguration(Map<String, Object> properties) throws ConfigurationSaveException;
+    /**
+     * Set the configuration for the class.
+     *
+     * @param properties {@link Map} containing the properties that will be saved.
+     * @throws ConfigurationSaveException if any error occurs during configuration save.
+     */
+    default void setConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
+    {
+    }
 
-    String getTenantID();
+    /**
+     * Return the tenant ID.
+     *
+     * @return the tenant ID.
+     */
+    default String getTenantID()
+    {
+        return "";
+    }
 
+    /**
+     * Return the client ID.
+     *
+     * @return the client ID.
+     */
     String getClientID();
 
+    /**
+     * Return the authentication secret.
+     *
+     * @return the authentication secret.
+     */
     String getSecret();
 
+    /**
+     * Return the provider scope.
+     *
+     * @return the provider scope.
+     */
     String getScope();
 
-    default String getURL() { return ""; }
-
+    /**
+     * See if the provider configuration is active.
+     *
+     * @return {@code true} if the configuration is active, or {@code false} otherwise.
+     */
     boolean isActive();
 }

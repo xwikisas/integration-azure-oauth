@@ -32,22 +32,32 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.event.ExtensionUpgradingEvent;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
 import com.xwiki.azureoauth.configuration.AzureConfiguration;
-import com.xwiki.azureoauth.internal.oldConfiguration.DefaultOldOAuthAzureConfiguration;
+import com.xwiki.azureoauth.internal.oldConfiguration.OldOAuthAzureConfiguration;
 
+/**
+ * Checks the current installation version and transfers the old configuration from Identity OAuth to the new
+ * configuration class from OIDC.
+ *
+ * @version $Id$
+ * @since 2.0
+ */
 @Component
-@Named(AzureADUpgradeListener.HINT)
+@Named(AzureADUpgradingListener.HINT)
 @Singleton
-public class AzureADUpgradeListener extends AbstractEventListener implements Initializable
+public class AzureADUpgradingListener extends AbstractEventListener implements Initializable
 {
     /**
      * The hint for the component.
      */
-    public static final String HINT = "AzureADUpgradeListener";
+    public static final String HINT = "AzureADUpgradingListener";
 
     @Inject
     private Logger logger;
@@ -56,10 +66,16 @@ public class AzureADUpgradeListener extends AbstractEventListener implements Ini
     private Provider<AzureConfiguration> azureClientConfigurationProvider;
 
     @Inject
-    @Named(DefaultOldOAuthAzureConfiguration.HINT)
+    @Named(OldOAuthAzureConfiguration.HINT)
     private Provider<AzureConfiguration> oauthConfigurationProvider;
 
-    public AzureADUpgradeListener()
+    @Inject
+    private InstalledExtensionRepository installedRepository;
+
+    /**
+     * Default constructor.
+     */
+    public AzureADUpgradingListener()
     {
         super(HINT, new ExtensionUpgradingEvent());
     }
@@ -70,13 +86,26 @@ public class AzureADUpgradeListener extends AbstractEventListener implements Ini
 
     }
 
+    /**
+     * If the new version of the API module of Integration Azure consists with the first version of OIDC integration,
+     * transfer the old configurations to the new OIDC client configuration class.
+     *
+     * @throws InitializationException if any error occurs.
+     */
     @Override
     public void initialize() throws InitializationException
     {
         try {
-            azureClientConfigurationProvider.get().setConfiguration(generateNewConfigurationMap());
+            InstalledExtension apiModule = installedRepository.getInstalledExtension(
+                new ExtensionId("com.xwiki.integration-azure-oauth:integration-azure-oauth-api", "2.0"));
+            if (apiModule != null) {
+                azureClientConfigurationProvider.get().setConfiguration(generateNewConfigurationMap());
+            }
         } catch (Exception e) {
-            throw new InitializationException(ExceptionUtils.getRootCauseMessage(e), e);
+            String rootCause = ExceptionUtils.getRootCauseMessage(e);
+            logger.error("There was an error while trying to migrate the old Identity OAuth configuration to OIDC "
+                + "configuration. Root cause is: [{}]", rootCause);
+            throw new InitializationException(rootCause, e);
         }
     }
 
@@ -90,7 +119,6 @@ public class AzureADUpgradeListener extends AbstractEventListener implements Ini
         newConfig.put("logoutEndpoint", getFormattedEndpoint(tenantID, "logout"));
         newConfig.put("clientId", oauthConfiguration.getClientID());
         newConfig.put("clientSecret", oauthConfiguration.getSecret());
-        newConfig.put("scope", oauthConfiguration.getScope().replace(" ", ","));
         newConfig.put("skipped", !oauthConfiguration.isActive());
         return newConfig;
     }

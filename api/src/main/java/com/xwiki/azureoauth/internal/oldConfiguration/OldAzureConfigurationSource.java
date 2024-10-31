@@ -27,6 +27,12 @@ import org.xwiki.configuration.internal.AbstractWikisConfigurationSource;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.stability.Unstable;
 
+/**
+ * Configuration source for the old Azure configuration class.
+ *
+ * @version $Id$
+ * @since 2.0
+ */
 @Component
 @Named(OldAzureConfigurationSource.HINT)
 @Singleton
@@ -39,6 +45,7 @@ public class OldAzureConfigurationSource extends AbstractWikisConfigurationSourc
     public static final String HINT = "azure.old.configuration";
 
     private static final String CONFIGURATION_SPACE = "AzureAD";
+
     private static final String CLASS_SPACE = "AzureADAdmin";
 
     private static final LocalDocumentReference CONFIG_DOC =
