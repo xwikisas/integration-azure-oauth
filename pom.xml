@@ -27,7 +27,7 @@
 
   <groupId>com.xwiki.integration-azure-oauth</groupId>
   <artifactId>integration-azure-oauth-parent</artifactId>
-  <version>1.8.1-SNAPSHOT</version>
+  <version>1.9.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro) parent POM</name>
@@ -35,7 +35,7 @@
 
   <properties>
     <licensing.version>1.25</licensing.version>
-    <identity.oauth.version>1.8</identity.oauth.version>
+    <identity.oauth.version>1.9</identity.oauth.version>
     <xwiki.minversion>14.10</xwiki.minversion>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>
