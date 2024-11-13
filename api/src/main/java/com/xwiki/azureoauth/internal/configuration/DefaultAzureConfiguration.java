@@ -20,6 +20,8 @@
 package com.xwiki.azureoauth.internal.configuration;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,35 +47,49 @@ public class DefaultAzureConfiguration implements AzureConfiguration
 {
     @Inject
     @Named(OIDCAzureClientConfigurationSource.HINT)
-    private ConfigurationSource mainConfiguration;
+    private ConfigurationSource oidcConfiguration;
 
     @Override
-    public void setConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
+    public void setOIDCConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
     {
-        this.mainConfiguration.setProperties(properties);
+        this.oidcConfiguration.setProperties(properties);
     }
 
     @Override
     public String getClientID()
     {
-        return this.mainConfiguration.getProperty("clientId", "");
+        return this.oidcConfiguration.getProperty("clientId", "");
     }
 
     @Override
     public String getSecret()
     {
-        return this.mainConfiguration.getProperty("clientSecret", "");
+        return this.oidcConfiguration.getProperty("clientSecret", "");
     }
 
     @Override
     public String getScope()
     {
-        return this.mainConfiguration.getProperty("scope", "");
+        return this.oidcConfiguration.getProperty("scope", "");
     }
 
     @Override
     public boolean isActive()
     {
-        return !this.mainConfiguration.getProperty("skipped", false);
+        return !this.oidcConfiguration.getProperty("skipped", false);
+    }
+
+    @Override
+    public String getTenantID()
+    {
+        String endpoint = this.oidcConfiguration.getProperty("authorizationEndpoint", "");
+        if (!endpoint.isEmpty()) {
+            Pattern pattern = Pattern.compile("com/([^/]+)/oauth2/v2");
+            Matcher matcher = pattern.matcher(endpoint);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        }
+        return "";
     }
 }

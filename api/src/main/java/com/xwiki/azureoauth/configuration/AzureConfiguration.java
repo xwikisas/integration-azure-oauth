@@ -41,7 +41,7 @@ public interface AzureConfiguration
      * @param properties {@link Map} containing the properties that will be saved.
      * @throws ConfigurationSaveException if any error occurs during configuration save.
      */
-    default void setConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
+    default void setOIDCConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
     {
     }
 

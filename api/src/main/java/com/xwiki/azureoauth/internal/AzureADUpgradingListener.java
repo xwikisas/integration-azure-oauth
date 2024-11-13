@@ -21,6 +21,7 @@ package com.xwiki.azureoauth.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -29,22 +30,33 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
+import org.xwiki.bridge.event.DocumentDeletedEvent;
+import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.configuration.ConfigurationSaveException;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
-import org.xwiki.extension.event.ExtensionUpgradingEvent;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.WikiReference;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
+import org.xwiki.wiki.descriptor.WikiDescriptorManager;
 
+import com.xpn.xwiki.doc.XWikiDocument;
 import com.xwiki.azureoauth.configuration.AzureConfiguration;
+import com.xwiki.azureoauth.internal.configuration.AzureADConfigurationSource;
 import com.xwiki.azureoauth.internal.oldConfiguration.OldOAuthAzureConfiguration;
+
+import static com.xwiki.azureoauth.internal.configuration.AzureADConfigurationSource.CONFIG_DOC;
 
 /**
  * Checks the current installation version and transfers the old configuration from Identity OAuth to the new
- * configuration class from OIDC.
+ * configuration class from OIDC. Listens to the modification made on the Azure AD configuration to update the OIDC
+ * client configuration.
  *
  * @version $Id$
  * @since 2.0
@@ -70,6 +82,13 @@ public class AzureADUpgradingListener extends AbstractEventListener implements I
     private Provider<AzureConfiguration> oauthConfigurationProvider;
 
     @Inject
+    @Named(AzureADConfigurationSource.HINT)
+    private ConfigurationSource azureConfiguration;
+
+    @Inject
+    private WikiDescriptorManager wikiManager;
+
+    @Inject
     private InstalledExtensionRepository installedRepository;
 
     /**
@@ -77,13 +96,26 @@ public class AzureADUpgradingListener extends AbstractEventListener implements I
      */
     public AzureADUpgradingListener()
     {
-        super(HINT, new ExtensionUpgradingEvent());
+        super(HINT, new DocumentUpdatedEvent(), new DocumentDeletedEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-
+        if (event instanceof DocumentUpdatedEvent || event instanceof DocumentDeletedEvent) {
+            XWikiDocument document = (XWikiDocument) source;
+            if (document != null && isAzureConfigObject(document)) {
+                try {
+                    String oldTenantID = azureClientConfigurationProvider.get().getTenantID();
+                    String tenantID = azureConfiguration.getProperty("tenantID", "");
+                    if (!tenantID.equals(oldTenantID)) {
+                        azureClientConfigurationProvider.get().setOIDCConfiguration(getEndpointsMap(tenantID));
+                    }
+                } catch (ConfigurationSaveException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     /**
@@ -99,7 +131,7 @@ public class AzureADUpgradingListener extends AbstractEventListener implements I
             InstalledExtension apiModule = installedRepository.getInstalledExtension(
                 new ExtensionId("com.xwiki.integration-azure-oauth:integration-azure-oauth-api", "2.0"));
             if (apiModule != null) {
-                azureClientConfigurationProvider.get().setConfiguration(generateNewConfigurationMap());
+                azureClientConfigurationProvider.get().setOIDCConfiguration(generateNewConfigurationMap());
             }
         } catch (Exception e) {
             String rootCause = ExceptionUtils.getRootCauseMessage(e);
@@ -109,18 +141,32 @@ public class AzureADUpgradingListener extends AbstractEventListener implements I
         }
     }
 
+    private boolean isAzureConfigObject(XWikiDocument doc)
+    {
+        DocumentReference configReference = new DocumentReference(CONFIG_DOC, this.getCurrentWikiReference());
+        return Objects.equals(doc.getDocumentReference(), configReference);
+    }
+
+    private WikiReference getCurrentWikiReference()
+    {
+        return new WikiReference(this.wikiManager.getCurrentWikiId());
+    }
+
     private Map<String, Object> generateNewConfigurationMap()
     {
-        Map<String, Object> newConfig = new HashMap<>();
         AzureConfiguration oauthConfiguration = oauthConfigurationProvider.get();
         String tenantID = oauthConfiguration.getTenantID();
-        newConfig.put("authorizationEndpoint", getFormattedEndpoint(tenantID, "authorize"));
-        newConfig.put("tokenEndpoint", getFormattedEndpoint(tenantID, "token"));
-        newConfig.put("logoutEndpoint", getFormattedEndpoint(tenantID, "logout"));
+        Map<String, Object> newConfig = new HashMap<>(getEndpointsMap(tenantID));
         newConfig.put("clientId", oauthConfiguration.getClientID());
         newConfig.put("clientSecret", oauthConfiguration.getSecret());
         newConfig.put("skipped", !oauthConfiguration.isActive());
         return newConfig;
+    }
+
+    private Map<String, Object> getEndpointsMap(String tenantID)
+    {
+        return Map.of("authorizationEndpoint", getFormattedEndpoint(tenantID, "authorize"), "tokenEndpoint",
+            getFormattedEndpoint(tenantID, "token"), "logoutEndpoint", getFormattedEndpoint(tenantID, "logout"));
     }
 
     private String getFormattedEndpoint(String tenantID, String scope)
