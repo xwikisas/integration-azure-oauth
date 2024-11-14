@@ -60,7 +60,46 @@ azureADAdmin.AzureADConfigClass_nowWhat2=Should you have technical difficulties,
 
 ## a single change for avatar's setting
 azureADAdmin.AzureADConfigClass_scope_avatar.onlyOutlook = only works with Outlook-enabled-accounts, a {0} limitation
-azureADAdmin.AzureADConfigClass_scope_avatar.onlyOutlook.linkLabel=known</content>
+azureADAdmin.AzureADConfigClass_scope_avatar.onlyOutlook.linkLabel=known
+
+## New configuration
+XWiki.OIDC.ClientConfigurationClass_enableUser=Enable user profiles on first login
+XWiki.OIDC.ClientConfigurationClass_skipped=Disable Azure authentication
+XWiki.OIDC.ClientConfigurationClass_userInfoSkip=Skip user info endpoint
+XWiki.OIDC.ClientConfigurationClass_groupsClaim=Groups claim
+XWiki.OIDC.ClientConfigurationClass_groupsMapping=Groups mapping
+XWiki.OIDC.ClientConfigurationClass_allowedGroups=Allowed groups
+XWiki.OIDC.ClientConfigurationClass_forbiddenGroups=Forbidden groups
+XWiki.OIDC.ClientConfigurationClass_userNameFormatter=User name format
+XWiki.OIDC.ClientConfigurationClass_userMapping=User mapping
+XWiki.OIDC.ClientConfigurationClass_clientSecret=Secret
+XWiki.OIDC.ClientConfigurationClass_clientId=Client ID
+AzureAD.AzureADConfigurationClass_tenantID=Tenant ID
+AzureAD.AzureADConfigurationClass_enableXWikiLoginGlobal=Allow XWiki Login
+AzureAD.AzureADConfigurationClass_xwikiLoginGroups=XWiki login user groups 
+
+XWiki.OIDC.ClientConfigurationClass_enableUser.hint=Define if user accounts should be enabled (marked as active) on first login.
+XWiki.OIDC.ClientConfigurationClass_skipped.hint=Disable the Azure AD authentication.
+XWiki.OIDC.ClientConfigurationClass_userInfoSkip.hint=Some providers have a bad implementation of the userinfo endpoint, making it unusable.
+XWiki.OIDC.ClientConfigurationClass_groupsClaim.hint=Indicate the field containing the list of groups (in case it's not an OpenID Connect standard).
+XWiki.OIDC.ClientConfigurationClass_groupsMapping.hint=Associates the XWiki groups with Azure AD groups.
+XWiki.OIDC.ClientConfigurationClass_allowedGroups.hint=The groups the user need to belong to be allowed to authenticate.
+XWiki.OIDC.ClientConfigurationClass_forbiddenGroups.hint=The groups that if a user belongs to, it will not be allowed to authenticate.
+XWiki.OIDC.ClientConfigurationClass_userNameFormatter.hint=The pattern to use to generate the unique identifier of the user.
+XWiki.OIDC.ClientConfigurationClass_userMapping.hint=Associate non standard properties coming from the OpenID Connect provider with the XWiki user.
+XWiki.OIDC.ClientConfigurationClass_clientSecret.hint=The client secret registered on the provider.
+XWiki.OIDC.ClientConfigurationClass_clientId.hint=The client identifier used by the authentication.
+AzureAD.AzureADConfigurationClass_tenantID.hint=Azure AD instance ID.
+AzureAD.AzureADConfigurationClass_enableXWikiLoginGlobal.hint=Allow a guest user to login using the standard XWiki authenticator.
+AzureAD.AzureADConfigurationClass_xwikiLoginGroups.hint=User groups allowed to login with XWiki.
+
+azure.properties.data.newEntry=New entry
+azure.properties.data.tip.key.groupMap=XWiki group...
+azure.properties.data.tip.value.groupMap=Group object ID...
+azure.properties.data.tip.key.userMap=XWiki user property...
+azure.properties.data.tip.value.userMap=Provider property...
+azure.properties.data.tip.value.forbiddenGroup=Forbidden groups...
+azure.properties.data.tip.value.allowedGroup=Allowed groups...</content>
   <object>
     <name>AzureADAdmin.Translations</name>
     <number>0</number>
