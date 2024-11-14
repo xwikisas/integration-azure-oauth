@@ -27,7 +27,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.stability.Unstable;
 
-import com.xwiki.azureoauth.configuration.AzureConfiguration;
+import com.xwiki.azureoauth.configuration.AzureOldConfiguration;
 
 /**
  * Old AzureAD configuration properties from Identity OAuth integration.
@@ -39,7 +39,7 @@ import com.xwiki.azureoauth.configuration.AzureConfiguration;
 @Singleton
 @Named(OldOAuthAzureConfiguration.HINT)
 @Unstable
-public class OldOAuthAzureConfiguration implements AzureConfiguration
+public class OldOAuthAzureConfiguration implements AzureOldConfiguration
 {
     /**
      * Component hint.

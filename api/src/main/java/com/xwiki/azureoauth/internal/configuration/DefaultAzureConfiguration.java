@@ -20,6 +20,8 @@
 package com.xwiki.azureoauth.internal.configuration;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,7 +50,7 @@ public class DefaultAzureConfiguration implements AzureConfiguration
     private ConfigurationSource mainConfiguration;
 
     @Override
-    public void setConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
+    public void setOIDCConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
     {
         this.mainConfiguration.setProperties(properties);
     }
@@ -75,5 +77,19 @@ public class DefaultAzureConfiguration implements AzureConfiguration
     public boolean isActive()
     {
         return !this.mainConfiguration.getProperty("skipped", false);
+    }
+
+    @Override
+    public String getTenantID()
+    {
+        String endpoint = this.mainConfiguration.getProperty("authorizationEndpoint", "");
+        if (!endpoint.isEmpty()) {
+            Pattern pattern = Pattern.compile("com/([^/]+)/oauth2/v2");
+            Matcher matcher = pattern.matcher(endpoint);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        }
+        return "";
     }
 }
