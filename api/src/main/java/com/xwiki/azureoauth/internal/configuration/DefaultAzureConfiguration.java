@@ -92,18 +92,4 @@ public class DefaultAzureConfiguration implements AzureConfiguration
         }
         return "";
     }
-
-    @Override
-    public String getTenantID()
-    {
-        String endpoint = this.mainConfiguration.getProperty("authorizationEndpoint", "");
-        if (!endpoint.isEmpty()) {
-            Pattern pattern = Pattern.compile("com/([^/]+)/oauth2/v2");
-            Matcher matcher = pattern.matcher(endpoint);
-            if (matcher.find()) {
-                return matcher.group(1);
-            }
-        }
-        return "";
-    }
 }
