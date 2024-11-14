@@ -19,6 +19,12 @@
  */
 package com.xwiki.azureoauth.configuration;
 
+/**
+ * AzureAD old configuration.
+ *
+ * @version $Id$
+ * @since 2.0
+ */
 public interface AzureOldConfiguration
 {
     /**
