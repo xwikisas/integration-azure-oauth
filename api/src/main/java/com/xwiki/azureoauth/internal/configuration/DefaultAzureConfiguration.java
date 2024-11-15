@@ -45,9 +45,18 @@ import com.xwiki.azureoauth.configuration.AzureConfiguration;
 @Unstable
 public class DefaultAzureConfiguration implements AzureConfiguration
 {
+    /**
+     * OIDC user class reference.
+     */
+    public static final String OIDC_USER_CLASS = "XWiki.OIDC.UserClass";
+
     @Inject
     @Named(OIDCAzureClientConfigurationSource.HINT)
     private ConfigurationSource oidcConfiguration;
+
+    @Inject
+    @Named(AzureADConfigurationSource.HINT)
+    private ConfigurationSource azureConfiguration;
 
     @Override
     public void setOIDCConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
@@ -80,7 +89,7 @@ public class DefaultAzureConfiguration implements AzureConfiguration
     }
 
     @Override
-    public String getTenantID()
+    public String getOIDCTenantID()
     {
         String endpoint = this.oidcConfiguration.getProperty("authorizationEndpoint", "");
         if (!endpoint.isEmpty()) {
@@ -91,5 +100,23 @@ public class DefaultAzureConfiguration implements AzureConfiguration
             }
         }
         return "";
+    }
+
+    @Override
+    public boolean isXWikiLoginGlobalEnabled()
+    {
+        return this.azureConfiguration.getProperty("enableXWikiLoginGlobal", true);
+    }
+
+    @Override
+    public String getTenantID()
+    {
+        return this.azureConfiguration.getProperty("tenantID", "");
+    }
+
+    @Override
+    public String getXWikiLoginGroups()
+    {
+        return this.azureConfiguration.getProperty("xwikiLoginGroups", "");
     }
 }

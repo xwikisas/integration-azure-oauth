@@ -17,53 +17,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.configuration;
+package com.xwiki.azureoauth.rest;
 
-import org.xwiki.component.annotation.Role;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+
+import org.xwiki.rest.XWikiRestComponent;
+import org.xwiki.rest.XWikiRestException;
 import org.xwiki.stability.Unstable;
 
 /**
- * AzureAD old configuration.
+ * Provides the APIs needed by the Azure AD server in order to skip the OIDC authenticator.
  *
  * @version $Id$
  * @since 2.0
  */
-@Role
 @Unstable
-public interface AzureOldConfiguration
+@Path("/azuread")
+public interface AzureADResource extends XWikiRestComponent
 {
     /**
-     * Return the tenant ID.
-     *
-     * @return the tenant ID.
+     * Redirect the user to the XWiki login page, skipping the OIDC authenticator.
+     * @param redirectDocument the page where to be redirected after log in.
+     * @return status code 303 SEE OTHER and the log in link for redirecting.
+     * @throws XWikiRestException if an error occurred while building the redirect URL.
      */
-    String getTenantID();
-
-    /**
-     * Return the client ID.
-     *
-     * @return the client ID.
-     */
-    String getClientID();
-
-    /**
-     * Return the authentication secret.
-     *
-     * @return the authentication secret.
-     */
-    String getSecret();
-
-    /**
-     * Return the provider scope.
-     *
-     * @return the provider scope.
-     */
-    String getScope();
-
-    /**
-     * See if the provider configuration is active.
-     *
-     * @return {@code true} if the configuration is active, or {@code false} otherwise.
-     */
-    boolean isActive();
+    @GET
+    @Path("/login/xwiki/{redirectDocument}")
+    Response xwikiLogin(@PathParam("redirectDocument") String redirectDocument) throws XWikiRestException;
 }

@@ -41,7 +41,7 @@ $xwiki.jsx.use('AzureAD.AzureADClientConfigurationSheet')
 $xwiki.ssx.use('AzureAD.AzureADClientConfigurationSheet')
 #includeMacros("XWiki.AdminFieldsDisplaySheet")
 #set ($params = {
-  'XWiki.OIDC.ClientConfigurationClass': ['skipped', 'userInfoSkip', 'enableUser', 'groupsClaim', 'groupsMapping', 'allowedGroups', 'forbiddenGroups', 'userNameFormatter', 'userMapping', 'clientSecret', 'clientId', 'xwikiLoginGroups'],
+  'XWiki.OIDC.ClientConfigurationClass': ['skipped', 'userInfoSkip', 'enableUser', 'scope', 'groupsClaim', 'groupsMapping', 'allowedGroups', 'forbiddenGroups', 'userNameFormatter', 'userMapping', 'clientSecret', 'clientId', 'xwikiLoginGroups'],
   'AzureAD.AzureADConfigurationClass': ['tenantID', 'enableXWikiLoginGlobal', 'xwikiLoginGroups']
 })
 

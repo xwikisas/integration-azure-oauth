@@ -38,7 +38,7 @@
       AzureAD.WebHome
     </xwiki.extension.licensing.publicDocuments>
     <xwiki.extension.licensing.excludedDocuments>
-      AzureAD.AzureADConfig
+      AzureAD.AzureADClientConfiguration
     </xwiki.extension.licensing.excludedDocuments>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)</xwiki.extension.name>

@@ -66,12 +66,8 @@
     </tenantID>
     <xwikiLoginGroups>
       <cache>0</cache>
-      <customDisplay/>
-      <defaultValue/>
       <disabled>0</disabled>
       <displayType>input</displayType>
-      <freeText/>
-      <hint/>
       <largeStorage>0</largeStorage>
       <multiSelect>1</multiSelect>
       <name>xwikiLoginGroups</name>
@@ -80,13 +76,9 @@
       <prettyName>xwikiLoginGroups</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
-      <separators/>
       <size>20</size>
-      <sort/>
       <unmodifiable>0</unmodifiable>
       <usesList>0</usesList>
-      <validationMessage/>
-      <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
     </xwikiLoginGroups>
   </class>
