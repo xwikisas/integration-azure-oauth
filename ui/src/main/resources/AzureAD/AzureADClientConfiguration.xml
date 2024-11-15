@@ -40,6 +40,66 @@
   <object>
     <name>AzureAD.AzureADClientConfiguration</name>
     <number>0</number>
+    <className>AzureAD.AzureADConfigurationClass</className>
+    <guid>74b7b696-7ec7-47ec-a77d-f2423eb8ded8</guid>
+    <class>
+      <name>AzureAD.AzureADConfigurationClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <enableXWikiLoginGlobal>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <name>enableXWikiLoginGlobal</name>
+        <number>3</number>
+        <prettyName>enableXWikiLoginGlobal</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </enableXWikiLoginGlobal>
+      <tenantID>
+        <disabled>0</disabled>
+        <name>tenantID</name>
+        <number>2</number>
+        <prettyName>tenantID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </tenantID>
+      <xwikiLoginGroups>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>xwikiLoginGroups</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>xwikiLoginGroups</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>20</size>
+        <unmodifiable>0</unmodifiable>
+        <usesList>0</usesList>
+        <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
+      </xwikiLoginGroups>
+    </class>
+    <property>
+      <enableXWikiLoginGlobal>1</enableXWikiLoginGlobal>
+    </property>
+    <property>
+      <tenantID/>
+    </property>
+    <property>
+      <xwikiLoginGroups/>
+    </property>
+  </object>
+  <object>
+    <name>AzureAD.AzureADClientConfiguration</name>
+    <number>0</number>
     <className>XWiki.ConfigurableClass</className>
     <guid>9ccc7db3-e0dd-4588-bd7b-b5db3f3961ec</guid>
     <class>
@@ -266,7 +326,7 @@
       <codeToExecute/>
     </property>
     <property>
-      <configurationClass>XWiki.OIDC.ClientConfigurationClass</configurationClass>
+      <configurationClass/>
     </property>
     <property>
       <displayBeforeCategory/>
@@ -634,7 +694,7 @@
       <forbiddenGroups/>
     </property>
     <property>
-      <groupsClaim>groups</groupsClaim>
+      <groupsClaim/>
     </property>
     <property>
       <groupsMapping/>
@@ -655,10 +715,10 @@
       <responseType>code</responseType>
     </property>
     <property>
-      <scope>openid,profile,email,address</scope>
+      <scope/>
     </property>
     <property>
-      <skipped/>
+      <skipped>0</skipped>
     </property>
     <property>
       <tokenEndpoint/>
@@ -673,7 +733,7 @@
       <userInfoEndpoint>https://graph.microsoft.com/oidc/userinfo</userInfoEndpoint>
     </property>
     <property>
-      <userInfoEndpointHeaders>Accept:application/json</userInfoEndpointHeaders>
+      <userInfoEndpointHeaders/>
     </property>
     <property>
       <userInfoEndpointMethod>GET</userInfoEndpointMethod>
@@ -682,11 +742,10 @@
       <userInfoRefreshRate>60000</userInfoRefreshRate>
     </property>
     <property>
-      <userInfoSkip>0</userInfoSkip>
+      <userInfoSkip>1</userInfoSkip>
     </property>
     <property>
-      <userMapping>preferredUsername:${oidc.idtoken.upn}
-mail:${oidc.idtoken.upn}</userMapping>
+      <userMapping/>
     </property>
     <property>
       <userNameFormatter>${oidc.idtoken.upn._clean._lowerCase}</userNameFormatter>

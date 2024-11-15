@@ -45,44 +45,53 @@ import com.xwiki.azureoauth.configuration.AzureConfiguration;
 @Unstable
 public class DefaultAzureConfiguration implements AzureConfiguration
 {
+    /**
+     * OIDC user class reference.
+     */
+    public static final String OIDC_USER_CLASS = "XWiki.OIDC.UserClass";
+
     @Inject
     @Named(OIDCAzureClientConfigurationSource.HINT)
-    private ConfigurationSource mainConfiguration;
+    private ConfigurationSource oidcConfiguration;
+
+    @Inject
+    @Named(AzureADConfigurationSource.HINT)
+    private ConfigurationSource azureConfiguration;
 
     @Override
     public void setOIDCConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
     {
-        this.mainConfiguration.setProperties(properties);
+        this.oidcConfiguration.setProperties(properties);
     }
 
     @Override
     public String getClientID()
     {
-        return this.mainConfiguration.getProperty("clientId", "");
+        return this.oidcConfiguration.getProperty("clientId", "");
     }
 
     @Override
     public String getSecret()
     {
-        return this.mainConfiguration.getProperty("clientSecret", "");
+        return this.oidcConfiguration.getProperty("clientSecret", "");
     }
 
     @Override
     public String getScope()
     {
-        return this.mainConfiguration.getProperty("scope", "");
+        return this.oidcConfiguration.getProperty("scope", "");
     }
 
     @Override
     public boolean isActive()
     {
-        return !this.mainConfiguration.getProperty("skipped", false);
+        return !this.oidcConfiguration.getProperty("skipped", false);
     }
 
     @Override
-    public String getTenantID()
+    public String getOIDCTenantID()
     {
-        String endpoint = this.mainConfiguration.getProperty("authorizationEndpoint", "");
+        String endpoint = this.oidcConfiguration.getProperty("authorizationEndpoint", "");
         if (!endpoint.isEmpty()) {
             Pattern pattern = Pattern.compile("com/([^/]+)/oauth2/v2");
             Matcher matcher = pattern.matcher(endpoint);
@@ -91,5 +100,23 @@ public class DefaultAzureConfiguration implements AzureConfiguration
             }
         }
         return "";
+    }
+
+    @Override
+    public boolean isXWikiLoginGlobalEnabled()
+    {
+        return this.azureConfiguration.getProperty("enableXWikiLoginGlobal", true);
+    }
+
+    @Override
+    public String getTenantID()
+    {
+        return this.azureConfiguration.getProperty("tenantID", "");
+    }
+
+    @Override
+    public String getXWikiLoginGroups()
+    {
+        return this.azureConfiguration.getProperty("xwikiLoginGroups", "");
     }
 }
