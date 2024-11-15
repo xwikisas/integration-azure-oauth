@@ -19,12 +19,17 @@
  */
 package com.xwiki.azureoauth.configuration;
 
+import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
+
 /**
  * AzureAD old configuration.
  *
  * @version $Id$
  * @since 2.0
  */
+@Role
+@Unstable
 public interface AzureOldConfiguration
 {
     /**

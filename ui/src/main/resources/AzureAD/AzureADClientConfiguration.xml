@@ -71,12 +71,8 @@
       </tenantID>
       <xwikiLoginGroups>
         <cache>0</cache>
-        <customDisplay/>
-        <defaultValue/>
         <disabled>0</disabled>
         <displayType>input</displayType>
-        <freeText/>
-        <hint/>
         <largeStorage>0</largeStorage>
         <multiSelect>1</multiSelect>
         <name>xwikiLoginGroups</name>
@@ -85,18 +81,14 @@
         <prettyName>xwikiLoginGroups</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators/>
         <size>20</size>
-        <sort/>
         <unmodifiable>0</unmodifiable>
         <usesList>0</usesList>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
       </xwikiLoginGroups>
     </class>
     <property>
-      <enableXWikiLoginGlobal/>
+      <enableXWikiLoginGlobal>1</enableXWikiLoginGlobal>
     </property>
     <property>
       <tenantID/>
@@ -331,7 +323,7 @@
       <categoryIcon/>
     </property>
     <property>
-      <codeToExecute>{{include reference="AzureAD.AzureADClientConfigurationSheet" /}}</codeToExecute>
+      <codeToExecute/>
     </property>
     <property>
       <configurationClass/>
@@ -343,7 +335,7 @@
       <displayInCategory/>
     </property>
     <property>
-      <displayInSection>Azure AD</displayInSection>
+      <displayInSection>AzureAD</displayInSection>
     </property>
     <property>
       <heading/>
@@ -380,443 +372,300 @@
       <validationScript/>
       <allowedGroups>
         <contenttype>PureText</contenttype>
-        <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
-        <hint/>
         <name>allowedGroups</name>
         <number>4</number>
-        <picker>1</picker>
         <prettyName>Allowed groups</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
         <size>50</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </allowedGroups>
       <authorizationEndpoint>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>authorizationEndpoint</name>
         <number>10</number>
-        <picker>1</picker>
         <prettyName>Authorization OIDC endpoint</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </authorizationEndpoint>
       <claims>
         <contenttype>PureText</contenttype>
-        <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
-        <hint/>
         <name>claims</name>
         <number>26</number>
-        <picker>1</picker>
         <prettyName>Claims</prettyName>
         <restricted>0</restricted>
         <rows>25</rows>
         <size>120</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </claims>
       <clientId>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>clientId</name>
         <number>14</number>
-        <picker>1</picker>
         <prettyName>Client ID</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </clientId>
       <clientSecret>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>clientSecret</name>
         <number>15</number>
-        <picker>1</picker>
         <prettyName>Secret</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </clientSecret>
       <configurationName>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>configurationName</name>
         <number>1</number>
-        <picker>1</picker>
         <prettyName>Configuration name</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </configurationName>
       <enableUser>
-        <customDisplay/>
         <defaultValue>1</defaultValue>
         <disabled>0</disabled>
         <displayFormType>select</displayFormType>
         <displayType>select</displayType>
-        <hint/>
         <name>enableUser</name>
         <number>29</number>
         <prettyName>Should user profiles be enabled on first login ?</prettyName>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </enableUser>
       <forbiddenGroups>
         <contenttype>PureText</contenttype>
-        <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
-        <hint/>
         <name>forbiddenGroups</name>
         <number>5</number>
-        <picker>1</picker>
         <prettyName>Forbidden groups</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
         <size>50</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </forbiddenGroups>
       <groupsClaim>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>groupsClaim</name>
         <number>2</number>
-        <picker>1</picker>
         <prettyName>Group claim</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </groupsClaim>
       <groupsMapping>
         <contenttype>PureText</contenttype>
-        <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
-        <hint/>
         <name>groupsMapping</name>
         <number>3</number>
-        <picker>1</picker>
         <prettyName>Group mapping</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
         <size>50</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </groupsMapping>
       <idTokenClaims>
         <contenttype>PureText</contenttype>
-        <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
-        <hint/>
         <name>idTokenClaims</name>
         <number>24</number>
-        <picker>1</picker>
         <prettyName>ID Token Claims</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
         <size>50</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </idTokenClaims>
       <logoutEndpoint>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>logoutEndpoint</name>
         <number>13</number>
-        <picker>1</picker>
         <prettyName>Logout OIDC endpoint</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </logoutEndpoint>
       <logoutEndpointMethod>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>logoutEndpointMethod</name>
         <number>19</number>
-        <picker>1</picker>
         <prettyName>Logout endpoint method</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </logoutEndpointMethod>
       <logoutMechanism>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>logoutMechanism</name>
         <number>20</number>
-        <picker>1</picker>
         <prettyName>Logout mechanism</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </logoutMechanism>
       <responseType>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>responseType</name>
         <number>23</number>
-        <picker>1</picker>
         <prettyName>Response type</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </responseType>
       <scope>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>scope</name>
         <number>22</number>
-        <picker>1</picker>
         <prettyName>Scope</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </scope>
       <skipped>
-        <customDisplay/>
-        <defaultValue/>
         <disabled>0</disabled>
         <displayFormType>select</displayFormType>
         <displayType>select</displayType>
-        <hint/>
         <name>skipped</name>
         <number>21</number>
         <prettyName>Is authentication skipped ?</prettyName>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </skipped>
       <tokenEndpoint>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>tokenEndpoint</name>
         <number>11</number>
-        <picker>1</picker>
         <prettyName>Token OIDC endpoint</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </tokenEndpoint>
       <tokenEndpointMethod>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>tokenEndpointMethod</name>
         <number>16</number>
-        <picker>1</picker>
         <prettyName>Token endpoint authentication method</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </tokenEndpointMethod>
       <userInfoClaims>
         <contenttype>PureText</contenttype>
-        <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
-        <hint/>
         <name>userInfoClaims</name>
         <number>25</number>
-        <picker>1</picker>
         <prettyName>User info Claims</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
         <size>50</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </userInfoClaims>
       <userInfoEndpoint>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>userInfoEndpoint</name>
         <number>12</number>
-        <picker>1</picker>
         <prettyName>User info OIDC endpoint</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </userInfoEndpoint>
       <userInfoEndpointHeaders>
         <contenttype>PureText</contenttype>
-        <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
-        <hint/>
         <name>userInfoEndpointHeaders</name>
         <number>18</number>
-        <picker>1</picker>
         <prettyName>User info endpoint headers</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
         <size>50</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </userInfoEndpointHeaders>
       <userInfoEndpointMethod>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>userInfoEndpointMethod</name>
         <number>17</number>
-        <picker>1</picker>
         <prettyName>User information endpoint method</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </userInfoEndpointMethod>
       <userInfoRefreshRate>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>userInfoRefreshRate</name>
         <number>27</number>
         <numberType>integer</numberType>
         <prettyName>User info refresh rate</prettyName>
         <size>5</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
       </userInfoRefreshRate>
       <userInfoSkip>
-        <customDisplay/>
-        <defaultValue/>
         <disabled>0</disabled>
         <displayFormType>select</displayFormType>
         <displayType>select</displayType>
-        <hint/>
         <name>userInfoSkip</name>
         <number>28</number>
         <prettyName>Is user info skipped ?</prettyName>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </userInfoSkip>
       <userMapping>
         <contenttype>PureText</contenttype>
-        <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
-        <hint/>
         <name>userMapping</name>
         <number>8</number>
-        <picker>1</picker>
         <prettyName>User mapping</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
         <size>50</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </userMapping>
       <userNameFormatter>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>userNameFormatter</name>
         <number>7</number>
-        <picker>1</picker>
         <prettyName>XWiki username formatter</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </userNameFormatter>
       <userSubjectFormatter>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>userSubjectFormatter</name>
         <number>6</number>
-        <picker>1</picker>
         <prettyName>Subject formatter</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </userSubjectFormatter>
       <xwikiProvider>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>xwikiProvider</name>
         <number>9</number>
-        <picker>1</picker>
         <prettyName>XWiki provider</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </xwikiProvider>
     </class>
@@ -836,7 +685,7 @@
       <clientSecret/>
     </property>
     <property>
-      <configurationName>Azure AD</configurationName>
+      <configurationName>AzureAD</configurationName>
     </property>
     <property>
       <enableUser>1</enableUser>
@@ -866,10 +715,10 @@
       <responseType>code</responseType>
     </property>
     <property>
-      <scope>openid,profile,email,address</scope>
+      <scope/>
     </property>
     <property>
-      <skipped/>
+      <skipped>0</skipped>
     </property>
     <property>
       <tokenEndpoint/>
@@ -893,7 +742,7 @@
       <userInfoRefreshRate>60000</userInfoRefreshRate>
     </property>
     <property>
-      <userInfoSkip>0</userInfoSkip>
+      <userInfoSkip>1</userInfoSkip>
     </property>
     <property>
       <userMapping/>

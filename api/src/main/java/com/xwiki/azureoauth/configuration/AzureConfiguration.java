@@ -43,4 +43,24 @@ public interface AzureConfiguration extends AzureOldConfiguration
      */
     void setOIDCConfiguration(Map<String, Object> properties) throws ConfigurationSaveException;
 
+    /**
+     * Extract the tenant ID from the OIDC Client Configuration.
+     *
+     * @return the extracted tenant ID.
+     */
+    String getOIDCTenantID();
+
+    /**
+     * Check if XWiki log in is enabled for guest users.
+     *
+     * @return {@code true} if global log in is enabled and {@code false} otherwise.
+     */
+    boolean isXWikiLoginGlobalEnabled();
+
+    /**
+     * Get the user groups that are allowed to log in with XWiki.
+     *
+     * @return the user groups that are allowed to log in with XWiki.
+     */
+    String getXWikiLoginGroups();
 }
