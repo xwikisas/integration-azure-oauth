@@ -323,7 +323,7 @@
       <categoryIcon/>
     </property>
     <property>
-      <codeToExecute/>
+      <codeToExecute>{{include reference="AzureAD.AzureADClientConfigurationSheet" /}}</codeToExecute>
     </property>
     <property>
       <configurationClass/>
@@ -335,7 +335,7 @@
       <displayInCategory/>
     </property>
     <property>
-      <displayInSection>AzureAD</displayInSection>
+      <displayInSection>Azure AD</displayInSection>
     </property>
     <property>
       <heading/>

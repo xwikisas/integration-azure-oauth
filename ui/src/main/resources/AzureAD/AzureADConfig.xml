@@ -420,7 +420,7 @@
       <displayInCategory/>
     </property>
     <property>
-      <displayInSection>Azure AD</displayInSection>
+      <displayInSection>AzureAD</displayInSection>
     </property>
     <property>
       <heading>$services.localization.render('azureADAdmin.config.heading')</heading>
