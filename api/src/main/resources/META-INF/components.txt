@@ -1,5 +1,5 @@
 com.xwiki.azureoauth.internal.AzureADInitializer
-com.xwiki.azureoauth.internal.AzureADUpgradingListener
+com.xwiki.azureoauth.internal.AzureADObjectUpgradeListener
 com.xwiki.azureoauth.internal.configuration.DefaultAzureConfiguration
 com.xwiki.azureoauth.internal.configuration.OIDCAzureClientConfigurationSource
 com.xwiki.azureoauth.internal.configuration.AzureADConfigurationSource
