@@ -99,7 +99,6 @@ public class AzureADInitializer
      *
      * @throws ConfigurationSaveException if any error occurs while saving the new configuration.
      */
-    // TODO: set azure as default OIDC provider
     public void initializeConfiguration() throws ConfigurationSaveException
     {
         InstalledExtension apiModule = installedRepository.getInstalledExtension(

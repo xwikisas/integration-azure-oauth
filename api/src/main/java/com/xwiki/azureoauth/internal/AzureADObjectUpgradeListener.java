@@ -28,13 +28,12 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
-import org.xwiki.bridge.event.DocumentDeletedEvent;
-import org.xwiki.bridge.event.DocumentUpdatedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSaveException;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.WikiReference;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
@@ -44,6 +43,8 @@ import org.xwiki.wiki.descriptor.WikiDescriptorManager;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.internal.event.XObjectUpdatedEvent;
+import com.xpn.xwiki.objects.BaseObjectReference;
 import com.xwiki.azureoauth.configuration.AzureConfiguration;
 
 import static com.xwiki.azureoauth.internal.configuration.AzureADConfigurationSource.CONFIG_DOC;
@@ -57,15 +58,17 @@ import static com.xwiki.azureoauth.internal.configuration.AzureADConfigurationSo
  * @since 2.0
  */
 @Component
-@Named(AzureADUpgradingListener.HINT)
+@Named(AzureADObjectUpgradeListener.HINT)
 @Singleton
 @Unstable
-public class AzureADUpgradingListener extends AbstractEventListener implements Initializable
+public class AzureADObjectUpgradeListener extends AbstractEventListener implements Initializable
 {
     /**
      * The hint for the component.
      */
-    public static final String HINT = "AzureADUpgradingListener";
+    public static final String HINT = "AzureADObjectUpgradeListener";
+
+    private static final EntityReference CLASS_MATCHER = BaseObjectReference.any("AzureAD.AzureADConfigurationClass");
 
     @Inject
     private WikiDescriptorManager wikiManager;
@@ -83,16 +86,15 @@ public class AzureADUpgradingListener extends AbstractEventListener implements I
     /**
      * Default constructor.
      */
-    public AzureADUpgradingListener()
+    public AzureADObjectUpgradeListener()
     {
-        super(HINT, new DocumentUpdatedEvent(), new DocumentDeletedEvent());
+        super(HINT, new XObjectUpdatedEvent(CLASS_MATCHER));
     }
 
-    // TODO: discuss with Lavinia why there is sometimes an infinite loop
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        if (event instanceof DocumentUpdatedEvent || event instanceof DocumentDeletedEvent) {
+        if (event instanceof XObjectUpdatedEvent) {
             XWikiDocument document = (XWikiDocument) source;
             if (document != null && isAzureConfigObject(document)) {
                 try {
