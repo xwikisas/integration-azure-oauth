@@ -32,10 +32,10 @@ import org.xwiki.configuration.ConfigurationSaveException;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.stability.Unstable;
 
-import com.xwiki.azureoauth.configuration.AzureConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 
 /**
- * Default implementation of {@link AzureConfiguration}.
+ * Default implementation of {@link EntraIDConfiguration}.
  *
  * @version $Id$
  * @since 2.0
@@ -43,7 +43,7 @@ import com.xwiki.azureoauth.configuration.AzureConfiguration;
 @Component
 @Singleton
 @Unstable
-public class DefaultAzureConfiguration implements AzureConfiguration
+public class DefaultEntraIDConfiguration implements EntraIDConfiguration
 {
     /**
      * OIDC user class reference.
@@ -51,12 +51,12 @@ public class DefaultAzureConfiguration implements AzureConfiguration
     public static final String OIDC_USER_CLASS = "XWiki.OIDC.UserClass";
 
     @Inject
-    @Named(OIDCAzureClientConfigurationSource.HINT)
+    @Named(OIDCClientConfigurationSource.HINT)
     private ConfigurationSource oidcConfiguration;
 
     @Inject
-    @Named(AzureADConfigurationSource.HINT)
-    private ConfigurationSource azureConfiguration;
+    @Named(EntraIDConfigurationSource.HINT)
+    private ConfigurationSource entraIDConfiguration;
 
     @Override
     public void setOIDCConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
@@ -105,18 +105,18 @@ public class DefaultAzureConfiguration implements AzureConfiguration
     @Override
     public boolean isXWikiLoginGlobalEnabled()
     {
-        return this.azureConfiguration.getProperty("enableXWikiLoginGlobal", true);
+        return this.entraIDConfiguration.getProperty("enableXWikiLoginGlobal", true);
     }
 
     @Override
     public String getTenantID()
     {
-        return this.azureConfiguration.getProperty("tenantID", "");
+        return this.entraIDConfiguration.getProperty("tenantID", "");
     }
 
     @Override
     public String getXWikiLoginGroups()
     {
-        return this.azureConfiguration.getProperty("xwikiLoginGroups", "");
+        return this.entraIDConfiguration.getProperty("xwikiLoginGroups", "");
     }
 }

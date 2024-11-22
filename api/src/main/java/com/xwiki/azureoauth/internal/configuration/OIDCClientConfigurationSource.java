@@ -19,6 +19,9 @@
  */
 package com.xwiki.azureoauth.internal.configuration;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -28,32 +31,31 @@ import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.stability.Unstable;
 
 /**
- * Configuration source for the Azure AD configuration class.
+ * Azure configuration source corresponding to the OIDC configuration class.
  *
  * @version $Id$
  * @since 2.0
  */
 @Component
-@Named(AzureADConfigurationSource.HINT)
+@Named(OIDCClientConfigurationSource.HINT)
 @Singleton
 @Unstable
-public class AzureADConfigurationSource extends AbstractWikisConfigurationSource
+public class OIDCClientConfigurationSource extends AbstractWikisConfigurationSource
 {
     /**
      * The hint for this component.
      */
-    public static final String HINT = "azure.configuration";
+    public static final String HINT = "entra.oidc.client.configuration";
 
-    private static final String SPACE = "AzureAD";
+    private static final String CONFIGURATION_SPACE = "AzureAD";
 
-    /**
-     * Configuration document.
-     */
-    public static final LocalDocumentReference CONFIG_DOC =
-        new LocalDocumentReference(SPACE, "AzureADClientConfiguration");
+    private static final List<String> CLASS_SPACE = Arrays.asList("XWiki", "OIDC");
+
+    private static final LocalDocumentReference CONFIG_DOC =
+        new LocalDocumentReference(CONFIGURATION_SPACE, "AzureADClientConfiguration");
 
     private static final LocalDocumentReference CONFIG_CLASS =
-        new LocalDocumentReference(SPACE, "AzureADConfigurationClass");
+        new LocalDocumentReference(CLASS_SPACE, "ClientConfigurationClass");
 
     @Override
     protected LocalDocumentReference getClassReference()

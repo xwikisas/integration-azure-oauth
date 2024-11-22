@@ -26,14 +26,14 @@ import org.xwiki.configuration.ConfigurationSaveException;
 import org.xwiki.stability.Unstable;
 
 /**
- * AzureAD configuration.
+ * Extends {@link AzureOldConfiguration} and adds additional endpoints for the OIDC configuration.
  *
  * @version $Id$
  * @since 2.0
  */
 @Role
 @Unstable
-public interface AzureConfiguration extends AzureOldConfiguration
+public interface EntraIDConfiguration extends AzureOldConfiguration
 {
     /**
      * Set the configuration for the class.

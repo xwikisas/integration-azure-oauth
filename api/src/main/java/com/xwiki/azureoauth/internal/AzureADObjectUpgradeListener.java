@@ -45,9 +45,9 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.internal.event.XObjectUpdatedEvent;
 import com.xpn.xwiki.objects.BaseObjectReference;
-import com.xwiki.azureoauth.configuration.AzureConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 
-import static com.xwiki.azureoauth.internal.configuration.AzureADConfigurationSource.CONFIG_DOC;
+import static com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSource.CONFIG_DOC;
 
 /**
  * Checks the current installation version and transfers the old configuration from Identity OAuth to the new
@@ -78,10 +78,10 @@ public class AzureADObjectUpgradeListener extends AbstractEventListener implemen
 
     @Inject
     @Named("default")
-    private Provider<AzureConfiguration> azureClientConfigurationProvider;
+    private Provider<EntraIDConfiguration> entraIDConfigurationProvider;
 
     @Inject
-    private Provider<AzureADInitializer> adInitializerProvider;
+    private Provider<AzureADOIDCMigrator> azureOIDCMigratorProvider;
 
     /**
      * Default constructor.
@@ -98,11 +98,12 @@ public class AzureADObjectUpgradeListener extends AbstractEventListener implemen
             XWikiDocument document = (XWikiDocument) source;
             if (document != null && isAzureConfigObject(document)) {
                 try {
-                    AzureConfiguration azureConfiguration = azureClientConfigurationProvider.get();
-                    String oldTenantID = azureConfiguration.getOIDCTenantID();
-                    String tenantID = azureConfiguration.getTenantID();
+                    EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
+                    String oldTenantID = entraIDConfiguration.getOIDCTenantID();
+                    String tenantID = entraIDConfiguration.getTenantID();
                     if (!tenantID.equals(oldTenantID)) {
-                        azureConfiguration.setOIDCConfiguration(adInitializerProvider.get().getEndpointsMap(tenantID));
+                        entraIDConfiguration.setOIDCConfiguration(
+                            azureOIDCMigratorProvider.get().getEndpoints(tenantID));
                     }
                 } catch (ConfigurationSaveException e) {
                     throw new RuntimeException(e);
@@ -115,9 +116,9 @@ public class AzureADObjectUpgradeListener extends AbstractEventListener implemen
     public void initialize() throws InitializationException
     {
         try {
-            AzureADInitializer adInitializer = adInitializerProvider.get();
-            adInitializer.refactorOIDCIssuer();
-            adInitializer.initializeConfiguration();
+            AzureADOIDCMigrator azureOIDCMigrator = azureOIDCMigratorProvider.get();
+            azureOIDCMigrator.refactorOIDCIssuer();
+            azureOIDCMigrator.initializeConfiguration();
         } catch (XWikiException | QueryException e) {
             String rootCause = ExceptionUtils.getRootCauseMessage(e);
             logger.error(
