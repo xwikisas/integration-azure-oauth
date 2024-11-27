@@ -58,15 +58,15 @@ import static com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSo
  * @since 2.0
  */
 @Component
-@Named(AzureADObjectUpgradeListener.HINT)
+@Named(AzureADObjectUpdateListener.HINT)
 @Singleton
 @Unstable
-public class AzureADObjectUpgradeListener extends AbstractEventListener implements Initializable
+public class AzureADObjectUpdateListener extends AbstractEventListener implements Initializable
 {
     /**
      * The hint for the component.
      */
-    public static final String HINT = "AzureADObjectUpgradeListener";
+    public static final String HINT = "AzureADObjectUpdateListener";
 
     private static final EntityReference CLASS_MATCHER = BaseObjectReference.any("AzureAD.AzureADConfigurationClass");
 
@@ -86,7 +86,7 @@ public class AzureADObjectUpgradeListener extends AbstractEventListener implemen
     /**
      * Default constructor.
      */
-    public AzureADObjectUpgradeListener()
+    public AzureADObjectUpdateListener()
     {
         super(HINT, new XObjectUpdatedEvent(CLASS_MATCHER));
     }
@@ -106,6 +106,8 @@ public class AzureADObjectUpgradeListener extends AbstractEventListener implemen
                             azureOIDCMigratorProvider.get().getEndpoints(tenantID));
                     }
                 } catch (ConfigurationSaveException e) {
+                    logger.error("There was an error while trying to update OIDC endpoints. Root cause is: [{}]",
+                        ExceptionUtils.getRootCauseMessage(e));
                     throw new RuntimeException(e);
                 }
             }

@@ -21,7 +21,6 @@ package com.xwiki.azureoauth.configuration;
 
 import java.util.Map;
 
-import org.xwiki.component.annotation.Role;
 import org.xwiki.configuration.ConfigurationSaveException;
 import org.xwiki.stability.Unstable;
 
@@ -31,17 +30,24 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 2.0
  */
-@Role
 @Unstable
 public interface EntraIDConfiguration extends AzureOldConfiguration
 {
     /**
-     * Set the configuration for the class.
+     * Set the configuration for the OIDC class.
      *
      * @param properties {@link Map} containing the properties that will be saved.
      * @throws ConfigurationSaveException if any error occurs during configuration save.
      */
     void setOIDCConfiguration(Map<String, Object> properties) throws ConfigurationSaveException;
+
+    /**
+     * Set the configuration for the Entra ID class.
+     *
+     * @param properties {@link Map} containing the properties that will be saved.
+     * @throws ConfigurationSaveException if any error occurs during configuration save.
+     */
+    void setEntraIDConfiguration(Map<String, Object> properties) throws ConfigurationSaveException;
 
     /**
      * Extract the tenant ID from the OIDC Client Configuration.

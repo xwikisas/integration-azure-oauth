@@ -107,6 +107,7 @@ public class AzureADOIDCMigrator
             new ExtensionId("com.xwiki.integration-azure-oauth:integration-azure-oauth-api", "2.0"));
         if (apiModule != null) {
             entraIDConfigurationProvider.get().setOIDCConfiguration(generateNewConfiguration());
+            entraIDConfigurationProvider.get().setEntraIDConfiguration(getTenantIdConfiguration());
         }
     }
 
@@ -145,21 +146,24 @@ public class AzureADOIDCMigrator
      */
     public Map<String, Object> getEndpoints(String tenantID)
     {
-        return Map.of(
-            "authorizationEndpoint", String.format(BASE_ENDPOINT, tenantID, "authorize"),
-            "tokenEndpoint", String.format(BASE_ENDPOINT, tenantID, "token"),
-            "logoutEndpoint", String.format(BASE_ENDPOINT, tenantID, "logout"));
+        return Map.of("authorizationEndpoint", String.format(BASE_ENDPOINT, tenantID, "authorize"), "tokenEndpoint",
+            String.format(BASE_ENDPOINT, tenantID, "token"), "logoutEndpoint",
+            String.format(BASE_ENDPOINT, tenantID, "logout"));
     }
 
     private Map<String, Object> generateNewConfiguration()
     {
         AzureOldConfiguration oauthConfiguration = oauthConfigurationProvider.get();
-        String tenantID = oauthConfiguration.getTenantID();
-        Map<String, Object> newConfig = new HashMap<>(getEndpoints(tenantID));
+        Map<String, Object> newConfig = new HashMap<>(getEndpoints(oauthConfiguration.getTenantID()));
         newConfig.put("clientId", oauthConfiguration.getClientID());
         newConfig.put("clientSecret", oauthConfiguration.getSecret());
         newConfig.put("skipped", !oauthConfiguration.isActive());
         newConfig.put("scope", oauthConfiguration.getScope());
         return newConfig;
+    }
+
+    private Map<String, Object> getTenantIdConfiguration()
+    {
+        return Map.of("tenantId", oauthConfigurationProvider.get().getTenantID());
     }
 }

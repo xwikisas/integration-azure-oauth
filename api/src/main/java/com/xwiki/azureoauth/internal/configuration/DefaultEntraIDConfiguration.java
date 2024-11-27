@@ -65,6 +65,12 @@ public class DefaultEntraIDConfiguration implements EntraIDConfiguration
     }
 
     @Override
+    public void setEntraIDConfiguration(Map<String, Object> properties) throws ConfigurationSaveException
+    {
+        this.entraIDConfiguration.setProperties(properties);
+    }
+
+    @Override
     public String getClientID()
     {
         return this.oidcConfiguration.getProperty("clientId", "");
@@ -111,7 +117,7 @@ public class DefaultEntraIDConfiguration implements EntraIDConfiguration
     @Override
     public String getTenantID()
     {
-        return this.entraIDConfiguration.getProperty("tenantID", "");
+        return this.entraIDConfiguration.getProperty("tenantId", "");
     }
 
     @Override
