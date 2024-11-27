@@ -45,7 +45,7 @@ $xwiki.ssx.use('AzureAD.AzureADClientConfigurationSheet')
   'AzureAD.AzureADConfigurationClass': ['tenantID', 'enableXWikiLoginGlobal', 'xwikiLoginGroups']
 })
 
-#set ($fieldSetClass = "azuread")
+#set ($fieldSetClass = "entraid")
 #set ($configDoc = $xwiki.getDocument('AzureAD.AzureADClientConfiguration'))
 #set ($configClassName = 'XWiki.OIDC.ClientConfigurationClass')
 

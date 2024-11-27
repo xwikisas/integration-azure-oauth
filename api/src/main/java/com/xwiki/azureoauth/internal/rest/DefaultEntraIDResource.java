@@ -36,18 +36,18 @@ import org.xwiki.velocity.tools.EscapeTool;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
-import com.xwiki.azureoauth.rest.AzureADResource;
+import com.xwiki.azureoauth.rest.EntraIDResource;
 
 /**
- * Default implementation of {@link AzureADResource}.
+ * Default implementation of {@link EntraIDResource}.
  *
  * @version $Id$
  * @since 2.0
  */
 @Component
-@Named("com.xwiki.azureoauth.internal.rest.DefaultAzureADResource")
+@Named("com.xwiki.azureoauth.internal.rest.DefaultEntraIDResource")
 @Singleton
-public class DefaultAzureADResource implements AzureADResource
+public class DefaultEntraIDResource implements EntraIDResource
 {
     @Inject
     private Provider<XWikiContext> wikiContextProvider;

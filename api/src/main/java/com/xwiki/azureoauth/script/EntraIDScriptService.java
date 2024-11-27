@@ -36,28 +36,28 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.api.User;
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xwiki.azureoauth.configuration.AzureConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 
-import static com.xwiki.azureoauth.internal.configuration.DefaultAzureConfiguration.OIDC_USER_CLASS;
+import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration.OIDC_USER_CLASS;
 
 /**
- * Azure AD script services.
+ * Entra ID script services.
  *
  * @version $Id$
  * @since 2.0
  */
 @Component
-@Named("azuread")
+@Named("entraid")
 @Singleton
 @Unstable
-public class AzureADScriptService implements ScriptService
+public class EntraIDScriptService implements ScriptService
 {
     @Inject
     private Provider<XWikiContext> wikiContextProvider;
 
     @Inject
     @Named("default")
-    private AzureConfiguration azureConfiguration;
+    private EntraIDConfiguration entraIDConfiguration;
 
     @Inject
     @Named("current")
@@ -70,7 +70,7 @@ public class AzureADScriptService implements ScriptService
      */
     public boolean isXWikiLoginEnabled()
     {
-        return azureConfiguration.isXWikiLoginGlobalEnabled();
+        return entraIDConfiguration.isXWikiLoginGlobalEnabled();
     }
 
     /**
@@ -97,6 +97,6 @@ public class AzureADScriptService implements ScriptService
         XWikiContext wikiContext = wikiContextProvider.get();
         XWiki xwiki = wikiContext.getWiki();
         User user = xwiki.getUser(wikiContext.getUserReference(), wikiContext);
-        return Stream.of(azureConfiguration.getXWikiLoginGroups().split(",")).anyMatch(user::isUserInGroup);
+        return Stream.of(entraIDConfiguration.getXWikiLoginGroups().split(",")).anyMatch(user::isUserInGroup);
     }
 }

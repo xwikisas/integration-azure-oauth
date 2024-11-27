@@ -298,11 +298,11 @@ For the application to work, it needs to be activated and configured.
       <content>{{velocity}}
 #set ($discard = $xwiki.jsx.use('AzureAD.WebHome'))
 {{html clean='false'}}
-#if ($isGuest &amp;&amp; $services.azuread.isXWikiLoginEnabled())
+#if ($isGuest &amp;&amp; $services.entraid.isXWikiLoginEnabled())
   #set($loginURL = $xwiki.getURL('XWiki.XWikiLogin', 'login', "xredirect=$request.getRequestURL()&amp;loginLink=1&amp;oidc.skipped=true"))
   &lt;a href="${loginURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml($services.localization.render('azure.drawer.header.login'))&lt;/a&gt;
-#elseif ($services.azuread.shouldDisplayXWikiLogin())
-  #set($logoutRedirect = "${request.getContextPath()}/rest/azuread/login/xwiki/$escapetool.xml($services.model.serialize($doc.getDocumentReference(), 'default'))")
+#elseif ($services.entraid.shouldDisplayXWikiLogin())
+  #set($logoutRedirect = "${request.getContextPath()}/rest/entraid/login/xwiki/$escapetool.xml($services.model.serialize($doc.getDocumentReference(), 'default'))")
   #set($logoutURL = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=${logoutRedirect}"))
   &lt;a href="${logoutURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml($services.localization.render('azure.drawer.header.switch'))&lt;/a&gt;
 #end

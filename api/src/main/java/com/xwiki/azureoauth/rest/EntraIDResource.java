@@ -29,14 +29,14 @@ import org.xwiki.rest.XWikiRestException;
 import org.xwiki.stability.Unstable;
 
 /**
- * Provides the APIs needed by the Azure AD server in order to skip the OIDC authenticator.
+ * Provides the API needed by the server in order to skip the OIDC authenticator.
  *
  * @version $Id$
  * @since 2.0
  */
 @Unstable
-@Path("/azuread")
-public interface AzureADResource extends XWikiRestComponent
+@Path("/entraid")
+public interface EntraIDResource extends XWikiRestComponent
 {
     /**
      * Redirect the user to the XWiki login page, skipping the OIDC authenticator.
