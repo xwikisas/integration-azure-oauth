@@ -23,7 +23,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 /**
- * AzureAD old configuration.
+ * AzureAD old configuration, containing the endpoints for Identity OAuth and Azure Config.
  *
  * @version $Id$
  * @since 2.0

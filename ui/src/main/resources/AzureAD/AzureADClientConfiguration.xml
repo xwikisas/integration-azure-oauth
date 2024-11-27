@@ -60,15 +60,15 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </enableXWikiLoginGlobal>
-      <tenantID>
+      <tenantId>
         <disabled>0</disabled>
-        <name>tenantID</name>
+        <name>tenantId</name>
         <number>2</number>
-        <prettyName>tenantID</prettyName>
+        <prettyName>tenantId</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </tenantID>
+      </tenantId>
       <xwikiLoginGroups>
         <cache>0</cache>
         <disabled>0</disabled>
@@ -91,7 +91,7 @@
       <enableXWikiLoginGlobal>1</enableXWikiLoginGlobal>
     </property>
     <property>
-      <tenantID/>
+      <tenantId/>
     </property>
     <property>
       <xwikiLoginGroups/>

@@ -45,11 +45,11 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xwiki.azureoauth.configuration.AzureConfiguration;
 import com.xwiki.azureoauth.configuration.AzureOldConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 import com.xwiki.azureoauth.internal.oldConfiguration.OldOAuthAzureConfiguration;
 
-import static com.xwiki.azureoauth.internal.configuration.DefaultAzureConfiguration.OIDC_USER_CLASS;
+import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration.OIDC_USER_CLASS;
 
 /**
  * Handles the initialization of Azure AD with OIDC integration.
@@ -57,10 +57,10 @@ import static com.xwiki.azureoauth.internal.configuration.DefaultAzureConfigurat
  * @version $Id$
  * @since 2.0
  */
-@Component(roles = AzureADInitializer.class)
+@Component(roles = AzureADOIDCMigrator.class)
 @Singleton
 @Unstable
-public class AzureADInitializer
+public class AzureADOIDCMigrator
 {
     private static final String INVALID_VERSION = "/2.0";
 
@@ -68,13 +68,15 @@ public class AzureADInitializer
 
     private static final String ISSUER = "issuer";
 
+    private static final String BASE_ENDPOINT = "https://login.microsoftonline.com/%s/oauth2/v2.0/%s";
+
     @Inject
     @Named(OldOAuthAzureConfiguration.HINT)
     private Provider<AzureOldConfiguration> oauthConfigurationProvider;
 
     @Inject
     @Named("default")
-    private Provider<AzureConfiguration> azureClientConfigurationProvider;
+    private Provider<EntraIDConfiguration> entraIDConfigurationProvider;
 
     @Inject
     private WikiDescriptorManager wikiManager;
@@ -104,19 +106,21 @@ public class AzureADInitializer
         InstalledExtension apiModule = installedRepository.getInstalledExtension(
             new ExtensionId("com.xwiki.integration-azure-oauth:integration-azure-oauth-api", "2.0"));
         if (apiModule != null) {
-            azureClientConfigurationProvider.get().setOIDCConfiguration(generateNewConfigurationMap());
+            entraIDConfigurationProvider.get().setOIDCConfiguration(generateNewConfiguration());
+            entraIDConfigurationProvider.get().setEntraIDConfiguration(getTenantIdConfiguration());
         }
     }
 
     /**
-     * Refactor OIDC issuer for already existing Azure users.
+     * Check the OIDC issuer for already existing Azure users to make sure it has the right format and refactor it if
+     * needed.
      *
      * @throws QueryException if there is an error while executing the query to find the users.
      */
     public void refactorOIDCIssuer() throws QueryException, XWikiException
     {
         List<String> results = this.queryManager.createQuery(
-                ", BaseObject as obj where doc.fullName = obj" + ".name and obj.className = :className", Query.HQL)
+                ", BaseObject as obj where doc.fullName = obj.name and obj.className = :className", Query.HQL)
             .setWiki(this.wikiManager.getCurrentWikiId()).bindValue("className", OIDC_USER_CLASS).execute();
         XWikiContext wikiContext = wikiContextProvider.get();
         XWiki wiki = wikiContext.getWiki();
@@ -129,7 +133,7 @@ public class AzureADInitializer
                 int index = issuer.lastIndexOf(INVALID_VERSION);
                 String fixedIssuer = issuer.substring(0, index) + VALID_VERSION;
                 oidcObj.set(ISSUER, fixedIssuer, wikiContext);
-                wiki.saveDocument(userDoc, "Fixed issuer", wikiContext);
+                wiki.saveDocument(userDoc, "Refactored OIDC issuer to the right format used by Entra ID.", wikiContext);
             }
         }
     }
@@ -140,17 +144,17 @@ public class AzureADInitializer
      * @param tenantID the AD tenant ID.
      * @return the formatted endpoints.
      */
-    public Map<String, Object> getEndpointsMap(String tenantID)
+    public Map<String, Object> getEndpoints(String tenantID)
     {
-        return Map.of("authorizationEndpoint", getFormattedEndpoint(tenantID, "authorize"), "tokenEndpoint",
-            getFormattedEndpoint(tenantID, "token"), "logoutEndpoint", getFormattedEndpoint(tenantID, "logout"));
+        return Map.of("authorizationEndpoint", String.format(BASE_ENDPOINT, tenantID, "authorize"), "tokenEndpoint",
+            String.format(BASE_ENDPOINT, tenantID, "token"), "logoutEndpoint",
+            String.format(BASE_ENDPOINT, tenantID, "logout"));
     }
 
-    private Map<String, Object> generateNewConfigurationMap()
+    private Map<String, Object> generateNewConfiguration()
     {
         AzureOldConfiguration oauthConfiguration = oauthConfigurationProvider.get();
-        String tenantID = oauthConfiguration.getTenantID();
-        Map<String, Object> newConfig = new HashMap<>(getEndpointsMap(tenantID));
+        Map<String, Object> newConfig = new HashMap<>(getEndpoints(oauthConfiguration.getTenantID()));
         newConfig.put("clientId", oauthConfiguration.getClientID());
         newConfig.put("clientSecret", oauthConfiguration.getSecret());
         newConfig.put("skipped", !oauthConfiguration.isActive());
@@ -158,8 +162,8 @@ public class AzureADInitializer
         return newConfig;
     }
 
-    private String getFormattedEndpoint(String tenantID, String scope)
+    private Map<String, Object> getTenantIdConfiguration()
     {
-        return String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/%s", tenantID, scope);
+        return Map.of("tenantId", oauthConfigurationProvider.get().getTenantID());
     }
 }
