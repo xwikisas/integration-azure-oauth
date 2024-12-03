@@ -19,6 +19,8 @@
  */
 package com.xwiki.azureoauth.internal;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Named;
@@ -53,20 +55,25 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for {@link AzureADObjectUpdateListener}
+ * Unit test for {@link EntraIDObjectUpdateListener}
  *
  * @version $Id$
  */
 @ComponentTest
-class AzureADObjectUpdateListenerTest
+class EntraIDObjectUpdateListenerTest
 {
     private static final String BASE_ENDPOINT = "https://login.microsoftonline.com/%s/oauth2/v2.0/%s";
 
-    private final LocalDocumentReference CONFIG_DOC =
-        new LocalDocumentReference("AzureAD", "AzureADClientConfiguration");
+    private static final List<String> SPACE = Arrays.asList("EntraID", "Code");
+
+    /**
+     * Entra ID OIDC configuration document.
+     */
+    private static final LocalDocumentReference CONFIG_DOC =
+        new LocalDocumentReference(SPACE, "EntraOIDCClientConfiguration");
 
     @InjectMockComponents
-    private AzureADObjectUpdateListener objectUpgradeListener;
+    private EntraIDObjectUpdateListener objectUpdateListener;
 
     @MockComponent
     private WikiDescriptorManager wikiManager;
@@ -117,7 +124,7 @@ class AzureADObjectUpdateListenerTest
     @Test
     void onEventSuccess() throws ConfigurationSaveException
     {
-        objectUpgradeListener.onEvent(event, xWikiDocument, null);
+        objectUpdateListener.onEvent(event, xWikiDocument, null);
 
         verify(entraIDConfiguration, Mockito.times(1)).setOIDCConfiguration(anyMap());
     }
@@ -128,7 +135,7 @@ class AzureADObjectUpdateListenerTest
         doThrow(new ConfigurationSaveException("Mock test exception.")).when(entraIDConfiguration)
             .setOIDCConfiguration(configMap);
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            objectUpgradeListener.onEvent(event, xWikiDocument, null);
+            objectUpdateListener.onEvent(event, xWikiDocument, null);
         });
         assertEquals(
             "There was an error while trying to update OIDC endpoints. Root cause is: [ConfigurationSaveException: Mock test exception.]",

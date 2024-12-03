@@ -20,30 +20,30 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="AzureAD.AzureADClientConfiguration" locale="">
-  <web>AzureAD</web>
-  <name>AzureADClientConfiguration</name>
+<xwikidoc version="1.5" reference="EntraID.Code.EntraOIDCClientConfiguration" locale="">
+  <web>EntraID.Code</web>
+  <name>EntraOIDCClientConfiguration</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>AzureAD.WebHome</parent>
+  <parent>WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>AzureADClientConfiguration</title>
+  <title>EntraOIDCClientConfiguration</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>AzureAD.AzureADClientConfiguration</name>
+    <name>EntraID.Code.EntraOIDCClientConfiguration</name>
     <number>0</number>
-    <className>AzureAD.AzureADConfigurationClass</className>
-    <guid>74b7b696-7ec7-47ec-a77d-f2423eb8ded8</guid>
+    <className>EntraID.Code.EntraIDConfigurationClass</className>
+    <guid>d7c95e8c-0574-4318-9502-3958af2ba9ac</guid>
     <class>
-      <name>AzureAD.AzureADConfigurationClass</name>
+      <name>EntraID.Code.EntraIDConfigurationClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -98,7 +98,7 @@
     </property>
   </object>
   <object>
-    <name>AzureAD.AzureADClientConfiguration</name>
+    <name>EntraID.Code.EntraOIDCClientConfiguration</name>
     <number>0</number>
     <className>XWiki.ConfigurableClass</className>
     <guid>9ccc7db3-e0dd-4588-bd7b-b5db3f3961ec</guid>
@@ -335,7 +335,7 @@
       <displayInCategory/>
     </property>
     <property>
-      <displayInSection>AzureAD</displayInSection>
+      <displayInSection>Entra ID</displayInSection>
     </property>
     <property>
       <heading/>
@@ -357,7 +357,7 @@
     </property>
   </object>
   <object>
-    <name>AzureAD.AzureADClientConfiguration</name>
+    <name>EntraID.Code.EntraOIDCClientConfiguration</name>
     <number>0</number>
     <className>XWiki.OIDC.ClientConfigurationClass</className>
     <guid>b6f47ed3-1251-4b17-8c74-5149da7ced37</guid>

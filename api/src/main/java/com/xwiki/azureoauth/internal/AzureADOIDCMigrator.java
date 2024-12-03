@@ -28,10 +28,9 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSaveException;
-import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.Query;
@@ -52,7 +51,9 @@ import com.xwiki.azureoauth.internal.oldConfiguration.OldOAuthAzureConfiguration
 import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration.OIDC_USER_CLASS;
 
 /**
- * Handles the initialization of Azure AD with OIDC integration.
+ * Helper class for migrating old Identity OAuth configurations to the new Entra ID and OIDC configurations. Also
+ * handles refactoring the issuer value in the OIDC User class to be compatible to the one used by the OIDC
+ * application.
  *
  * @version $Id$
  * @since 2.0
@@ -94,6 +95,9 @@ public class AzureADOIDCMigrator
     @Named("current")
     private DocumentReferenceResolver<String> documentReferenceResolver;
 
+    @Inject
+    private Logger logger;
+
     /**
      * Refactor OIDC issuer for Azure users and if the new version of the API module of Integration Azure consists with
      * the first version of OIDC integration, transfer the old configurations to the new OIDC client configuration
@@ -103,11 +107,16 @@ public class AzureADOIDCMigrator
      */
     public void initializeConfiguration() throws ConfigurationSaveException
     {
-        InstalledExtension apiModule = installedRepository.getInstalledExtension(
-            new ExtensionId("com.xwiki.integration-azure-oauth:integration-azure-oauth-api", "2.0"));
-        if (apiModule != null) {
-            entraIDConfigurationProvider.get().setOIDCConfiguration(generateNewConfiguration());
-            entraIDConfigurationProvider.get().setEntraIDConfiguration(getTenantIdConfiguration());
+        EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
+        Map<String, Object> configurationMap = generateNewConfiguration();
+        if (entraIDConfiguration.getTenantID().isEmpty()) {
+            entraIDConfiguration.setEntraIDConfiguration(getTenantIdConfiguration());
+            configurationMap.putAll(getEndpoints(oauthConfigurationProvider.get().getTenantID()));
+            logger.info("Successfully set Entra ID configuration.");
+        }
+        if (!configurationMap.isEmpty()) {
+            entraIDConfiguration.setOIDCConfiguration(configurationMap);
+            logger.info("Successfully set OIDC configuration.");
         }
     }
 
@@ -153,12 +162,18 @@ public class AzureADOIDCMigrator
 
     private Map<String, Object> generateNewConfiguration()
     {
+        Map<String, Object> newConfig = new HashMap<>();
+        EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
         AzureOldConfiguration oauthConfiguration = oauthConfigurationProvider.get();
-        Map<String, Object> newConfig = new HashMap<>(getEndpoints(oauthConfiguration.getTenantID()));
-        newConfig.put("clientId", oauthConfiguration.getClientID());
-        newConfig.put("clientSecret", oauthConfiguration.getSecret());
-        newConfig.put("skipped", !oauthConfiguration.isActive());
-        newConfig.put("scope", oauthConfiguration.getScope());
+        if (entraIDConfiguration.getScope().isEmpty()) {
+            newConfig.put("scope", oauthConfiguration.getScope());
+        }
+        if (entraIDConfiguration.getClientID().isEmpty()) {
+            newConfig.put("clientId", oauthConfiguration.getClientID());
+        }
+        if (entraIDConfiguration.getSecret().isEmpty()) {
+            newConfig.put("clientSecret", oauthConfiguration.getSecret());
+        }
         return newConfig;
     }
 

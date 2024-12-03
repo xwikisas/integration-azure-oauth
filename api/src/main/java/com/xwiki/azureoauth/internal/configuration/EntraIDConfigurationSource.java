@@ -19,6 +19,9 @@
  */
 package com.xwiki.azureoauth.internal.configuration;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -28,7 +31,7 @@ import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.stability.Unstable;
 
 /**
- * Configuration source for the Azure AD configuration class.
+ * Configuration source for the Entra ID configuration class.
  *
  * @version $Id$
  * @since 2.0
@@ -44,16 +47,16 @@ public class EntraIDConfigurationSource extends AbstractWikisConfigurationSource
      */
     public static final String HINT = "entraid.configuration";
 
-    private static final String SPACE = "AzureAD";
+    private static final List<String> SPACE = Arrays.asList("EntraID", "Code");
 
     /**
-     * Configuration document.
+     * Entra ID OIDC configuration document.
      */
     public static final LocalDocumentReference CONFIG_DOC =
-        new LocalDocumentReference(SPACE, "AzureADClientConfiguration");
+        new LocalDocumentReference(SPACE, "EntraOIDCClientConfiguration");
 
     private static final LocalDocumentReference CONFIG_CLASS =
-        new LocalDocumentReference(SPACE, "AzureADConfigurationClass");
+        new LocalDocumentReference(SPACE, "EntraIDConfigurationClass");
 
     @Override
     protected LocalDocumentReference getClassReference()

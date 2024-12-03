@@ -20,25 +20,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="AzureAD.AzureADConfigurationClass" locale="">
-  <web>AzureAD</web>
-  <name>AzureADConfigurationClass</name>
+<xwikidoc version="1.5" reference="EntraID.Code.EntraIDConfigurationClass" locale="">
+  <web>EntraID.Code</web>
+  <name>EntraIDConfigurationClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>AzureAD.AzureADConfig</parent>
+  <parent>WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>AzureADConfigurationClass</title>
+  <title>EntraIDConfigurationClass</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <class>
-    <name>AzureAD.AzureADConfigurationClass</name>
+    <name>EntraID.Code.EntraIDConfigurationClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>

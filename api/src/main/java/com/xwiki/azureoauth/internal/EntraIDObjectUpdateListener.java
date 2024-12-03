@@ -51,24 +51,25 @@ import static com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSo
 
 /**
  * Checks the current installation version and transfers the old configuration from Identity OAuth to the new
- * configuration class from OIDC. Listens to the modification made on the Azure AD configuration to update the OIDC
+ * configuration class from OIDC. Listens to the modification made on the Entra ID configuration to update the OIDC
  * client configuration.
  *
  * @version $Id$
  * @since 2.0
  */
 @Component
-@Named(AzureADObjectUpdateListener.HINT)
+@Named(EntraIDObjectUpdateListener.HINT)
 @Singleton
 @Unstable
-public class AzureADObjectUpdateListener extends AbstractEventListener implements Initializable
+public class EntraIDObjectUpdateListener extends AbstractEventListener implements Initializable
 {
     /**
      * The hint for the component.
      */
-    public static final String HINT = "AzureADObjectUpdateListener";
+    public static final String HINT = "EntraIDObjectUpdateListener";
 
-    private static final EntityReference CLASS_MATCHER = BaseObjectReference.any("AzureAD.AzureADConfigurationClass");
+    private static final EntityReference CLASS_MATCHER = BaseObjectReference.any("EntraID.Code"
+        + ".EntraIDConfigurationClass");
 
     @Inject
     private WikiDescriptorManager wikiManager;
@@ -86,7 +87,7 @@ public class AzureADObjectUpdateListener extends AbstractEventListener implement
     /**
      * Default constructor.
      */
-    public AzureADObjectUpdateListener()
+    public EntraIDObjectUpdateListener()
     {
         super(HINT, new XObjectUpdatedEvent(CLASS_MATCHER));
     }
@@ -96,7 +97,7 @@ public class AzureADObjectUpdateListener extends AbstractEventListener implement
     {
         if (event instanceof XObjectUpdatedEvent) {
             XWikiDocument document = (XWikiDocument) source;
-            if (document != null && isAzureConfigObject(document)) {
+            if (document != null && isEntraIDConfigObject(document)) {
                 try {
                     EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
                     String oldTenantID = entraIDConfiguration.getOIDCTenantID();
@@ -124,7 +125,7 @@ public class AzureADObjectUpdateListener extends AbstractEventListener implement
         } catch (XWikiException | QueryException e) {
             String rootCause = ExceptionUtils.getRootCauseMessage(e);
             logger.error(
-                "There was an error while trying to refactor the OIDC class for Azure users. Root cause is: [{}]",
+                "There was an error while trying to refactor the OIDC class for old AzureAD users. Root cause is: [{}]",
                 rootCause);
             throw new InitializationException(rootCause, e);
         } catch (ConfigurationSaveException e) {
@@ -139,7 +140,7 @@ public class AzureADObjectUpdateListener extends AbstractEventListener implement
         }
     }
 
-    private boolean isAzureConfigObject(XWikiDocument doc)
+    private boolean isEntraIDConfigObject(XWikiDocument doc)
     {
         DocumentReference configReference = new DocumentReference(CONFIG_DOC, this.getCurrentWikiReference());
         return Objects.equals(doc.getDocumentReference(), configReference);

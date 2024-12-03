@@ -30,8 +30,10 @@ import org.xwiki.configuration.internal.AbstractWikisConfigurationSource;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.stability.Unstable;
 
+import static com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSource.CONFIG_DOC;
+
 /**
- * Azure configuration source corresponding to the OIDC configuration class.
+ * Entra ID configuration source corresponding to the OIDC configuration class.
  *
  * @version $Id$
  * @since 2.0
@@ -47,12 +49,7 @@ public class OIDCClientConfigurationSource extends AbstractWikisConfigurationSou
      */
     public static final String HINT = "entra.oidc.client.configuration";
 
-    private static final String CONFIGURATION_SPACE = "AzureAD";
-
     private static final List<String> CLASS_SPACE = Arrays.asList("XWiki", "OIDC");
-
-    private static final LocalDocumentReference CONFIG_DOC =
-        new LocalDocumentReference(CONFIGURATION_SPACE, "AzureADClientConfiguration");
 
     private static final LocalDocumentReference CONFIG_CLASS =
         new LocalDocumentReference(CLASS_SPACE, "ClientConfigurationClass");

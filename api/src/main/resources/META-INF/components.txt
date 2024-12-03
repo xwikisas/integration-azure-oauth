@@ -1,7 +1,7 @@
 com.xwiki.azureoauth.AzureADIdentityOAuthProvider
 com.xwiki.azureoauth.AzureADOAuthClient
 com.xwiki.azureoauth.internal.AzureADOIDCMigrator
-com.xwiki.azureoauth.internal.AzureADObjectUpdateListener
+com.xwiki.azureoauth.internal.EntraIDObjectUpdateListener
 com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration
 com.xwiki.azureoauth.internal.configuration.OIDCClientConfigurationSource
 com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSource
