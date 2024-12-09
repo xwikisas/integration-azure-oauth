@@ -50,7 +50,7 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.PropertyInterface;
 import com.xwiki.azureoauth.configuration.AzureOldConfiguration;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
-import com.xwiki.azureoauth.internal.oldConfiguration.OldOAuthAzureConfiguration;
+import com.xwiki.azureoauth.internal.oldConfiguration.OldAzureOAuthConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -71,11 +71,11 @@ class AzureADOIDCMigratorTest
     private AzureADOIDCMigrator azureADOIDCMigrator;
 
     @MockComponent
-    @Named(OldOAuthAzureConfiguration.HINT)
+    @Named(OldAzureOAuthConfiguration.HINT)
     private Provider<AzureOldConfiguration> oauthConfigurationProvider;
 
     @MockComponent
-    @Named(OldOAuthAzureConfiguration.HINT)
+    @Named(OldAzureOAuthConfiguration.HINT)
     private AzureOldConfiguration oauthConfiguration;
 
     @MockComponent
@@ -163,7 +163,7 @@ class AzureADOIDCMigratorTest
         when(entraIDConfiguration.getSecret()).thenReturn("secret");
         when(entraIDConfiguration.getTenantID()).thenReturn("tenant_id");
 
-        azureADOIDCMigrator.initializeConfiguration();
+        azureADOIDCMigrator.initializeOIDCConfiguration();
         verify(entraIDConfiguration, Mockito.times(0)).setOIDCConfiguration(anyMap());
     }
 
@@ -175,7 +175,7 @@ class AzureADOIDCMigratorTest
         when(entraIDConfiguration.getSecret()).thenReturn("");
         when(entraIDConfiguration.getTenantID()).thenReturn("");
 
-        azureADOIDCMigrator.initializeConfiguration();
+        azureADOIDCMigrator.initializeOIDCConfiguration();
         Map<String, Object> configMap = new HashMap<>(endpoints);
         configMap.put("clientId", "client_id");
         configMap.put("clientSecret", "secret");

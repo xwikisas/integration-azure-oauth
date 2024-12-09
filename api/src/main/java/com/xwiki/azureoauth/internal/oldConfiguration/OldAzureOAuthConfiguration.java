@@ -19,56 +19,68 @@
  */
 package com.xwiki.azureoauth.internal.oldConfiguration;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.configuration.internal.AbstractWikisConfigurationSource;
-import org.xwiki.model.reference.LocalDocumentReference;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.stability.Unstable;
 
+import com.xwiki.azureoauth.configuration.AzureOldConfiguration;
+
 /**
- * Configuration source for Identity OAuth configuration class.
+ * Old AzureAD configuration properties from Identity OAuth integration.
  *
  * @version $Id$
  * @since 2.0
  */
 @Component
-@Named(OldOAuthAzureConfigurationSource.HINT)
 @Singleton
+@Named(OldAzureOAuthConfiguration.HINT)
 @Unstable
-public class OldOAuthAzureConfigurationSource extends AbstractWikisConfigurationSource
+public class OldAzureOAuthConfiguration implements AzureOldConfiguration
 {
     /**
-     * The hint for this component.
+     * Component hint.
      */
-    public static final String HINT = "oauth.azure.old.configuration";
+    public static final String HINT = "AZURE_OAUTH_OLD_CONFIGURATION";
 
-    private static final String CONFIGURATION_SPACE = "AzureAD";
+    @Inject
+    @Named(OldAzureConfigurationSource.HINT)
+    private ConfigurationSource azureConfiguration;
 
-    private static final String CLASS_SPACE = "IdentityOAuth";
-
-    private static final LocalDocumentReference CONFIG_DOC =
-        new LocalDocumentReference(CONFIGURATION_SPACE, "AzureADConfig");
-
-    private static final LocalDocumentReference CONFIG_CLASS =
-        new LocalDocumentReference(CLASS_SPACE, "IdentityOAuthConfigClass");
+    @Inject
+    @Named(OldIdentityOAuthConfigurationSource.HINT)
+    private ConfigurationSource oauthConfiguration;
 
     @Override
-    protected LocalDocumentReference getClassReference()
+    public String getTenantID()
     {
-        return CONFIG_CLASS;
+        return azureConfiguration.getProperty("tenantid", "");
     }
 
     @Override
-    protected LocalDocumentReference getLocalDocumentReference()
+    public String getClientID()
     {
-        return CONFIG_DOC;
+        return oauthConfiguration.getProperty("clientid", "");
     }
 
     @Override
-    protected String getCacheId()
+    public String getSecret()
     {
-        return HINT;
+        return oauthConfiguration.getProperty("secret", "");
+    }
+
+    @Override
+    public String getScope()
+    {
+        return oauthConfiguration.getProperty("scope", "openid,User.Read");
+    }
+
+    @Override
+    public boolean isActive()
+    {
+        return oauthConfiguration.getProperty("active", true);
     }
 }

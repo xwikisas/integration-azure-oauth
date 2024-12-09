@@ -46,14 +46,13 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xwiki.azureoauth.configuration.AzureOldConfiguration;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
-import com.xwiki.azureoauth.internal.oldConfiguration.OldOAuthAzureConfiguration;
+import com.xwiki.azureoauth.internal.oldConfiguration.OldAzureOAuthConfiguration;
 
 import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration.OIDC_USER_CLASS;
 
 /**
- * Helper class for migrating old Identity OAuth configurations to the new Entra ID and OIDC configurations. Also
- * handles refactoring the issuer value in the OIDC User class to be compatible to the one used by the OIDC
- * application.
+ * Migrate old Identity OAuth configurations to the new Entra ID and OIDC configurations. Refactor the issuer value in
+ * the OIDC User class to be compatible to the one used by the OIDC application.
  *
  * @version $Id$
  * @since 2.0
@@ -72,8 +71,8 @@ public class AzureADOIDCMigrator
     private static final String BASE_ENDPOINT = "https://login.microsoftonline.com/%s/oauth2/v2.0/%s";
 
     @Inject
-    @Named(OldOAuthAzureConfiguration.HINT)
-    private Provider<AzureOldConfiguration> oauthConfigurationProvider;
+    @Named(OldAzureOAuthConfiguration.HINT)
+    private Provider<AzureOldConfiguration> identityOAuthConfigurationProvider;
 
     @Inject
     @Named("default")
@@ -99,19 +98,18 @@ public class AzureADOIDCMigrator
     private Logger logger;
 
     /**
-     * Refactor OIDC issuer for Azure users and if the new version of the API module of Integration Azure consists with
-     * the first version of OIDC integration, transfer the old configurations to the new OIDC client configuration
-     * class.
+     * Check if the current EntraID/OIDC configuration is empty and populate it with the old configuration from Azure
+     * AD.
      *
      * @throws ConfigurationSaveException if any error occurs while saving the new configuration.
      */
-    public void initializeConfiguration() throws ConfigurationSaveException
+    public void initializeOIDCConfiguration() throws ConfigurationSaveException
     {
         EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
         Map<String, Object> configurationMap = generateNewConfiguration();
         if (entraIDConfiguration.getTenantID().isEmpty()) {
             entraIDConfiguration.setEntraIDConfiguration(getTenantIdConfiguration());
-            configurationMap.putAll(getEndpoints(oauthConfigurationProvider.get().getTenantID()));
+            configurationMap.putAll(getEndpoints(identityOAuthConfigurationProvider.get().getTenantID()));
             logger.info("Successfully set Entra ID configuration.");
         }
         if (!configurationMap.isEmpty()) {
@@ -164,7 +162,7 @@ public class AzureADOIDCMigrator
     {
         Map<String, Object> newConfig = new HashMap<>();
         EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
-        AzureOldConfiguration oauthConfiguration = oauthConfigurationProvider.get();
+        AzureOldConfiguration oauthConfiguration = identityOAuthConfigurationProvider.get();
         if (entraIDConfiguration.getScope().isEmpty()) {
             newConfig.put("scope", oauthConfiguration.getScope());
         }
@@ -179,6 +177,6 @@ public class AzureADOIDCMigrator
 
     private Map<String, Object> getTenantIdConfiguration()
     {
-        return Map.of("tenantId", oauthConfigurationProvider.get().getTenantID());
+        return Map.of("tenantId", identityOAuthConfigurationProvider.get().getTenantID());
     }
 }

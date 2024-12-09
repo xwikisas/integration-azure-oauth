@@ -32,56 +32,56 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for {@link OldOAuthAzureConfiguration}
+ * Unit test for {@link OldAzureOAuthConfiguration}
  *
  * @version $Id$
  */
 @ComponentTest
-class OldOAuthAzureConfigurationTest
+class OldAzureOAuthConfigurationTest
 {
     @InjectMockComponents
-    private OldOAuthAzureConfiguration oldOAuthAzureConfiguration;
+    private OldAzureOAuthConfiguration oldAzureOAuthConfiguration;
 
     @MockComponent
     @Named(OldAzureConfigurationSource.HINT)
     private ConfigurationSource azureConfiguration;
 
     @MockComponent
-    @Named(OldOAuthAzureConfigurationSource.HINT)
+    @Named(OldIdentityOAuthConfigurationSource.HINT)
     private ConfigurationSource oauthConfiguration;
 
     @Test
     void getClientIDTest()
     {
         when(oauthConfiguration.getProperty("clientid", "")).thenReturn("client_id");
-        assertEquals("client_id", oldOAuthAzureConfiguration.getClientID());
+        assertEquals("client_id", oldAzureOAuthConfiguration.getClientID());
     }
 
     @Test
     void getSecretTest()
     {
         when(oauthConfiguration.getProperty("secret", "")).thenReturn("client_secret");
-        assertEquals("client_secret", oldOAuthAzureConfiguration.getSecret());
+        assertEquals("client_secret", oldAzureOAuthConfiguration.getSecret());
     }
 
     @Test
     void getScopeTest()
     {
         when(oauthConfiguration.getProperty("scope", "openid,User.Read")).thenReturn("app_scope");
-        assertEquals("app_scope", oldOAuthAzureConfiguration.getScope());
+        assertEquals("app_scope", oldAzureOAuthConfiguration.getScope());
     }
 
     @Test
     void isActiveTest()
     {
         when(oauthConfiguration.getProperty("active", true)).thenReturn(false);
-        assertFalse(oldOAuthAzureConfiguration.isActive());
+        assertFalse(oldAzureOAuthConfiguration.isActive());
     }
 
     @Test
     void getTenantIDTest()
     {
         when(azureConfiguration.getProperty("tenantid", "")).thenReturn("tenant_id");
-        assertEquals("tenant_id", oldOAuthAzureConfiguration.getTenantID());
+        assertEquals("tenant_id", oldAzureOAuthConfiguration.getTenantID());
     }
 }

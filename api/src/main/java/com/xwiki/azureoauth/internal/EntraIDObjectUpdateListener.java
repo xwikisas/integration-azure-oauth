@@ -121,7 +121,7 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
         try {
             AzureADOIDCMigrator azureOIDCMigrator = azureOIDCMigratorProvider.get();
             azureOIDCMigrator.refactorOIDCIssuer();
-            azureOIDCMigrator.initializeConfiguration();
+            azureOIDCMigrator.initializeOIDCConfiguration();
         } catch (XWikiException | QueryException e) {
             String rootCause = ExceptionUtils.getRootCauseMessage(e);
             logger.error(

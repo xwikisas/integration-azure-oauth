@@ -685,7 +685,7 @@
       <clientSecret/>
     </property>
     <property>
-      <configurationName>AzureAD</configurationName>
+      <configurationName>Entra ID</configurationName>
     </property>
     <property>
       <enableUser>1</enableUser>
