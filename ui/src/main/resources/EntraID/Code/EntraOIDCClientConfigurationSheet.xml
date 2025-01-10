@@ -20,33 +20,35 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="AzureAD.AzureADClientConfigurationSheet" locale="">
-  <web>AzureAD</web>
-  <name>AzureADClientConfigurationSheet</name>
+<xwikidoc version="1.5" reference="EntraID.Code.EntraOIDCClientConfigurationSheet" locale="">
+  <web>EntraID.Code</web>
+  <name>EntraOIDCClientConfigurationSheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>AzureAD.WebHome</parent>
+  <parent>WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>AzureADClientConfigurationSheet</title>
+  <title>EntraOIDCClientConfigurationSheet</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity output="false"}}
-$xwiki.jsx.use('AzureAD.AzureADClientConfigurationSheet')
-$xwiki.ssx.use('AzureAD.AzureADClientConfigurationSheet')
+$xwiki.jsx.use('EntraID.Code.EntraOIDCClientConfigurationSheet')
+$xwiki.ssx.use('EntraID.Code.EntraOIDCClientConfigurationSheet')
 #includeMacros("XWiki.AdminFieldsDisplaySheet")
 #set ($params = {
-  'XWiki.OIDC.ClientConfigurationClass': ['skipped', 'userInfoSkip', 'enableUser', 'scope', 'groupsClaim', 'groupsMapping', 'allowedGroups', 'forbiddenGroups', 'userNameFormatter', 'userMapping', 'clientSecret', 'clientId', 'xwikiLoginGroups'],
-  'AzureAD.AzureADConfigurationClass': ['tenantID', 'enableXWikiLoginGlobal', 'xwikiLoginGroups']
+  'XWiki.OIDC.ClientConfigurationClass': ['skipped', 'userInfoSkip', 'enableUser', 'scope', 'groupsClaim',
+    'groupsMapping', 'allowedGroups', 'forbiddenGroups', 'userNameFormatter', 'userMapping', 'clientSecret',
+    'clientId', 'xwikiLoginGroups'],
+  'EntraID.Code.EntraIDConfigurationClass': ['tenantId', 'enableXWikiLoginGlobal', 'xwikiLoginGroups']
 })
 
 #set ($fieldSetClass = "entraid")
-#set ($configDoc = $xwiki.getDocument('AzureAD.AzureADClientConfiguration'))
+#set ($configDoc = $xwiki.getDocument('EntraID.Code.EntraOIDCClientConfiguration'))
 #set ($configClassName = 'XWiki.OIDC.ClientConfigurationClass')
 
 {{/velocity}}
@@ -81,8 +83,10 @@ $xwiki.ssx.use('AzureAD.AzureADClientConfigurationSheet')
     &lt;/fieldset&gt;
     &lt;div class="hidden"&gt;
       &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-      &lt;input type="hidden" name="xcontinue" value="$xwiki.getURL($currentDoc, 'admin', "editor=${escapetool.url(${editor})}&amp;amp;section=${escapetool.url(${section})}&amp;amp;space=${escapetool.url(${currentSpace})}")" /&gt;
-      &lt;input type="hidden" name="xredirect" value="$xwiki.getURL($currentDoc, 'admin', "editor=${escapetool.url(${editor})}&amp;amp;section=${escapetool.url(${section})}&amp;amp;space=${escapetool.url(${currentSpace})}")" /&gt;
+      &lt;input type="hidden" name="xcontinue" value="$xwiki.getURL($currentDoc, 'admin',
+        "editor=${escapetool.url(${editor})}&amp;amp;section=${escapetool.url(${section})}&amp;amp;space=${escapetool.url(${currentSpace})}")" /&gt;
+      &lt;input type="hidden" name="xredirect" value="$xwiki.getURL($currentDoc, 'admin',
+        "editor=${escapetool.url(${editor})}&amp;amp;section=${escapetool.url(${section})}&amp;amp;space=${escapetool.url(${currentSpace})}")" /&gt;
       &lt;input type="hidden" name="classname" value="$escapetool.xml($configClassName)" /&gt;
     &lt;/div&gt;
     &lt;div class="bottombuttons"&gt;
@@ -97,7 +101,7 @@ $xwiki.ssx.use('AzureAD.AzureADClientConfigurationSheet')
 {{/velocity}}
 </content>
   <object>
-    <name>AzureAD.AzureADClientConfigurationSheet</name>
+    <name>EntraID.Code.EntraOIDCClientConfigurationSheet</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>22b359f0-b98b-411b-a90e-9d15a4cbbd9f</guid>
@@ -184,8 +188,8 @@ $xwiki.ssx.use('AzureAD.AzureADClientConfigurationSheet')
       <cache>long</cache>
     </property>
     <property>
-      <code>define('azure-properties', {
-  prefix: 'azure.properties.data.',
+      <code>define('entra-properties', {
+  prefix: 'entra.properties.data.',
   keys: [
     'newEntry',
     'tip.key.groupMap',
@@ -197,7 +201,7 @@ $xwiki.ssx.use('AzureAD.AzureADClientConfigurationSheet')
   ]
 });
 
-require(['jquery',  'xwiki-l10n!azure-properties'],function($, l10n) {
+require(['jquery',  'xwiki-l10n!entra-properties'],function($, l10n) {
   $(document).ready(function() {
     const defaultOptions = {
       separator: ",",
@@ -286,8 +290,10 @@ require(['jquery',  'xwiki-l10n!azure-properties'],function($, l10n) {
 
     function createMapPropertyEntry(key, value, input, options) {
       const $entry = $("&lt;div&gt;").addClass("property-entry");
-      const $keyInput = $("&lt;input&gt;").attr("type", "text").addClass("key").attr("placeholder", l10n.get($(input).data('keyTip'))).val(key || "");
-      const $valueInput = $("&lt;input&gt;").attr("type", "text").addClass("value").attr("placeholder", l10n.get($(input).data('valueTip'))).val(value || "");
+      const $keyInput = $("&lt;input&gt;").attr("type", "text").addClass("key").attr("placeholder",
+        l10n.get($(input).data('keyTip'))).val(key || "");
+      const $valueInput = $("&lt;input&gt;").attr("type", "text").addClass("value").attr("placeholder",
+        l10n.get($(input).data('valueTip'))).val(value || "");
 
       const $removeBtn = $("&lt;span&gt;").addClass("remove").click(function() {
         $(this).closest(".property-entry").remove();
@@ -306,7 +312,8 @@ require(['jquery',  'xwiki-l10n!azure-properties'],function($, l10n) {
 
     function createListPropertyEntry(value, input, options) {
       const $entry = $("&lt;div&gt;").addClass("property-entry");
-      const $valueInput = $("&lt;input&gt;").attr("type", "text").addClass("value").attr("placeholder", l10n.get($(input).data('valueTip'))).val(value || "");
+      const $valueInput = $("&lt;input&gt;").attr("type", "text").addClass("value").attr("placeholder",
+        l10n.get($(input).data('valueTip'))).val(value || "");
       const $removeBtn = $("&lt;span&gt;").addClass("remove").click(function() {
         $(this).closest(".property-entry").remove();
         updateListValue(input, options);
@@ -354,7 +361,7 @@ require(['jquery',  'xwiki-l10n!azure-properties'],function($, l10n) {
     </property>
   </object>
   <object>
-    <name>AzureAD.AzureADClientConfigurationSheet</name>
+    <name>EntraID.Code.EntraOIDCClientConfigurationSheet</name>
     <number>1</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>dc307977-eb98-4e28-bef5-4915f49b9f98</guid>
@@ -477,7 +484,7 @@ require(['jquery',  'xwiki-l10n!azure-properties'],function($, l10n) {
     </property>
   </object>
   <object>
-    <name>AzureAD.AzureADClientConfigurationSheet</name>
+    <name>EntraID.Code.EntraOIDCClientConfigurationSheet</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>2fb22502-81fe-411c-830b-b6b9ff5f998c</guid>
@@ -583,9 +590,6 @@ require(['jquery',  'xwiki-l10n!azure-properties'],function($, l10n) {
     </property>
     <property>
       <code>label .xHint {
-  /* We can't keep colibri's default uppercase for hints, there are in the LDAP configuration UI some hints which case is meaningful.
-  For example "cn" should not be displayed/interpreted as "CN".
-  */
   text-transform: none !important;
 }
 

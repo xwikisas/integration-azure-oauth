@@ -75,9 +75,9 @@ XWiki.OIDC.ClientConfigurationClass_userNameFormatter=User name format
 XWiki.OIDC.ClientConfigurationClass_userMapping=User mapping
 XWiki.OIDC.ClientConfigurationClass_clientSecret=Secret
 XWiki.OIDC.ClientConfigurationClass_clientId=Client ID
-AzureAD.AzureADConfigurationClass_tenantID=Tenant ID
-AzureAD.AzureADConfigurationClass_enableXWikiLoginGlobal=Allow XWiki Login
-AzureAD.AzureADConfigurationClass_xwikiLoginGroups=XWiki login user groups 
+EntraID.Code.EntraIDConfigurationClass_tenantId=Tenant ID
+EntraID.Code.EntraIDConfigurationClass_enableXWikiLoginGlobal=Allow XWiki Login
+EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups=XWiki login user groups
 
 XWiki.OIDC.ClientConfigurationClass_enableUser.hint=Define if user accounts should be enabled (marked as active) on first login.
 XWiki.OIDC.ClientConfigurationClass_skipped.hint=Disable the Azure AD authentication.
@@ -91,20 +91,20 @@ XWiki.OIDC.ClientConfigurationClass_userNameFormatter.hint=The pattern to use to
 XWiki.OIDC.ClientConfigurationClass_userMapping.hint=Associate non-standard properties coming from the OpenID Connect provider with the XWiki user.
 XWiki.OIDC.ClientConfigurationClass_clientSecret.hint=The client secret registered on the provider.
 XWiki.OIDC.ClientConfigurationClass_clientId.hint=The client identifier used by the authentication.
-AzureAD.AzureADConfigurationClass_tenantID.hint=Azure AD instance ID.
-AzureAD.AzureADConfigurationClass_enableXWikiLoginGlobal.hint=Allow a guest user to login using the standard XWiki authenticator.
-AzureAD.AzureADConfigurationClass_xwikiLoginGroups.hint=User groups allowed to log in with XWiki.
+EntraID.Code.EntraIDConfigurationClass_tenantId.hint=Azure AD instance ID.
+EntraID.Code.EntraIDConfigurationClass_enableXWikiLoginGlobal.hint=Allow a guest user to login using the standard XWiki authenticator.
+EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups.hint=User groups allowed to log in with XWiki.
 
-azure.properties.data.newEntry=New entry
-azure.properties.data.tip.key.groupMap=XWiki group...
-azure.properties.data.tip.value.groupMap=Group object ID...
-azure.properties.data.tip.key.userMap=XWiki user property...
-azure.properties.data.tip.value.userMap=Provider property...
-azure.properties.data.tip.value.forbiddenGroup=Forbidden groups...
-azure.properties.data.tip.value.allowedGroup=Allowed groups...
+entra.properties.data.newEntry=New entry
+entra.properties.data.tip.key.groupMap=XWiki group...
+entra.properties.data.tip.value.groupMap=Group object ID...
+entra.properties.data.tip.key.userMap=XWiki user property...
+entra.properties.data.tip.value.userMap=Provider property...
+entra.properties.data.tip.value.forbiddenGroup=Forbidden groups...
+entra.properties.data.tip.value.allowedGroup=Allowed groups...
 
-azure.drawer.header.login=Log in with XWiki
-azure.drawer.header.switch=Switch to XWiki user</content>
+entra.drawer.header.login=Log in with XWiki
+entra.drawer.header.switch=Switch to XWiki user</content>
   <object>
     <name>AzureADAdmin.Translations</name>
     <number>0</number>
