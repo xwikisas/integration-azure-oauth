@@ -31,8 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.xwiki.configuration.ConfigurationSaveException;
-import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -52,7 +50,7 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.PropertyInterface;
 import com.xwiki.azureoauth.configuration.AzureOldConfiguration;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
-import com.xwiki.azureoauth.internal.oldConfiguration.OldOAuthAzureConfiguration;
+import com.xwiki.azureoauth.internal.oldConfiguration.OldAzureOAuthConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -73,11 +71,11 @@ class AzureADOIDCMigratorTest
     private AzureADOIDCMigrator azureADOIDCMigrator;
 
     @MockComponent
-    @Named(OldOAuthAzureConfiguration.HINT)
+    @Named(OldAzureOAuthConfiguration.HINT)
     private Provider<AzureOldConfiguration> oauthConfigurationProvider;
 
     @MockComponent
-    @Named(OldOAuthAzureConfiguration.HINT)
+    @Named(OldAzureOAuthConfiguration.HINT)
     private AzureOldConfiguration oauthConfiguration;
 
     @MockComponent
@@ -109,9 +107,6 @@ class AzureADOIDCMigratorTest
     private Query query;
 
     @Mock
-    private InstalledExtension installedExtension;
-
-    @Mock
     private XWiki wiki;
 
     @Mock
@@ -141,9 +136,6 @@ class AzureADOIDCMigratorTest
     @Mock
     private PropertyInterface propertyInterface2;
 
-    private ExtensionId extensionId =
-        new ExtensionId("com.xwiki.integration-azure-oauth:integration-azure-oauth-api", "2.0");
-
     private Map<String, Object> endpoints =
         Map.of("authorizationEndpoint", String.format(BASE_ENDPOINT, "tenant_id", "authorize"), "tokenEndpoint",
             String.format(BASE_ENDPOINT, "tenant_id", "token"), "logoutEndpoint",
@@ -166,20 +158,27 @@ class AzureADOIDCMigratorTest
     @Test
     void initializeConfigurationWrongVersionTest() throws ConfigurationSaveException
     {
-        when(installedRepository.getInstalledExtension(extensionId)).thenReturn(null);
-        azureADOIDCMigrator.initializeConfiguration();
+        when(entraIDConfiguration.getClientID()).thenReturn("client_id");
+        when(entraIDConfiguration.getScope()).thenReturn("scope1,scope2");
+        when(entraIDConfiguration.getSecret()).thenReturn("secret");
+        when(entraIDConfiguration.getTenantID()).thenReturn("tenant_id");
+
+        azureADOIDCMigrator.initializeOIDCConfiguration();
         verify(entraIDConfiguration, Mockito.times(0)).setOIDCConfiguration(anyMap());
     }
 
     @Test
     void initializeConfigurationTest() throws ConfigurationSaveException
     {
-        when(installedRepository.getInstalledExtension(extensionId)).thenReturn(installedExtension);
-        azureADOIDCMigrator.initializeConfiguration();
+        when(entraIDConfiguration.getClientID()).thenReturn("");
+        when(entraIDConfiguration.getScope()).thenReturn("");
+        when(entraIDConfiguration.getSecret()).thenReturn("");
+        when(entraIDConfiguration.getTenantID()).thenReturn("");
+
+        azureADOIDCMigrator.initializeOIDCConfiguration();
         Map<String, Object> configMap = new HashMap<>(endpoints);
         configMap.put("clientId", "client_id");
         configMap.put("clientSecret", "secret");
-        configMap.put("skipped", false);
         configMap.put("scope", "scope1,scope2");
         verify(entraIDConfiguration, Mockito.times(1)).setOIDCConfiguration(configMap);
     }

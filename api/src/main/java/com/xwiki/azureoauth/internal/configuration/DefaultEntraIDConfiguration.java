@@ -97,6 +97,9 @@ public class DefaultEntraIDConfiguration implements EntraIDConfiguration
     @Override
     public String getOIDCTenantID()
     {
+        // In the OIDC Client Configuration for Entra ID, the tenant ID is embedded in the 'authorizationEndpoint' URL.
+        // To extract it, a regex is needed to select only the specific part of the URL that corresponds to the
+        // tenant ID.
         String endpoint = this.oidcConfiguration.getProperty("authorizationEndpoint", "");
         if (!endpoint.isEmpty()) {
             Pattern pattern = Pattern.compile("com/([^/]+)/oauth2/v2");

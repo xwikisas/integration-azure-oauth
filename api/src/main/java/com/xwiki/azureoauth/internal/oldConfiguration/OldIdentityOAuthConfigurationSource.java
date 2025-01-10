@@ -17,10 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.internal.configuration;
-
-import java.util.Arrays;
-import java.util.List;
+package com.xwiki.azureoauth.internal.oldConfiguration;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -30,29 +27,32 @@ import org.xwiki.configuration.internal.AbstractWikisConfigurationSource;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.stability.Unstable;
 
-import static com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSource.CONFIG_DOC;
-
 /**
- * Entra ID configuration source corresponding to the OIDC configuration class.
+ * Configuration source for Identity OAuth configuration class.
  *
  * @version $Id$
  * @since 2.0
  */
 @Component
-@Named(OIDCClientConfigurationSource.HINT)
+@Named(OldIdentityOAuthConfigurationSource.HINT)
 @Singleton
 @Unstable
-public class OIDCClientConfigurationSource extends AbstractWikisConfigurationSource
+public class OldIdentityOAuthConfigurationSource extends AbstractWikisConfigurationSource
 {
     /**
      * The hint for this component.
      */
-    public static final String HINT = "entra.oidc.client.configuration";
+    public static final String HINT = "oauth.azure.old.configuration";
 
-    private static final List<String> CLASS_SPACE = Arrays.asList("XWiki", "OIDC");
+    private static final String CONFIGURATION_SPACE = "AzureAD";
+
+    private static final String CLASS_SPACE = "IdentityOAuth";
+
+    private static final LocalDocumentReference CONFIG_DOC =
+        new LocalDocumentReference(CONFIGURATION_SPACE, "AzureADConfig");
 
     private static final LocalDocumentReference CONFIG_CLASS =
-        new LocalDocumentReference(CLASS_SPACE, "ClientConfigurationClass");
+        new LocalDocumentReference(CLASS_SPACE, "IdentityOAuthConfigClass");
 
     @Override
     protected LocalDocumentReference getClassReference()

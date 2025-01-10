@@ -21,6 +21,7 @@ package com.xwiki.azureoauth.configuration;
 
 import java.util.Map;
 
+import org.xwiki.component.annotation.Role;
 import org.xwiki.configuration.ConfigurationSaveException;
 import org.xwiki.stability.Unstable;
 
@@ -30,6 +31,7 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 2.0
  */
+@Role
 @Unstable
 public interface EntraIDConfiguration extends AzureOldConfiguration
 {
