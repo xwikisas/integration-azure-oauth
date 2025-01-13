@@ -38,7 +38,7 @@
       AzureAD.WebHome
     </xwiki.extension.licensing.publicDocuments>
     <xwiki.extension.licensing.excludedDocuments>
-      AzureAD.AzureADClientConfiguration
+      EntraID.Code.EntraOIDCClientConfiguration
     </xwiki.extension.licensing.excludedDocuments>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)</xwiki.extension.name>
@@ -59,6 +59,12 @@
       <groupId>com.xwiki.licensing</groupId>
       <artifactId>application-licensing-licensor-api</artifactId>
       <version>${licensing.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>authservice-backport-ui</artifactId>
+      <version>1.1.1</version>
+      <type>xar</type>
     </dependency>
   </dependencies>
 </project>
