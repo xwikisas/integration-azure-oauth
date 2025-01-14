@@ -300,11 +300,14 @@ For the application to work, it needs to be activated and configured.
 {{html clean='false'}}
 #if ($isGuest &amp;&amp; $services.entraid.isXWikiLoginEnabled())
   #set($loginURL = $xwiki.getURL('XWiki.XWikiLogin', 'login', "xredirect=$request.getRequestURL()&amp;loginLink=1&amp;oidc.skipped=true"))
-  &lt;a href="${loginURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml($services.localization.render('azure.drawer.header.login'))&lt;/a&gt;
+  &lt;a id="tmLogin-bypass" href="${loginURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml(
+        $services.localization.render('azure.drawer.header.login'))&lt;/a&gt;
 #elseif ($services.entraid.shouldDisplayXWikiLogin())
-  #set($logoutRedirect = "${request.getContextPath()}/rest/entraid/login/xwiki/$escapetool.xml($services.model.serialize($doc.getDocumentReference(), 'default'))")
+  #set($logoutRedirect = "${request.getContextPath()}/rest/entraid/login/xwiki/$escapetool.xml(
+        $services.model.serialize($doc.getDocumentReference(), 'default'))")
   #set($logoutURL = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=${logoutRedirect}"))
-  &lt;a href="${logoutURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml($services.localization.render('azure.drawer.header.switch'))&lt;/a&gt;
+  &lt;a id="tmLogout-bypass" href="${logoutURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml(
+        $services.localization.render('azure.drawer.header.switch'))&lt;/a&gt;
 #end
 {{/html}}
 {{/velocity}}</content>
