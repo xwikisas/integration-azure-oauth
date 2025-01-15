@@ -461,7 +461,7 @@ require(['jquery',  'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'],functi
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe('xwiki:dom:loaded', function(){
+      <code>document.observe('xwiki:dom:loaded', function() {
   var groupMapping = $('XWiki.OIDC.ClientConfigurationClass_0_groupsMapping');
   var userMapping = $('XWiki.OIDC.ClientConfigurationClass_0_userMapping');
   var allowedGroups = $('XWiki.OIDC.ClientConfigurationClass_0_allowedGroups');
