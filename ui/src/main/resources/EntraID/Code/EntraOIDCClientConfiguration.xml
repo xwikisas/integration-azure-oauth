@@ -323,7 +323,7 @@
       <categoryIcon/>
     </property>
     <property>
-      <codeToExecute/>
+      <codeToExecute>{{include reference="EntraID.Code.EntraOIDCClientConfigurationSheet" /}}</codeToExecute>
     </property>
     <property>
       <configurationClass/>

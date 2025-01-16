@@ -28,8 +28,8 @@
   <artifactId>integration-azure-oauth-api</artifactId>
   <packaging>jar</packaging>
 
-  <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro) API</name>
-  <description>This extension allows users to authenticate to the wiki using Azure Active Directory</description>
+  <name>Microsoft Entra ID OpenID Connect (OIDC) API</name>
+  <description>This extension allows users to authenticate to the wiki using Entra ID</description>
 
   <dependencies>
     <dependency>
