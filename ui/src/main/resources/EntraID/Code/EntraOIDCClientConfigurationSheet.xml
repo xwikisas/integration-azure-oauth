@@ -37,8 +37,8 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity output="false"}}
-$xwiki.jsx.use('EntraID.Code.EntraOIDCClientConfigurationSheet')
-$xwiki.ssx.use('EntraID.Code.EntraOIDCClientConfigurationSheet')
+#set ($discard = $xwiki.jsx.use('EntraID.Code.EntraOIDCClientConfigurationSheet'))
+#set ($discard = $xwiki.ssx.use('EntraID.Code.EntraOIDCClientConfigurationSheet'))
 #includeMacros("XWiki.AdminFieldsDisplaySheet")
 #set ($params = {
   'XWiki.OIDC.ClientConfigurationClass': ['skipped', 'userInfoSkip', 'enableUser', 'scope', 'groupsClaim',
@@ -46,11 +46,9 @@ $xwiki.ssx.use('EntraID.Code.EntraOIDCClientConfigurationSheet')
     'clientId', 'xwikiLoginGroups'],
   'EntraID.Code.EntraIDConfigurationClass': ['tenantId', 'enableXWikiLoginGlobal', 'xwikiLoginGroups']
 })
-
 #set ($fieldSetClass = "entraid")
 #set ($configDoc = $xwiki.getDocument('EntraID.Code.EntraOIDCClientConfiguration'))
 #set ($configClassName = 'XWiki.OIDC.ClientConfigurationClass')
-
 {{/velocity}}
 
 {{velocity}}
@@ -84,17 +82,17 @@ $xwiki.ssx.use('EntraID.Code.EntraOIDCClientConfigurationSheet')
     &lt;div class="hidden"&gt;
       &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
       &lt;input type="hidden" name="xcontinue" value="$xwiki.getURL($currentDoc, 'admin',
-        "editor=${escapetool.url(${editor})}&amp;amp;section=${escapetool.url(${section})}&amp;amp;space=${escapetool.url(${currentSpace})}")" /&gt;
+        "editor=${escapetool.url(${editor})}&amp;section=${escapetool.url(${section})}&amp;space=${escapetool.url(${currentSpace})}")" /&gt;
       &lt;input type="hidden" name="xredirect" value="$xwiki.getURL($currentDoc, 'admin',
-        "editor=${escapetool.url(${editor})}&amp;amp;section=${escapetool.url(${section})}&amp;amp;space=${escapetool.url(${currentSpace})}")" /&gt;
+        "editor=${escapetool.url(${editor})}&amp;section=${escapetool.url(${section})}&amp;space=${escapetool.url(${currentSpace})}")" /&gt;
       &lt;input type="hidden" name="classname" value="$escapetool.xml($configClassName)" /&gt;
     &lt;/div&gt;
     &lt;div class="bottombuttons"&gt;
       &lt;p class="admin-buttons"&gt;
-        &lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="formactionsac" 
+        &lt;span class="buttonwrapper"&gt;&lt;input class="button" type="submit" name="formactionsac"
           value="$escapetool.xml($services.localization.render('admin.save'))" /&gt;&lt;/span&gt;
       &lt;/p&gt;
-    &lt;/div&gt; ## bottombuttons
+    &lt;/div&gt;
   &lt;/form&gt;
   {{/html}}
 #end
@@ -200,14 +198,30 @@ $xwiki.ssx.use('EntraID.Code.EntraOIDCClientConfigurationSheet')
     'tip.value.allowedGroup',
   ]
 });
+require.config({
+  paths: {
+    'xwiki-suggestGroups': "$xwiki.getSkinFile('uicomponents/suggest/suggestUsersAndGroups.js', true)" +
+      "?v=$escapetool.url($xwiki.version)"
+  }
+});
 
-require(['jquery',  'xwiki-l10n!entra-properties'],function($, l10n) {
+
+require(['jquery',  'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'],function($, l10n) {
   $(document).ready(function() {
     const defaultOptions = {
-      separator: ",",
-      mapsToString: " \u2192 ",
+      separator: ',',
+      mapsToString: ' \u2192 ',
       escapeChar: '\\',
       newEntryMessage: l10n.get('newEntry')
+    };
+
+    function maybeMakeFieldSelectable(input) {
+      if ($(input).data('selectize')) {
+        let key = '.' + $(input).data('keyClass');
+        $(key).suggestGroups({
+          userScope: 'LOCAL_ONLY'
+        });
+      }
     };
 
     // Function to initialize and display existing properties
@@ -243,60 +257,58 @@ require(['jquery',  'xwiki-l10n!entra-properties'],function($, l10n) {
         } else if (dataType === 'list') {
           $(input).before(createListPropertyEntry(prop[1], input, options));
         }
+        maybeMakeFieldSelectable(input);
       });
-    }
+    };
 
     function addProp(properties, prop) {
-      const key = prop.substring(0, prop.indexOf("="));
-      const value = prop.substring(prop.indexOf("=") + 1) || "";
+      const key = prop.substring(0, prop.indexOf('='));
+      const value = prop.substring(prop.indexOf('=') + 1) || '';
       properties.push([key, value]);
-    }
+    };
 
     function escapeValue(value, options) {
-      return value.split("").map(function(c) {
+      return value.split('').map(function(c) {
         return c === options.separator || c === options.escapeChar ? options.escapeChar + c : c;
-      }).join("");
-    }
+      }).join('');
+    };
 
     function updateListValue(input, options) {
-      console.log(input)
-      const propertiesStr = $(input).siblings(".property-entry").map(function() {
-        const value = $(this).find(".value").val();
+      const propertiesStr = $(input).siblings('.property-entry').map(function() {
+        const value = $(this).find('.value').val();
         return value ? escapeValue(value, options) : null;
       }).get().join(options.separator);
-      console.log($(input))
-      if ($(input).prop("tagName").toLowerCase() === "textarea") {
+      if ($(input).prop('tagName').toLowerCase() === 'textarea') {
         $(input).text(propertiesStr);
       } else {
         $(input).val(propertiesStr);
       }
-    }
+    };
 
     function updateMapValue(input, options) {
-      console.log(input)
-      const propertiesStr = $(input).siblings(".property-entry").map(function() {
-        const key = $(this).find(".key").val();
-        const value = $(this).find(".value").val();
+      const propertiesStr = $(input).siblings('.property-entry').map(function() {
+        const key = $(this).find('.key').val();
+        const value = $(this).find('.value').val();
         return key &amp;&amp; value ? `${escapeValue(key, options)}=${escapeValue(value, options)}` : null;
       }).get().join(options.separator);
-      console.log($(input))
-      if ($(input).prop("tagName").toLowerCase() === "textarea") {
+      if ($(input).prop('tagName').toLowerCase() === 'textarea') {
         $(input).text(propertiesStr);
       } else {
         $(input).val(propertiesStr);
       }
-    }
+    };
 
 
     function createMapPropertyEntry(key, value, input, options) {
-      const $entry = $("&lt;div&gt;").addClass("property-entry");
-      const $keyInput = $("&lt;input&gt;").attr("type", "text").addClass("key").attr("placeholder",
-        l10n.get($(input).data('keyTip'))).val(key || "");
-      const $valueInput = $("&lt;input&gt;").attr("type", "text").addClass("value").attr("placeholder",
-        l10n.get($(input).data('valueTip'))).val(value || "");
+      const $entry = $('&lt;div&gt;').addClass('property-entry');
+      const $keyInput = $('&lt;input&gt;').attr('type', 'text').addClass('key').addClass($(input).data('keyClass')).attr('placeholder',
+        l10n.get($(input).data('keyTip'))).val(key || '');
 
-      const $removeBtn = $("&lt;span&gt;").addClass("remove").click(function() {
-        $(this).closest(".property-entry").remove();
+      const $valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
+        l10n.get($(input).data('valueTip'))).val(value || '');
+
+      const $removeBtn = $('&lt;span&gt;').addClass('remove').click(function() {
+        $(this).closest('.property-entry').remove();
         updateMapValue(input, options);
       });
 
@@ -308,43 +320,44 @@ require(['jquery',  'xwiki-l10n!entra-properties'],function($, l10n) {
       });
 
       return $entry.append($keyInput, options.mapsToString, $valueInput, $removeBtn);
-    }
+    };
 
     function createListPropertyEntry(value, input, options) {
-      const $entry = $("&lt;div&gt;").addClass("property-entry");
-      const $valueInput = $("&lt;input&gt;").attr("type", "text").addClass("value").attr("placeholder",
-        l10n.get($(input).data('valueTip'))).val(value || "");
-      const $removeBtn = $("&lt;span&gt;").addClass("remove").click(function() {
-        $(this).closest(".property-entry").remove();
+      const $entry = $('&lt;div&gt;').addClass('property-entry');
+      const $valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
+        l10n.get($(input).data('valueTip'))).val(value || '');
+      const $removeBtn = $('&lt;span&gt;').addClass('remove').click(function() {
+        $(this).closest('.property-entry').remove();
         updateListValue(input, options);
       });
       $valueInput.change(function() {
         updateListValue(input, options);
       });
       return $entry.append($valueInput, $removeBtn);
-    }
+    };
 
-    $(document).on("click", ".new-entry", function() {
-      const input = this.previous("textarea");
-      const options = $(this).data("options");
+    $(document).on('click', '.new-entry', function() {
+      const input = this.previous('textarea');
+      const options = $(this).data('options');
       const dataType = $(input).data('type');
       if(dataType === 'map') {
-        $(this).before(createMapPropertyEntry("", "", input, options));
+        $(this).before(createMapPropertyEntry('', '', input, options));
       } else if (dataType === 'list') {
-        $(this).before(createListPropertyEntry("", input, options));
+        $(this).before(createListPropertyEntry('', input, options));
       }
+        maybeMakeFieldSelectable(input);
     });
 
-    $(".properties-editor").each(function() {
+    $('.properties-editor').each(function() {
       const options = {
-        separator: $(this).data("separator") || defaultOptions.separator,
+        separator: $(this).data('separator') || defaultOptions.separator,
         mapsToString: defaultOptions.mapsToString,
-        escapeChar: $(this).data("escape-character") || defaultOptions.escapeChar,
+        escapeChar: $(this).data('escape-character') || defaultOptions.escapeChar,
         newEntryMessage: defaultOptions.newEntryMessage
       };
       // Hide original input, display New Entry button, and initialize properties
       $(this).hide();
-      $(this).after($("&lt;span&gt;").addClass("new-entry").text(options.newEntryMessage).data("options", options));
+      $(this).after($('&lt;span&gt;').addClass('new-entry').text(options.newEntryMessage).data('options', options));
       initializeAndDisplayExistingProperties(this, options);
     });
   });
@@ -448,29 +461,35 @@ require(['jquery',  'xwiki-l10n!entra-properties'],function($, l10n) {
       <cache>long</cache>
     </property>
     <property>
-      <code>document.observe("xwiki:dom:loaded", function(){
+      <code>$(document).on('xwiki:dom:loaded', function() {
   var groupMapping = $('XWiki.OIDC.ClientConfigurationClass_0_groupsMapping');
   var userMapping = $('XWiki.OIDC.ClientConfigurationClass_0_userMapping');
   var allowedGroups = $('XWiki.OIDC.ClientConfigurationClass_0_allowedGroups');
   var forbiddenGroups = $('XWiki.OIDC.ClientConfigurationClass_0_forbiddenGroups');
 
-  groupMapping.setAttribute("data-key-tip", "tip.key.groupMap");
-  groupMapping.setAttribute("data-value-tip", "tip.value.groupMap");
-  groupMapping.setAttribute("data-type", "map");
-  groupMapping.addClassName("properties-editor");
+  groupMapping.setAttribute('data-key-tip', 'tip.key.groupMap');
+  groupMapping.setAttribute('data-value-tip', 'tip.value.groupMap');
+  groupMapping.setAttribute('data-type', 'map');
+  groupMapping.setAttribute('data-key-class', 'group-map-key');
+  groupMapping.setAttribute('data-selectize', true);
+  groupMapping.addClassName('properties-editor');
 
-  userMapping.setAttribute("data-key-tip", "tip.key.userMap");
-  userMapping.setAttribute("data-value-tip", "tip.value.userMap");
-  userMapping.setAttribute("data-type", "map");
-  userMapping.addClassName("properties-editor");
+  userMapping.setAttribute('data-key-tip', 'tip.key.userMap');
+  userMapping.setAttribute('data-value-tip', 'tip.value.userMap');
+  userMapping.setAttribute('data-type', 'map');
+  userMapping.setAttribute('data-key-class', 'user-map-key');
+  userMapping.setAttribute('data-selectize', false);
+  userMapping.addClassName('properties-editor');
 
-  allowedGroups.setAttribute("data-value-tip", "tip.value.allowedGroup");
-  allowedGroups.setAttribute("data-type", "list");
-  allowedGroups.addClassName("properties-editor");
+  allowedGroups.setAttribute('data-value-tip', 'tip.value.allowedGroup');
+  allowedGroups.setAttribute('data-type', 'list');
+  allowedGroups.setAttribute('data-selectize', false);
+  allowedGroups.addClassName('properties-editor');
 
-  forbiddenGroups.setAttribute("data-value-tip", "tip.value.forbiddenGroup");
-  forbiddenGroups.setAttribute("data-type", "list");
-  forbiddenGroups.addClassName("properties-editor");
+  forbiddenGroups.setAttribute('data-value-tip', 'tip.value.forbiddenGroup');
+  forbiddenGroups.setAttribute('data-type', 'list');
+  forbiddenGroups.setAttribute('data-selectize', false);
+  forbiddenGroups.addClassName('properties-editor');
 });</code>
     </property>
     <property>
@@ -616,6 +635,10 @@ span.new-entry {
   cursor:pointer;
 }
 
+div.selectize-control, div.selectize-input, input.key, input.value {
+  width: -webkit-fill-available;
+  height: 4rem;
+}
 </code>
     </property>
     <property>
