@@ -28,20 +28,20 @@
   <artifactId>integration-azure-oauth-ui</artifactId>
   <packaging>xar</packaging>
 
-  <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro)</name>
-  <description>This extension allows users to authenticate to the wiki using Azure Active Directory. The app can be purchased individually or part of the XWiki Pro package. Try it free.</description>
+  <name>Microsoft Entra ID OpenID Connect (OIDC)</name>
+  <description>This extension allows users to authenticate to the wiki using Entra ID. The app can be purchased individually or part of the XWiki Pro package. Try it free.</description>
 
   <properties>
     <!-- The list of documents that have an implicit unlimited free license. The users can view these documents without
       buying a license or getting a trial license, but they cannot edit or delete them. -->
     <xwiki.extension.licensing.publicDocuments>
-      AzureAD.WebHome
+      EntraID.WebHome
     </xwiki.extension.licensing.publicDocuments>
     <xwiki.extension.licensing.excludedDocuments>
       EntraID.Code.EntraOIDCClientConfiguration
     </xwiki.extension.licensing.excludedDocuments>
     <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)</xwiki.extension.name>
+    <xwiki.extension.name>Microsoft Entra ID OpenID Connect (OIDC)</xwiki.extension.name>
     <!-- Don't run CLIRR or Revapi here since there's no Java code. -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
@@ -51,9 +51,9 @@
   <dependencies>
     <dependency>
       <groupId>com.xwiki.integration-azure-oauth</groupId>
-      <artifactId>integration-azure-oauth-admin-ui</artifactId>
+      <artifactId>integration-azure-oauth-api</artifactId>
       <version>${project.version}</version>
-      <type>xar</type>
+      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>com.xwiki.licensing</groupId>
@@ -64,6 +64,7 @@
       <groupId>org.xwiki.contrib</groupId>
       <artifactId>authservice-backport-ui</artifactId>
       <version>1.1.1</version>
+      <optional>true</optional>
       <type>xar</type>
     </dependency>
   </dependencies>

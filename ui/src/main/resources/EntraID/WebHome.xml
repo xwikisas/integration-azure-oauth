@@ -20,8 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="AzureAD.WebHome" locale="">
-  <web>AzureAD</web>
+<xwikidoc version="1.5" reference="EntraID.WebHome" locale="">
+  <web>EntraID</web>
   <name>WebHome</name>
   <language/>
   <defaultLanguage/>
@@ -31,38 +31,23 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Microsoft Azure Active Directory Single Sign-On (SSO)</title>
+  <title>Microsoft Entra ID OpenID Connect (OIDC)</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#set ($reference = $services.model.createDocumentReference("xwiki", ["AzureAD"], "WebPreferences"))
+#set ($reference = $services.model.createDocumentReference("xwiki", ["EntraID"], "WebPreferences"))
 #if (!$services.licensing.licensor.hasLicensureForEntity($references))
-  {{missingLicenseMessage extensionName="azureAD.extension.name"/}}
+  {{missingLicenseMessage extensionName="entraID.extension.name"/}}
 #else
-This space contains the code for the Azure Active Directory Integration of XWiki.
+This space contains the code for the Entra ID OpenID Connect Integration of XWiki.
     This extensions currently allows users to login with XWiki by authorizing the transmission
-    of profile information from an Azure Active Directory node. It uses the OIDC protocol.
-
-For the application to work, it needs to be activated and configured.
-    The configuration requires an app to be registered and authorized within the Azure
-    configuration. This process yields a client-id, a secret, and a tenant-id
-    that are input in the Wiki's configuration.
-    The detailed installation instructions are at the [[extensions' page&gt;&gt;]].
+    of profile information from an Microsoft Entra ID node. It uses the OIDC protocol.
 #end
 {{/velocity}}</content>
-  <attachment>
-    <filename>AzureAD-logo.svg</filename>
-    <mimetype>image/svg+xml</mimetype>
-    <author>xwiki:XWiki.Admin</author>
-    <version>1.1</version>
-    <comment/>
-    <content>PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMyAyMyI+PHBhdGggZmlsbD0iI2YzZjNmMyIgZD0iTTAgMGgyM3YyM0gweiIvPjxwYXRoIGZpbGw9IiNmMzUzMjUiIGQ9Ik0xIDFoMTB2MTBIMXoiLz48cGF0aCBmaWxsPSIjODFiYzA2IiBkPSJNMTIgMWgxMHYxMEgxMnoiLz48cGF0aCBmaWxsPSIjMDVhNmYwIiBkPSJNMSAxMmgxMHYxMEgxeiIvPjxwYXRoIGZpbGw9IiNmZmJhMDgiIGQ9Ik0xMiAxMmgxMHYxMEgxMnoiLz48L3N2Zz4=</content>
-    <filesize>272</filesize>
-  </attachment>
   <object>
-    <name>AzureAD.WebHome</name>
+    <name>EntraID.WebHome</name>
     <number>0</number>
     <className>XWiki.JavaScriptExtension</className>
     <guid>439d079c-907d-44f7-8e6d-55ed3524a765</guid>
@@ -153,7 +138,7 @@ For the application to work, it needs to be activated and configured.
   $(document).on('click', '#tmLogin', function(event) {
     event.preventDefault();
     console.log('click login')
-    document.cookie = "oidcProvider=AzureAD; path=/";
+    document.cookie = "oidcProvider=Entra ID; path=/";
     window.location.href = event.currentTarget.href;
   });
 })
@@ -170,7 +155,7 @@ For the application to work, it needs to be activated and configured.
     </property>
   </object>
   <object>
-    <name>AzureAD.WebHome</name>
+    <name>EntraID.WebHome</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>8963ba00-2dfe-4084-9371-78307ea76911</guid>
@@ -296,18 +281,19 @@ For the application to work, it needs to be activated and configured.
     </property>
     <property>
       <content>{{velocity}}
-#set ($discard = $xwiki.jsx.use('AzureAD.WebHome'))
+#set ($discard = $xwiki.jsx.use('EntraID.WebHome'))
 {{html clean='false'}}
 #if ($isGuest &amp;&amp; $services.entraid.isXWikiLoginEnabled())
-  #set($loginURL = $xwiki.getURL('XWiki.XWikiLogin', 'login', "xredirect=$request.getRequestURL()&amp;loginLink=1&amp;oidc.skipped=true"))
+  #set($loginURL = $xwiki.getURL('XWiki.XWikiLogin', 'login',
+        "xredirect=$request.getRequestURL()&amp;loginLink=1&amp;oidc.skipped=true"))
   &lt;a id="tmLogin-bypass" href="${loginURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml(
-        $services.localization.render('azure.drawer.header.login'))&lt;/a&gt;
+        $services.localization.render('entra.drawer.header.login'))&lt;/a&gt;
 #elseif ($services.entraid.shouldDisplayXWikiLogin())
-  #set($logoutRedirect = "${request.getContextPath()}/rest/entraid/login/xwiki/$escapetool.xml(
+  #set($switchToXWikiUser = "${request.getContextPath()}/rest/entraid/login/xwiki/$escapetool.xml(
         $services.model.serialize($doc.getDocumentReference(), 'default'))")
-  #set($logoutURL = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=${logoutRedirect}"))
-  &lt;a id="tmLogout-bypass" href="${logoutURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml(
-        $services.localization.render('azure.drawer.header.switch'))&lt;/a&gt;
+  #set($logoutURL = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=${switchToXWikiUser}"))
+  &lt;a id="tmLogout-xwiki-switch" href="${logoutURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml(
+        $services.localization.render('entra.drawer.header.switch'))&lt;/a&gt;
 #end
 {{/html}}
 {{/velocity}}</content>
@@ -316,7 +302,7 @@ For the application to work, it needs to be activated and configured.
       <extensionPointId>org.xwiki.plaftorm.drawer.header</extensionPointId>
     </property>
     <property>
-      <name>com.xwiki.azure.drawer.header</name>
+      <name>com.xwiki.entra.drawer.header</name>
     </property>
     <property>
       <parameters/>
