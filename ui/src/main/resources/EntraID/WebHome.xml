@@ -289,9 +289,9 @@ This space contains the code for the Entra ID OpenID Connect Integration of XWik
   &lt;a id="tmLogin-bypass" href="${loginURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml(
         $services.localization.render('entra.drawer.header.login'))&lt;/a&gt;
 #elseif ($services.entraid.shouldDisplayXWikiLogin())
-  #set($logoutRedirect = "${request.getContextPath()}/rest/entraid/login/xwiki/$escapetool.xml(
+  #set($switchToXWikiUser = "${request.getContextPath()}/rest/entraid/login/xwiki/$escapetool.xml(
         $services.model.serialize($doc.getDocumentReference(), 'default'))")
-  #set($logoutURL = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=${logoutRedirect}"))
+  #set($logoutURL = $xwiki.getURL('XWiki.XWikiLogout', 'logout', "xredirect=${switchToXWikiUser}"))
   &lt;a id="tmLogout-xwiki-switch" href="${logoutURL}"&gt;$services.icon.renderHTML('log-in') $escapetool.xml(
         $services.localization.render('entra.drawer.header.switch'))&lt;/a&gt;
 #end
