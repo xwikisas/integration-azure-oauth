@@ -45,9 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 // add dependencies overwritten by backport
 @UITest(properties = {
     // Add the RightsManagerPlugin needed by the test
-    "xwikiCfgPlugins=com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin",
-    // Programming rights are required to disable/enable user profiles (cf. XWIKI-21238)
-    "xwikiPropertiesAdditionalProperties=test.prchecker.excludePattern=.*:XWiki\\.XWikiUserProfileSheet" })
+    "xwikiCfgPlugins=com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin" })
 class EntraIdIT
 {
     private static final String FIRST_USER_NAME = "JonSnow";
