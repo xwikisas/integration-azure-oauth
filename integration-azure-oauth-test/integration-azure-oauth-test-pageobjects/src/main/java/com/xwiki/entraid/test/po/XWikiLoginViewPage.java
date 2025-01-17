@@ -23,7 +23,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.xwiki.test.ui.po.ViewPage;
 
-
+/**
+ * Represents the XWiki login view page.
+ *
+ * @version $Id$
+ * @since 2.0
+ */
 public class XWikiLoginViewPage extends ViewPage
 {
     @FindBy(id = "loginForm")

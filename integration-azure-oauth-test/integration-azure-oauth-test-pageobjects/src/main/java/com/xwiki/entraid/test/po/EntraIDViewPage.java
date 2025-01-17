@@ -29,8 +29,8 @@ import org.xwiki.test.ui.po.ViewPage;
 /**
  * Represents actions that can be done on the UI added by EntraID OIDC provider.
  *
- * @since 2.0
  * @version $Id$
+ * @since 2.0
  */
 public class EntraIDViewPage extends ViewPage
 {

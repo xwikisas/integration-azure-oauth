@@ -25,6 +25,12 @@ import org.xwiki.test.ui.XWikiWebDriver;
 import org.xwiki.test.ui.po.Select;
 import org.xwiki.test.ui.po.ViewPage;
 
+/**
+ * Represents the Authentication Backport view page.
+ *
+ * @version $Id$
+ * @since 2.0
+ */
 public class AuthServiceViewPage extends ViewPage
 {
     public void switchToOIDCAuthenticationService()
