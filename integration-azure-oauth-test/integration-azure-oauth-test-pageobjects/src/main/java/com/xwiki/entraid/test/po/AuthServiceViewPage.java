@@ -19,37 +19,40 @@
  */
 package com.xwiki.entraid.test.po;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
+import org.xwiki.test.ui.XWikiWebDriver;
 import org.xwiki.test.ui.po.Select;
 import org.xwiki.test.ui.po.ViewPage;
 
 public class AuthServiceViewPage extends ViewPage
 {
-    @FindBy(id = "authServiceId")
-    private WebElement authServiceSelectElement;
-
-    @FindBy(name = "setauthservice")
-    private WebElement saveButton;
-
-    @FindBy(className = "codeToExecute")
-    private WebElement authService;
-
-    public void goToPage()
-    {
-        getUtil().gotoPage(
-            "http://localhost:8080/xwiki/bin/admin/XWiki/XWikiPreferences?editor=globaladmin&section=Authentication");
-    }
-
     public void switchToOIDCAuthenticationService()
     {
+        XWikiWebDriver driver = getUtil().getDriver();
+
+        WebElement authServiceSelectElement = driver.findElement(By.id("authServiceId"));
+        WebElement saveButton = getUtil().getDriver().findElement(By.className("btn-danger"));
+
         Select authServiceSelect = new Select(authServiceSelectElement);
         authServiceSelect.selectByValue("oidc");
         saveButton.click();
     }
 
-    public WebElement getAuthServiceUI()
+    public boolean isOIDCSelected()
     {
-        return authService;
+        WebElement authService = getUtil().getDriver().findElement(By.className("codeToExecute"));
+        return authService.getText().contains("OpenID Connect Authenticator");
+    }
+
+    public void navigateToAuthenticationAdmin()
+    {
+        toggleDrawer();
+        XWikiWebDriver driver = getUtil().getDriver();
+        WebElement adminHyperlink = driver.findElement(By.id("tmAdminWiki"));
+        adminHyperlink.click();
+        WebElement panelHeadingOther = driver.findElement(By.id("panel-heading-other"));
+        panelHeadingOther.click();
+        driver.findElement(By.cssSelector("a[data-id='Authentication']")).click();
     }
 }

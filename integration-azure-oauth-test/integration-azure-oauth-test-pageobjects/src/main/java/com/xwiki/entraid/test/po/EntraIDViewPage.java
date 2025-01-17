@@ -19,10 +19,19 @@
  */
 package com.xwiki.entraid.test.po;
 
+import java.util.List;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.xwiki.test.ui.po.ViewPage;
 
+/**
+ * Represents actions that can be done on the UI added by EntraID OIDC provider.
+ *
+ * @since 2.0
+ * @version $Id$
+ */
 public class EntraIDViewPage extends ViewPage
 {
     @FindBy(xpath = "//a[@id='tmLogin']")
@@ -31,11 +40,16 @@ public class EntraIDViewPage extends ViewPage
     @FindBy(xpath = "//a[@id='tmLogin-bypass']")
     private WebElement bypassLogin;
 
-    @FindBy(xpath = "//a[@id='tmLogout']")
-    private WebElement logoutLink;
+    @FindBy(id = "exceptionMessageContainer")
+    private WebElement microsoftContainer;
 
-    @FindBy(xpath = "//a[@id='tmLogout-bypass']")
-    private WebElement bypassLogout;
+    /**
+     * Go to XWiki Main WebHome.
+     */
+    public void goToHomePage()
+    {
+        getUtil().gotoPage("Main", "WebHome");
+    }
 
     public void clickLogin()
     {
@@ -47,5 +61,23 @@ public class EntraIDViewPage extends ViewPage
     {
         toggleDrawer();
         this.bypassLogin.click();
+    }
+
+    public boolean canBypassLogin()
+    {
+        toggleDrawer();
+        return this.contentContainsElement(By.id("tmLogin-bypass"));
+    }
+
+    public boolean isSwitchUserDisplayed()
+    {
+        toggleDrawer();
+        List<WebElement> webElements = getDriver().findElements(By.id("tmLogout-xwiki-switch"));
+        return !webElements.isEmpty();
+    }
+
+    public WebElement getMicrosoftContainer()
+    {
+        return microsoftContainer;
     }
 }

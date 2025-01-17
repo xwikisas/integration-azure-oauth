@@ -23,20 +23,37 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.xwiki.administration.test.po.EditGroupModal;
+import org.xwiki.administration.test.po.GroupsPage;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.LocalDocumentReference;
+import org.xwiki.rest.model.jaxb.Object;
 import org.xwiki.test.docker.junit5.UITest;
 import org.xwiki.test.ui.TestUtils;
 
 import com.xwiki.entraid.test.po.AuthServiceViewPage;
+import com.xwiki.entraid.test.po.EntraIDViewPage;
+import com.xwiki.entraid.test.po.XWikiLoginViewPage;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@UITest
+// add dependencies overwritten by backport
+@UITest(properties = {
+    // Add the RightsManagerPlugin needed by the test
+    "xwikiCfgPlugins=com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin",
+    // Programming rights are required to disable/enable user profiles (cf. XWIKI-21238)
+    "xwikiPropertiesAdditionalProperties=test.prchecker.excludePattern=.*:XWiki\\.XWikiUserProfileSheet" })
 class EntraIdIT
 {
     private static final String FIRST_USER_NAME = "JonSnow";
 
     private static final String SECOND_USER_NAME = "ElsaIce";
+
+    private static final String GROUP_NAME = "XWiki_devs";
 
     private static final DocumentReference ENTRAID_CONFIGURATION_REFERENCE =
         new DocumentReference("xwiki", Arrays.asList("EntraID", "Code"), "EntraOIDCClientConfiguration");
@@ -51,7 +68,7 @@ class EntraIdIT
     private static final String PASSWORD = "pass";
 
     @BeforeAll
-    static void setUp(TestUtils setup)
+    static void setUp(TestUtils setup) throws Exception
     {
         setup.createUser(FIRST_USER_NAME, PASSWORD, setup.getURLToNonExistentPage(), "first_name", "Jon", "last_name",
             "Snow");
@@ -59,24 +76,74 @@ class EntraIdIT
         setup.createUser(SECOND_USER_NAME, PASSWORD, setup.getURLToNonExistentPage(), "first_name", "Elsa", "last_name",
             "Ice");
 
+        setup.loginAsSuperAdmin();
+        GroupsPage groupsPage = GroupsPage.gotoPage();
+        groupsPage.addNewGroup(GROUP_NAME);
+        EditGroupModal devsGroupModal = groupsPage.clickEditGroup(GROUP_NAME);
+        devsGroupModal.addUsers(FIRST_USER_NAME, SECOND_USER_NAME);
+        groupsPage = GroupsPage.gotoPage();
+        assertEquals("2", groupsPage.getMemberCount(GROUP_NAME));
+
         // By default the minimal distribution used for the tests doesn't have any rights setup. Let's create an Admin
         // user part of the Admin Group and make sure that this Admin Group has admin rights in the wiki. We could also
         // have given that Admin user the admin right directly but the solution we chose is closer to the XS
         // distribution.
-        setup.loginAsSuperAdmin();
         setup.setGlobalRights("XWiki.XWikiAdminGroup", "", "admin", true);
         setup.createAdminUser();
         setup.loginAsAdmin();
+        setup.updateObject(ENTRAID_CONFIGURATION_REFERENCE, ENTRAID_CONFIGURATION_CLASSNAME, 0, "tenantId",
+            "test_tenantId");
+        Object userObject =
+            setup.rest().object(new LocalDocumentReference("XWiki", SECOND_USER_NAME), "XWiki.OIDC.UserClass");
+        userObject.withProperties(TestUtils.RestTestUtils.property("issuer", "some_issuer"));
+        setup.rest().add(userObject);
+        setup.forceGuestUser();
     }
 
     @Test
     void authenticate(TestUtils testUtils)
     {
+        EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
+        testUtils.loginAsAdmin();
+        entraIDViewPage.goToHomePage();
         AuthServiceViewPage authServiceViewPage = new AuthServiceViewPage();
-        authServiceViewPage.goToPage();
+        authServiceViewPage.navigateToAuthenticationAdmin();
         authServiceViewPage.switchToOIDCAuthenticationService();
-        assertTrue(authServiceViewPage.getAuthServiceUI().getText().contains(
-            "OpenID Connect Authenticator (org.xwiki.contrib.oidc.auth.internal.OIDCAuthService) Allow authenticating"
-                + " through an OpenID Connect provider"));
+        assertTrue(authServiceViewPage.isOIDCSelected());
+        testUtils.forceGuestUser();
+
+        entraIDViewPage.goToHomePage();
+        entraIDViewPage.clickLogin();
+        testUtils.getDriver().waitUntilElementIsVisible(By.id("exceptionMessageContainer"));
+        WebElement loginPageMessage = entraIDViewPage.getMicrosoftContainer();
+        assertTrue(loginPageMessage.getText().contains(
+            "Specified tenant identifier 'test_tenantid' is neither a valid DNS name, nor a valid external domain."));
+        entraIDViewPage.goToHomePage();
+        entraIDViewPage.clickLoginBypass();
+        XWikiLoginViewPage xwikiLoginViewPage = new XWikiLoginViewPage();
+        assertTrue(xwikiLoginViewPage.getXwikiLoginContainer().isDisplayed());
+
+        entraIDViewPage.goToHomePage();
+        testUtils.loginAsAdmin();
+        testUtils.updateObject(ENTRAID_CONFIGURATION_REFERENCE, ENTRAID_CONFIGURATION_CLASSNAME, 0,
+            "enableXWikiLoginGlobal", 0);
+        testUtils.forceGuestUser();
+        entraIDViewPage.goToHomePage();
+        assertFalse(entraIDViewPage.canBypassLogin());
+
+        testUtils.login(SECOND_USER_NAME, PASSWORD);
+        entraIDViewPage.goToHomePage();
+        assertEquals(SECOND_USER_NAME, testUtils.getLoggedInUserName());
+        assertFalse(entraIDViewPage.isSwitchUserDisplayed());
+
+        testUtils.loginAsAdmin();
+        testUtils.updateObject(ENTRAID_CONFIGURATION_REFERENCE, ENTRAID_CONFIGURATION_CLASSNAME, 0, "xwikiLoginGroups",
+            String.format("XWiki.%s", GROUP_NAME));
+        testUtils.login(SECOND_USER_NAME, PASSWORD);
+        entraIDViewPage.goToHomePage();
+        assertTrue(entraIDViewPage.isSwitchUserDisplayed());
+        testUtils.login(FIRST_USER_NAME, PASSWORD);
+        entraIDViewPage.goToHomePage();
+        assertFalse(entraIDViewPage.isSwitchUserDisplayed());
     }
 }
