@@ -343,7 +343,7 @@ require(['jquery', 'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'], functi
       } else if (dataType === 'list') {
         $(this).before(createListPropertyEntry('', input, options));
       }
-        maybeMakeFieldSelectable(input);
+      maybeMakeFieldSelectable(input);
     });
 
     $('.properties-editor').each(function() {
