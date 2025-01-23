@@ -30,8 +30,8 @@
   <version>1.9.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Microsoft Entra ID OpenID Connect (OIDC) parent POM</name>
-  <description>This extension allows users to authenticate to the wiki using Entra ID. The app can be purchased individually or part of the XWiki Pro package. Try it free.</description>
+  <name>Microsoft Entra ID SSO parent POM</name>
+  <description>This extension allows users to authenticate to the wiki using Entra ID, formerly known as Azure Active Directory. The app can be purchased individually or part of the XWiki Pro package. Try it free.</description>
 
   <properties>
     <licensing.version>1.25</licensing.version>
