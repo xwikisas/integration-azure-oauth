@@ -205,17 +205,8 @@ require.config({
   }
 });
 
-
-require(['jquery',  'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'],function($, l10n) {
-  $(document).ready(function() {
-    const defaultOptions = {
-      separator: ',',
-      mapsToString: ' \u2192 ',
-      escapeChar: '\\',
-      newEntryMessage: l10n.get('newEntry')
-    };
-
-    function maybeMakeFieldSelectable(input) {
+require(['jquery', 'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'], function($, l10n) {
+  function maybeMakeFieldSelectable(input) {
       if ($(input).data('selectize')) {
         let key = '.' + $(input).data('keyClass');
         $(key).suggestGroups({
@@ -224,116 +215,123 @@ require(['jquery',  'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'],functi
       }
     };
 
-    // Function to initialize and display existing properties
-    function initializeAndDisplayExistingProperties(input, options) {
-      const propStr = $(input).val();
-      const properties = [];
-      let escaped = false;
-      let currentProp = '';
+  // Function to initialize and display existing properties.
+  function initializeAndDisplayExistingProperties(input, options) {
+    const propStr = $(input).val();
+    const properties = [];
+    let escaped = false;
+    let currentProp = '';
 
-      for (let i = 0; i &lt; propStr.length; i++) {
-        const c = propStr[i];
-        if (escaped) {
-          currentProp += c;
-          escaped = false;
-        } else if (c === options.escapeChar) {
-          escaped = true;
-        } else if (c === options.separator) {
-          addProp(properties, currentProp);
-          currentProp = '';
-        } else {
-          currentProp += c;
-        }
-      }
-      if (currentProp.length &gt; 0) {
+    for (let i = 0; i &lt; propStr.length; i++) {
+      const c = propStr[i];
+      if (escaped) {
+        currentProp += c;
+        escaped = false;
+      } else if (c === options.escapeChar) {
+        escaped = true;
+      } else if (c === options.separator) {
         addProp(properties, currentProp);
-      }
-
-      // Render each property depending on data type
-      const dataType = $(input).data('type');
-      $.each(properties, function(_, prop) {
-        if(dataType === 'map') {
-          $(input).before(createMapPropertyEntry(prop[0], prop[1], input, options));
-        } else if (dataType === 'list') {
-          $(input).before(createListPropertyEntry(prop[1], input, options));
-        }
-        maybeMakeFieldSelectable(input);
-      });
-    };
-
-    function addProp(properties, prop) {
-      const key = prop.substring(0, prop.indexOf('='));
-      const value = prop.substring(prop.indexOf('=') + 1) || '';
-      properties.push([key, value]);
-    };
-
-    function escapeValue(value, options) {
-      return value.split('').map(function(c) {
-        return c === options.separator || c === options.escapeChar ? options.escapeChar + c : c;
-      }).join('');
-    };
-
-    function updateListValue(input, options) {
-      const propertiesStr = $(input).siblings('.property-entry').map(function() {
-        const value = $(this).find('.value').val();
-        return value ? escapeValue(value, options) : null;
-      }).get().join(options.separator);
-      if ($(input).prop('tagName').toLowerCase() === 'textarea') {
-        $(input).text(propertiesStr);
+        currentProp = '';
       } else {
-        $(input).val(propertiesStr);
+        currentProp += c;
       }
-    };
+    }
+    if (currentProp.length &gt; 0) {
+      addProp(properties, currentProp);
+    }
 
-    function updateMapValue(input, options) {
-      const propertiesStr = $(input).siblings('.property-entry').map(function() {
-        const key = $(this).find('.key').val();
-        const value = $(this).find('.value').val();
-        return key &amp;&amp; value ? `${escapeValue(key, options)}=${escapeValue(value, options)}` : null;
-      }).get().join(options.separator);
-      if ($(input).prop('tagName').toLowerCase() === 'textarea') {
-        $(input).text(propertiesStr);
-      } else {
-        $(input).val(propertiesStr);
+    // Render each property depending on data type
+    const dataType = $(input).data('type');
+    $.each(properties, function(_, prop) {
+      if(dataType === 'map') {
+        $(input).before(createMapPropertyEntry(prop[0], prop[1], input, options));
+      } else if (dataType === 'list') {
+        $(input).before(createListPropertyEntry(prop[1], input, options));
       }
-    };
+      maybeMakeFieldSelectable(input);
+    });
+  };
 
+  function addProp(properties, prop) {
+    const key = prop.substring(0, prop.indexOf('='));
+    const value = prop.substring(prop.indexOf('=') + 1) || '';
+    properties.push([key, value]);
+  };
 
-    function createMapPropertyEntry(key, value, input, options) {
-      const $entry = $('&lt;div&gt;').addClass('property-entry');
-      const $keyInput = $('&lt;input&gt;').attr('type', 'text').addClass('key').addClass($(input).data('keyClass')).attr('placeholder',
-        l10n.get($(input).data('keyTip'))).val(key || '');
+  function escapeValue(value, options) {
+    return value.split('').map(function(c) {
+      return c === options.separator || c === options.escapeChar ? options.escapeChar + c : c;
+    }).join('');
+  };
 
-      const $valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
-        l10n.get($(input).data('valueTip'))).val(value || '');
+  function updateListValue(input, options) {
+    const propertiesStr = $(input).siblings('.property-entry').map(function() {
+      const value = $(this).find('.value').val();
+      return value ? escapeValue(value, options) : null;
+    }).get().join(options.separator);
+    if ($(input).prop('tagName').toLowerCase() === 'textarea') {
+      $(input).text(propertiesStr);
+    } else {
+      $(input).val(propertiesStr);
+    }
+  };
 
-      const $removeBtn = $('&lt;span&gt;').addClass('remove').click(function() {
-        $(this).closest('.property-entry').remove();
-        updateMapValue(input, options);
-      });
+  function updateMapValue(input, options) {
+    const propertiesStr = $(input).siblings('.property-entry').map(function() {
+      const key = $(this).find('.key').val();
+      const value = $(this).find('.value').val();
+      return key &amp;&amp; value ? `${escapeValue(key, options)}=${escapeValue(value, options)}` : null;
+    }).get().join(options.separator);
+    if ($(input).prop('tagName').toLowerCase() === 'textarea') {
+      $(input).text(propertiesStr);
+    } else {
+      $(input).val(propertiesStr);
+    }
+  };
 
-      $keyInput.change(function() {
-        updateMapValue(input, options);
-      });
-      $valueInput.change(function() {
-        updateMapValue(input, options);
-      });
+  function createMapPropertyEntry(key, value, input, options) {
+    const $entry = $('&lt;div&gt;').addClass('property-entry');
+    const $keyInput = $('&lt;input&gt;').attr('type', 'text').addClass('key').addClass($(input).data('keyClass')).attr('placeholder',
+      l10n.get($(input).data('keyTip'))).val(key || '');
 
-      return $entry.append($keyInput, options.mapsToString, $valueInput, $removeBtn);
-    };
+    const $valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
+      l10n.get($(input).data('valueTip'))).val(value || '');
 
-    function createListPropertyEntry(value, input, options) {
-      const $entry = $('&lt;div&gt;').addClass('property-entry');
-      const $valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
-        l10n.get($(input).data('valueTip'))).val(value || '');
-      const $removeBtn = $('&lt;span&gt;').addClass('remove').click(function() {
-        $(this).closest('.property-entry').remove();
-        updateListValue(input, options);
-      });
-      $valueInput.change(function() {
-        updateListValue(input, options);
-      });
-      return $entry.append($valueInput, $removeBtn);
+    const $removeBtn = $('&lt;span&gt;').addClass('remove').click(function() {
+      $(this).closest('.property-entry').remove();
+      updateMapValue(input, options);
+    });
+
+    $keyInput.change(function() {
+      updateMapValue(input, options);
+    });
+    $valueInput.change(function() {
+      updateMapValue(input, options);
+    });
+
+    return $entry.append($keyInput, options.mapsToString, $valueInput, $removeBtn);
+  };
+
+  function createListPropertyEntry(value, input, options) {
+    const $entry = $('&lt;div&gt;').addClass('property-entry');
+    const $valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
+      l10n.get($(input).data('valueTip'))).val(value || '');
+    const $removeBtn = $('&lt;span&gt;').addClass('remove').click(function() {
+      $(this).closest('.property-entry').remove();
+      updateListValue(input, options);
+    });
+    $valueInput.change(function() {
+      updateListValue(input, options);
+    });
+    return $entry.append($valueInput, $removeBtn);
+  };
+
+  $(function() {
+    const defaultOptions = {
+      separator: ',',
+      mapsToString: ' \u2192 ',
+      escapeChar: '\\',
+      newEntryMessage: l10n.get('newEntry')
     };
 
     $(document).on('click', '.new-entry', function() {
@@ -355,7 +353,7 @@ require(['jquery',  'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'],functi
         escapeChar: $(this).data('escape-character') || defaultOptions.escapeChar,
         newEntryMessage: defaultOptions.newEntryMessage
       };
-      // Hide original input, display New Entry button, and initialize properties
+      // Hide original input, display New Entry button, and initialize properties.
       $(this).hide();
       $(this).after($('&lt;span&gt;').addClass('new-entry').text(options.newEntryMessage).data('options', options));
       initializeAndDisplayExistingProperties(this, options);
