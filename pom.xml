@@ -30,12 +30,11 @@
   <version>1.9.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro) parent POM</name>
-  <description>This extension allows users to authenticate to the wiki using Azure Active Directory. The app can be purchased individually or part of the XWiki Pro package. Try it free.</description>
+  <name>Microsoft Entra ID SSO parent POM</name>
+  <description>This extension allows users to authenticate to the wiki using Entra ID, formerly known as Azure Active Directory. The app can be purchased individually or part of the XWiki Pro package. Try it free.</description>
 
   <properties>
     <licensing.version>1.25</licensing.version>
-    <identity.oauth.version>1.9</identity.oauth.version>
     <xwiki.minversion>14.10</xwiki.minversion>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>
@@ -71,7 +70,6 @@
 
   <modules>
     <module>api</module>
-    <module>admin-ui</module>
     <module>ui</module>
   </modules>
 </project>

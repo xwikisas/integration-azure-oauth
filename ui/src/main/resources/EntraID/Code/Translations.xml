@@ -20,14 +20,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="AzureADAdmin.Translations" locale="">
-  <web>AzureADAdmin</web>
+<xwikidoc version="1.5" reference="EntraID.Code.Translations" locale="">
+  <web>EntraID.Code</web>
   <name>Translations</name>
   <language/>
   <defaultLanguage>en</defaultLanguage>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>AzureADAdmin.WebHome</parent>
+  <parent>WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
@@ -36,35 +36,11 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content>admin.azureAD=Azure AD
-# Login page
-azureADAdmin.loginWithAzureAD = Login with Azure Active Directory
-
-# Admin (extras compared to IdentityOAuth/Translations
-azureADAdmin.config.heading=AzureAD Integration Configuration
-azureADAdmin.AzureADConfigClass_config.explanation=XWiki can be integrated to login XWiki users with Azure Active Directory
-azureAD.extension.name=Microsoft Azure Active Directory Single Sign-On (SSO) (Pro)
-
-azureADAdmin.AzureADConfigClass_communicate=Communication with the Azure Active Directory services
-azureADAdmin.AzureADConfigClass_communicate.hint=To activate the Azure AD integration you need to {0} and to insert your client-Id, tenant-id and secret in the following settings.
-azureADAdmin.AzureADConfigClass_communicate.hint.linkLabel=register for OAuth access on the Microsoft Azure console
-azureADAdmin.AzureADConfigClass_communicate.hint2=For more information, please see {0}.
-azureADAdmin.AzureADConfigClass_communicate.hint2.linkLabel=the installation instructions
-
-azureADAdmin.AzureADConfigClass_tenantid=Tenant ID
-azureADAdmin.AzureADConfigClass_tenantid.hint=As provided in the Azure overview.
-
-
-azureADAdmin.AzureADConfigClass_nowWhat1=Once this is configured please log out and login by clicking "Login with Azure AD".
-azureADAdmin.AzureADConfigClass_nowWhat2=Should you have technical difficulties, please write to support@xwikisas.com .
-
-## a single change for avatar's setting
-azureADAdmin.AzureADConfigClass_scope_avatar.onlyOutlook = only works with Outlook-enabled-accounts, a {0} limitation
-azureADAdmin.AzureADConfigClass_scope_avatar.onlyOutlook.linkLabel=known
-
-## New configuration
+  <content>## New configuration
+entraID.extension.name=Microsoft Entra ID OpenID Connect (OIDC)
+entraID.extension.home.description=This space contains the code for the Entra ID OpenID Connect Integration of XWiki. This extensions currently allows users to login with XWiki by authorizing the transmission of profile information from an Microsoft Entra ID node. It uses the OIDC protocol.
 XWiki.OIDC.ClientConfigurationClass_enableUser=Enable user profiles on first login
-XWiki.OIDC.ClientConfigurationClass_skipped=Disable Azure authentication
+XWiki.OIDC.ClientConfigurationClass_skipped=Disable Entra ID authentication
 XWiki.OIDC.ClientConfigurationClass_userInfoSkip=Use user info endpoint
 XWiki.OIDC.ClientConfigurationClass_scope=Scope
 XWiki.OIDC.ClientConfigurationClass_groupsClaim=Groups claim
@@ -80,18 +56,18 @@ EntraID.Code.EntraIDConfigurationClass_enableXWikiLoginGlobal=Allow XWiki Login
 EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups=XWiki login user groups
 
 XWiki.OIDC.ClientConfigurationClass_enableUser.hint=Define if user accounts should be enabled (marked as active) on first login.
-XWiki.OIDC.ClientConfigurationClass_skipped.hint=Disable the Azure AD authentication.
+XWiki.OIDC.ClientConfigurationClass_skipped.hint=Disable the Entra ID authentication.
 XWiki.OIDC.ClientConfigurationClass_userInfoSkip.hint=Some providers have a bad implementation of the userinfo endpoint, making it unusable.
 XWiki.OIDC.ClientConfigurationClass_scope.hint=The scopes to use when redirecting to the provider.
 XWiki.OIDC.ClientConfigurationClass_groupsClaim.hint=Indicate the field containing the list of groups (in case it's not an OpenID Connect standard).
-XWiki.OIDC.ClientConfigurationClass_groupsMapping.hint=Associates the XWiki groups with Azure AD groups.
+XWiki.OIDC.ClientConfigurationClass_groupsMapping.hint=Associates the XWiki groups with Entra ID groups.
 XWiki.OIDC.ClientConfigurationClass_allowedGroups.hint=The groups the user need to belong to be allowed to authenticate.
 XWiki.OIDC.ClientConfigurationClass_forbiddenGroups.hint=The groups that if a user belongs to, it will not be allowed to authenticate.
 XWiki.OIDC.ClientConfigurationClass_userNameFormatter.hint=The pattern to use to generate the unique identifier of the user.
 XWiki.OIDC.ClientConfigurationClass_userMapping.hint=Associate non-standard properties coming from the OpenID Connect provider with the XWiki user.
 XWiki.OIDC.ClientConfigurationClass_clientSecret.hint=The client secret registered on the provider.
 XWiki.OIDC.ClientConfigurationClass_clientId.hint=The client identifier used by the authentication.
-EntraID.Code.EntraIDConfigurationClass_tenantId.hint=Azure AD instance ID.
+EntraID.Code.EntraIDConfigurationClass_tenantId.hint=Entra ID instance ID.
 EntraID.Code.EntraIDConfigurationClass_enableXWikiLoginGlobal.hint=Allow a guest user to login using the standard XWiki authenticator.
 EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups.hint=User groups allowed to log in with XWiki.
 
@@ -101,9 +77,12 @@ entra.properties.data.tip.value.groupMap=Group object ID...
 entra.properties.data.tip.key.userMap=XWiki user property...
 entra.properties.data.tip.value.userMap=Provider property...
 entra.properties.data.tip.value.forbiddenGroup=Forbidden groups...
-entra.properties.data.tip.value.allowedGroup=Allowed groups...</content>
+entra.properties.data.tip.value.allowedGroup=Allowed groups...
+
+entra.drawer.header.login=Log in with XWiki
+entra.drawer.header.switch=Switch to XWiki user</content>
   <object>
-    <name>AzureADAdmin.Translations</name>
+    <name>EntraID.Code.Translations</name>
     <number>0</number>
     <className>XWiki.TranslationDocumentClass</className>
     <guid>01d84622-baf7-448b-96a4-93fcd4276764</guid>
