@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content>## New configuration
 entraID.extension.name=Microsoft Entra ID OpenID Connect (OIDC)
-
+entraID.extension.home.description=This space contains the code for the Entra ID OpenID Connect Integration of XWiki. This extensions currently allows users to login with XWiki by authorizing the transmission of profile information from an Microsoft Entra ID node. It uses the OIDC protocol.
 XWiki.OIDC.ClientConfigurationClass_enableUser=Enable user profiles on first login
 XWiki.OIDC.ClientConfigurationClass_skipped=Disable Entra ID authentication
 XWiki.OIDC.ClientConfigurationClass_userInfoSkip=Use user info endpoint

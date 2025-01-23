@@ -30,8 +30,8 @@
   <version>1.9.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Microsoft Entra ID OpenID Connect (OIDC) parent POM</name>
-  <description>This extension allows users to authenticate to the wiki using Entra ID. The app can be purchased individually or part of the XWiki Pro package. Try it free.</description>
+  <name>Microsoft Entra ID SSO parent POM</name>
+  <description>This extension allows users to authenticate to the wiki using Entra ID, formerly known as Azure Active Directory. The app can be purchased individually or part of the XWiki Pro package. Try it free.</description>
 
   <properties>
     <licensing.version>1.25</licensing.version>
@@ -49,6 +49,24 @@
     <url>https://github.com/xwikisas/integration-azure-oauth/tree/master</url>
     <tag>HEAD</tag>
   </scm>
+
+  <!-- Even though this repository is already declared in the parent POM, we still explicitly redeclare it for
+       convenience. This makes it simpler to build this project without having to declare this repository in one's own
+       Maven settings.xml file. In the future We may decide to remove this in the future and make it a rule to have the
+       XWiki SAS Nexus repository in one's settings.xml -->
+  <repositories>
+    <repository>
+      <id>public-store-releases</id>
+      <name>XWiki SAS Public Store Repository for Releases</name>
+      <url>https://nexus.xwiki.com/nexus/content/repositories/public-store-releases/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <modules>
     <module>api</module>
