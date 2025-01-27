@@ -19,23 +19,26 @@
  */
 package com.xwiki.entraid.test.po;
 
+import java.util.List;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.xwiki.test.ui.po.ViewPage;
 
 /**
- * Represents the XWiki login view page.
+ * Represents actions that can be done on the Microsoft login container. This container is externally provided and might
+ * suffer changes that can break the tests.
  *
  * @version $Id$
  * @since 2.0
  */
-public class XWikiLoginViewPage extends ViewPage
+public class MicrosoftLoginViewPage extends ViewPage
 {
-    @FindBy(id = "loginForm")
-    private WebElement xwikiLoginContainer;
+    private static final String CONTAINER_ID = "exceptionMessageContainer";
 
-    public WebElement getXwikiLoginContainer()
+    public List<WebElement> getMicrosoftContainer()
     {
-        return xwikiLoginContainer;
+        this.getDriver().waitUntilElementIsVisible(By.id(CONTAINER_ID));
+        return getDriver().findElements(By.id(CONTAINER_ID));
     }
 }

@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.xwiki.test.ui.po.ViewPage;
 
 /**
@@ -34,15 +33,6 @@ import org.xwiki.test.ui.po.ViewPage;
  */
 public class EntraIDViewPage extends ViewPage
 {
-    @FindBy(xpath = "//a[@id='tmLogin']")
-    private WebElement loginLink;
-
-    @FindBy(xpath = "//a[@id='tmLogin-bypass']")
-    private WebElement bypassLogin;
-
-    @FindBy(id = "exceptionMessageContainer")
-    private WebElement microsoftContainer;
-
     /**
      * Go to XWiki Main WebHome.
      */
@@ -51,22 +41,16 @@ public class EntraIDViewPage extends ViewPage
         getUtil().gotoPage("Main", "WebHome");
     }
 
-    public void clickLogin()
+    public WebElement getLoginButton()
     {
         toggleDrawer();
-        this.loginLink.click();
+        return getDriver().findElement(By.id("tmLogin"));
     }
 
-    public void clickLoginBypass()
+    public List<WebElement> getBypassLoginButton()
     {
         toggleDrawer();
-        this.bypassLogin.click();
-    }
-
-    public boolean canBypassLogin()
-    {
-        toggleDrawer();
-        return this.contentContainsElement(By.id("tmLogin-bypass"));
+        return getDriver().findElements(By.id("tmLogin-bypass"));
     }
 
     public boolean isSwitchUserDisplayed()
@@ -74,10 +58,5 @@ public class EntraIDViewPage extends ViewPage
         toggleDrawer();
         List<WebElement> webElements = getDriver().findElements(By.id("tmLogout-xwiki-switch"));
         return !webElements.isEmpty();
-    }
-
-    public WebElement getMicrosoftContainer()
-    {
-        return microsoftContainer;
     }
 }

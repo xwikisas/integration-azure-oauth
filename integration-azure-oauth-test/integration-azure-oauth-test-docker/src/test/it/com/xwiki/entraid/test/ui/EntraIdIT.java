@@ -20,11 +20,11 @@
 package com.xwiki.entraid.test.ui;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.xwiki.administration.test.po.EditGroupModal;
 import org.xwiki.administration.test.po.GroupsPage;
@@ -33,16 +33,17 @@ import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.rest.model.jaxb.Object;
 import org.xwiki.test.docker.junit5.UITest;
 import org.xwiki.test.ui.TestUtils;
+import org.xwiki.test.ui.po.LoginPage;
 
 import com.xwiki.entraid.test.po.AuthServiceViewPage;
 import com.xwiki.entraid.test.po.EntraIDViewPage;
-import com.xwiki.entraid.test.po.XWikiLoginViewPage;
+import com.xwiki.entraid.test.po.MicrosoftLoginViewPage;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-// add dependencies overwritten by backport
 @UITest(properties = {
     // Add the RightsManagerPlugin needed by the test
     "xwikiCfgPlugins=com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin" })
@@ -56,9 +57,6 @@ class EntraIdIT
 
     private static final DocumentReference ENTRAID_CONFIGURATION_REFERENCE =
         new DocumentReference("xwiki", Arrays.asList("EntraID", "Code"), "EntraOIDCClientConfiguration");
-
-    private static final DocumentReference ENTRAID_WEBHOME_REFERENCE =
-        new DocumentReference("xwiki", "AzureAD", "WebHome");
 
     private static final String ENTRAID_CONFIGURATION_CLASSNAME = "EntraID.Code.EntraIDConfigurationClass";
 
@@ -94,41 +92,52 @@ class EntraIdIT
         setup.updateObject(ENTRAID_CONFIGURATION_REFERENCE, ENTRAID_CONFIGURATION_CLASSNAME, 0, "tenantId",
             "test_tenantId");
 
-        // Configure the OIDC user class for the second user tobe able to test the switch to XWiki user functionality.
+        // Configure the OIDC user class for the second user to be able to test the switch to XWiki user functionality.
         Object userObject =
             setup.rest().object(new LocalDocumentReference("XWiki", SECOND_USER_NAME), "XWiki.OIDC.UserClass");
         userObject.withProperties(TestUtils.RestTestUtils.property("issuer", "some_issuer"));
         setup.rest().add(userObject);
-        setup.forceGuestUser();
-    }
 
-    @Order(1)
-    @Test
-    void authenticate(TestUtils testUtils)
-    {
         // Switch the authentication service to OIDC.
         EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
-        testUtils.loginAsAdmin();
         entraIDViewPage.goToHomePage();
         AuthServiceViewPage authServiceViewPage = new AuthServiceViewPage();
         authServiceViewPage.navigateToAuthenticationAdmin();
         authServiceViewPage.switchToOIDCAuthenticationService();
         assertTrue(authServiceViewPage.isOIDCSelected());
-        testUtils.forceGuestUser();
+        setup.forceGuestUser();
+        entraIDViewPage.goToHomePage();
+    }
 
+    @Order(1)
+    @Test
+    void authenticateWithEntraID()
+    {
+        EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
+        MicrosoftLoginViewPage microsoftLoginViewPage = new MicrosoftLoginViewPage();
         // Check that the login functionality correctly redirect the guest to Microsoft login page, respectively that
         // the OIDC bypass login is working.
         entraIDViewPage.goToHomePage();
-        entraIDViewPage.clickLogin();
-        testUtils.getDriver().waitUntilElementIsVisible(By.id("exceptionMessageContainer"));
-        WebElement loginPageMessage = entraIDViewPage.getMicrosoftContainer();
-        assertTrue(loginPageMessage.getText().contains(
+        entraIDViewPage.getLoginButton().click();
+        List<WebElement> loginPageMessage = microsoftLoginViewPage.getMicrosoftContainer();
+        // We cannot actually test that the Entra ID login works, as we would have to use private information.
+        // Therefore, we only test that the Microsoft login page is called.
+        assertEquals(1, loginPageMessage.size());
+        assertTrue(loginPageMessage.get(0).getText().contains(
             "Specified tenant identifier 'test_tenantid' is neither a valid DNS name, nor a valid external domain."));
         entraIDViewPage.goToHomePage();
-        entraIDViewPage.clickLoginBypass();
-        XWikiLoginViewPage xwikiLoginViewPage = new XWikiLoginViewPage();
-        assertTrue(xwikiLoginViewPage.getXwikiLoginContainer().isDisplayed());
+    }
 
+    @Order(2)
+    @Test
+    void autheticateWithXWiki(TestUtils testUtils)
+    {
+        EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
+        List<WebElement> bypassLogin = entraIDViewPage.getBypassLoginButton();
+        assertEquals(1, bypassLogin.size());
+        bypassLogin.get(0).click();
+        LoginPage xwikiLoginViewPage = new LoginPage();
+        assertDoesNotThrow(xwikiLoginViewPage::assertOnPage);
         // Disable the OIDC login bypass and check that is no longer displayed.
         entraIDViewPage.goToHomePage();
         testUtils.loginAsAdmin();
@@ -136,17 +145,18 @@ class EntraIdIT
             "enableXWikiLoginGlobal", 0);
         testUtils.forceGuestUser();
         entraIDViewPage.goToHomePage();
-        assertFalse(entraIDViewPage.canBypassLogin());
+        bypassLogin = entraIDViewPage.getBypassLoginButton();
+        assertTrue(bypassLogin.isEmpty());
+        entraIDViewPage.goToHomePage();
     }
 
-    @Order(2)
+    @Order(3)
     @Test
-    void SwitchUserTest(TestUtils testUtils)
+    void switchUserToXWikiLogin(TestUtils testUtils)
     {
         // Check that the Entra ID user (the user with the OIDC user class) does not have the possibility to switch
         // to a XWiki user before adding the group to configuration.
         EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
-        entraIDViewPage.goToHomePage();
         testUtils.login(SECOND_USER_NAME, PASSWORD);
         entraIDViewPage.goToHomePage();
         assertEquals(SECOND_USER_NAME, testUtils.getLoggedInUserName());

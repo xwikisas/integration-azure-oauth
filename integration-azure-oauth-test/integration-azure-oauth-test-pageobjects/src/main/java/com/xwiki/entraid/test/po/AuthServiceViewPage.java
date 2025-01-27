@@ -26,7 +26,8 @@ import org.xwiki.test.ui.po.Select;
 import org.xwiki.test.ui.po.ViewPage;
 
 /**
- * Represents the Authentication Backport view page.
+ * Represents the view page for Authentication Backport contrib application which doesn't have a PO created so far. The
+ * application might suffer changes that could break the tests.
  *
  * @version $Id$
  * @since 2.0
