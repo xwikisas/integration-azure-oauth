@@ -21,6 +21,7 @@ package com.xwiki.entraid.test.ui;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -102,7 +103,6 @@ class EntraIdIT
         EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
         entraIDViewPage.goToHomePage();
         AuthServiceViewPage authServiceViewPage = new AuthServiceViewPage();
-        authServiceViewPage.navigateToAuthenticationAdmin();
         authServiceViewPage.switchToOIDCAuthenticationService();
         assertTrue(authServiceViewPage.isOIDCSelected());
         setup.forceGuestUser();
@@ -114,6 +114,8 @@ class EntraIdIT
     void authenticateWithEntraID()
     {
         EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
+        // We initialise MicrosoftLoginViewPage before actually reaching the Microsoft login page, as the
+        // initialisation of the object will fail if done outside the XWiki domain.
         MicrosoftLoginViewPage microsoftLoginViewPage = new MicrosoftLoginViewPage();
         // Check that the login functionality correctly redirect the guest to Microsoft login page, respectively that
         // the OIDC bypass login is working.
@@ -133,9 +135,9 @@ class EntraIdIT
     void autheticateWithXWiki(TestUtils testUtils)
     {
         EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
-        List<WebElement> bypassLogin = entraIDViewPage.getBypassLoginButton();
-        assertEquals(1, bypassLogin.size());
-        bypassLogin.get(0).click();
+        Optional<WebElement> bypassLogin = entraIDViewPage.getBypassLoginButton();
+        assertTrue(bypassLogin.isPresent());
+        bypassLogin.get().click();
         LoginPage xwikiLoginViewPage = new LoginPage();
         assertDoesNotThrow(xwikiLoginViewPage::assertOnPage);
         // Disable the OIDC login bypass and check that is no longer displayed.
@@ -146,7 +148,7 @@ class EntraIdIT
         testUtils.forceGuestUser();
         entraIDViewPage.goToHomePage();
         bypassLogin = entraIDViewPage.getBypassLoginButton();
-        assertTrue(bypassLogin.isEmpty());
+        assertFalse(bypassLogin.isPresent());
         entraIDViewPage.goToHomePage();
     }
 

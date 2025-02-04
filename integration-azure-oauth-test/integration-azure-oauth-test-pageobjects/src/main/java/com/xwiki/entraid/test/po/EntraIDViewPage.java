@@ -20,6 +20,7 @@
 package com.xwiki.entraid.test.po;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -47,10 +48,11 @@ public class EntraIDViewPage extends ViewPage
         return getDriver().findElement(By.id("tmLogin"));
     }
 
-    public List<WebElement> getBypassLoginButton()
+    public Optional<WebElement> getBypassLoginButton()
     {
         toggleDrawer();
-        return getDriver().findElements(By.id("tmLogin-bypass"));
+        List<WebElement> elements = getDriver().findElements(By.id("tmLogin-bypass"));
+        return elements.stream().findFirst();
     }
 
     public boolean isSwitchUserDisplayed()

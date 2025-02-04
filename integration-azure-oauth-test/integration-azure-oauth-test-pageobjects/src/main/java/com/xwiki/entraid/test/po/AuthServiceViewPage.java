@@ -21,7 +21,6 @@ package com.xwiki.entraid.test.po;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.xwiki.test.ui.XWikiWebDriver;
 import org.xwiki.test.ui.po.Select;
 import org.xwiki.test.ui.po.ViewPage;
 
@@ -36,10 +35,10 @@ public class AuthServiceViewPage extends ViewPage
 {
     public void switchToOIDCAuthenticationService()
     {
-        XWikiWebDriver driver = getUtil().getDriver();
+        navigateToAuthenticationAdmin();
 
-        WebElement authServiceSelectElement = driver.findElement(By.id("authServiceId"));
-        WebElement saveButton = getUtil().getDriver().findElement(By.className("btn-danger"));
+        WebElement authServiceSelectElement = getDriver().findElement(By.id("authServiceId"));
+        WebElement saveButton = getDriver().findElement(By.className("btn-danger"));
 
         Select authServiceSelect = new Select(authServiceSelectElement);
         authServiceSelect.selectByValue("oidc");
@@ -48,18 +47,17 @@ public class AuthServiceViewPage extends ViewPage
 
     public boolean isOIDCSelected()
     {
-        WebElement authService = getUtil().getDriver().findElement(By.className("codeToExecute"));
+        WebElement authService = getDriver().findElement(By.className("codeToExecute"));
         return authService.getText().contains("OpenID Connect Authenticator");
     }
 
-    public void navigateToAuthenticationAdmin()
+    private void navigateToAuthenticationAdmin()
     {
         toggleDrawer();
-        XWikiWebDriver driver = getUtil().getDriver();
-        WebElement adminHyperlink = driver.findElement(By.id("tmAdminWiki"));
+        WebElement adminHyperlink = getDriver().findElement(By.id("tmAdminWiki"));
         adminHyperlink.click();
-        WebElement panelHeadingOther = driver.findElement(By.id("panel-heading-other"));
+        WebElement panelHeadingOther = getDriver().findElement(By.id("panel-heading-other"));
         panelHeadingOther.click();
-        driver.findElement(By.cssSelector("a[data-id='Authentication']")).click();
+        getDriver().findElement(By.cssSelector("a[data-id='Authentication']")).click();
     }
 }
