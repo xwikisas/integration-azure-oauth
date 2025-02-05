@@ -72,4 +72,12 @@
     <module>api</module>
     <module>ui</module>
   </modules>
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <modules>
+        <module>integration-azure-oauth-test</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
