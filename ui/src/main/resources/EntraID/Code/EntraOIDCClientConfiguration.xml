@@ -685,7 +685,7 @@
       <clientSecret/>
     </property>
     <property>
-      <configurationName>Entra ID</configurationName>
+      <configurationName>EntraID</configurationName>
     </property>
     <property>
       <enableUser>1</enableUser>

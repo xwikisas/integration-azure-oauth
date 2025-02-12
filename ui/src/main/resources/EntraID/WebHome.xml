@@ -136,7 +136,7 @@
   $(document).on('click', '#tmLogin', function(event) {
     event.preventDefault();
     console.log('click login')
-    document.cookie = "oidcProvider=Entra ID; path=/";
+    document.cookie = "oidcProvider=EntraID; path=/";
     window.location.href = event.currentTarget.href;
   });
 })
