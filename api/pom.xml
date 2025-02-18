@@ -31,6 +31,9 @@
   <name>Microsoft Entra ID SSO API</name>
   <description>This extension allows users to authenticate to the wiki using Entra ID, formerly known as Azure Active Directory.</description>
   <properties>
+    <!-- This module is a leftover dependency from the old Azure OAuth version, and it is no longer needed as its
+      functionalities have been replaced by OIDC. Removing this module is also necessary to allow the user to select
+      the Authentication service. -->
     <xwiki.extension.features>com.xwiki.identity-oauth:identity-oauth-api</xwiki.extension.features>
   </properties>
   <dependencies>

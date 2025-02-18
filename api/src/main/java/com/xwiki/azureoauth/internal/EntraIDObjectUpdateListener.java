@@ -138,7 +138,7 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
             XWiki xwiki = azureOIDCMigrator.getXWiki();
 
             // XWiki might not be fully initialized yet in which case it means we are not installing or reloading the
-            // extension
+            // extension. To be removed when upgrading the XWiki parent to a version >= 15.3.
             if (xwiki != null) {
                 resetAuthService(xwiki);
             }
@@ -173,9 +173,15 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
         return new WikiReference(this.wikiManager.getCurrentWikiId());
     }
 
+    /**
+     * Prior to XWiki 15.3, to be able to select the Authentication service by using the AuthService Backport, the
+     * default XWikiAuthServiceComponent needs to be selected. To do this, we check the selected authentication service
+     * and reset it to default one if externally set, with the exception if the authentication service is set in
+     * xwiki.cfg. To be removed when upgrading the parent to a version >= 15.3.
+     */
     private void resetAuthService(XWiki xwiki) throws ComponentLookupException
     {
-        // Check if an authenticator class is explicitly set (in which case we don't want to override it)
+        // Check if an authenticator class is explicitly set (in which case we don't want to override it).
         String authServiceClass = this.xwikicfg.getProperty("xwiki.authentication.authclass");
         if (authServiceClass == null) {
             if (xwiki.getAuthService() instanceof XWikiAuthServiceComponent) {
@@ -188,9 +194,12 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
         }
     }
 
+    /**
+     * To be removed when upgrading the XWiki parent to a version >= 15.3.
+     */
     private void registerDefaultService(XWiki xwiki) throws ComponentLookupException
     {
-        // Reset the cached auth service so that it's released next time
+        // Reset the cached auth service so that it's released next time.
         xwiki.setAuthService(null);
 
         boolean hasDefaultAuthService = componentManagerProvider.get().hasComponent(XWikiAuthServiceComponent.class);
@@ -198,7 +207,7 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
             List<XWikiAuthServiceComponent> authServicesList =
                 this.componentManagerProvider.get().getInstanceList(XWikiAuthServiceComponent.class);
             for (XWikiAuthServiceComponent authServiceComponent : authServicesList) {
-                // Register the bridge as authenticator
+                // Register the bridge as authenticator.
                 if (authServiceComponent.getId().equals(DEFAULT_ID)) {
                     xwiki.setAuthService(authServiceComponent);
                     break;

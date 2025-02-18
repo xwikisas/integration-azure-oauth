@@ -46,6 +46,8 @@
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
     <xwiki.extension.category>application</xwiki.extension.category>
+    <!-- This module is a leftover dependency from the old Azure OAuth version, and it is no longer needed as its
+      functionalities have been replaced by EntraID OIDC. -->
     <xwiki.extension.features>
       com.xwiki.integration-azure-oauth:integration-azure-oauth-admin-ui
     </xwiki.extension.features>
