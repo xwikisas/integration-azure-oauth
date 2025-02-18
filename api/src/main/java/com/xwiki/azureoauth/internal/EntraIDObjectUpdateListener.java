@@ -19,6 +19,7 @@
  */
 package com.xwiki.azureoauth.internal;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -29,18 +30,23 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSaveException;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.WikiReference;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 import org.xwiki.query.QueryException;
+import org.xwiki.security.authservice.XWikiAuthServiceComponent;
 import org.xwiki.stability.Unstable;
 import org.xwiki.wiki.descriptor.WikiDescriptorManager;
 
+import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.internal.event.XObjectUpdatedEvent;
@@ -71,6 +77,8 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
     private static final EntityReference CLASS_MATCHER = BaseObjectReference.any("EntraID.Code"
         + ".EntraIDConfigurationClass");
 
+    private static final String DEFAULT_ID = "default";
+
     @Inject
     private WikiDescriptorManager wikiManager;
 
@@ -83,6 +91,13 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
 
     @Inject
     private Provider<AzureADOIDCMigrator> azureOIDCMigratorProvider;
+
+    @Inject
+    @Named("xwikicfg")
+    private ConfigurationSource xwikicfg;
+
+    @Inject
+    private Provider<ComponentManager> componentManagerProvider;
 
     /**
      * Default constructor.
@@ -120,6 +135,13 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
     {
         try {
             AzureADOIDCMigrator azureOIDCMigrator = azureOIDCMigratorProvider.get();
+            XWiki xwiki = azureOIDCMigrator.getXWiki();
+
+            // XWiki might not be fully initialized yet in which case it means we are not installing or reloading the
+            // extension
+            if (xwiki != null) {
+                resetAuthService(xwiki);
+            }
             azureOIDCMigrator.initializeOIDCConfiguration();
             azureOIDCMigrator.refactorOIDCIssuer();
         } catch (XWikiException | QueryException e) {
@@ -149,5 +171,39 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
     private WikiReference getCurrentWikiReference()
     {
         return new WikiReference(this.wikiManager.getCurrentWikiId());
+    }
+
+    private void resetAuthService(XWiki xwiki) throws ComponentLookupException
+    {
+        // Check if an authenticator class is explicitly set (in which case we don't want to override it)
+        String authServiceClass = this.xwikicfg.getProperty("xwiki.authentication.authclass");
+        if (authServiceClass == null) {
+            if (xwiki.getAuthService() instanceof XWikiAuthServiceComponent) {
+                XWikiAuthServiceComponent currentAuth = (XWikiAuthServiceComponent) xwiki.getAuthService();
+                if (Objects.equals(currentAuth.getId(), "oidc") || Objects.equals(currentAuth.getId(), DEFAULT_ID)) {
+                    return;
+                }
+            }
+            registerDefaultService(xwiki);
+        }
+    }
+
+    private void registerDefaultService(XWiki xwiki) throws ComponentLookupException
+    {
+        // Reset the cached auth service so that it's released next time
+        xwiki.setAuthService(null);
+
+        boolean hasDefaultAuthService = componentManagerProvider.get().hasComponent(XWikiAuthServiceComponent.class);
+        if (hasDefaultAuthService) {
+            List<XWikiAuthServiceComponent> authServicesList =
+                this.componentManagerProvider.get().getInstanceList(XWikiAuthServiceComponent.class);
+            for (XWikiAuthServiceComponent authServiceComponent : authServicesList) {
+                // Register the bridge as authenticator
+                if (authServiceComponent.getId().equals(DEFAULT_ID)) {
+                    xwiki.setAuthService(authServiceComponent);
+                    break;
+                }
+            }
+        }
     }
 }

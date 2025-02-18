@@ -46,6 +46,9 @@
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
     <xwiki.extension.category>application</xwiki.extension.category>
+    <xwiki.extension.features>
+      com.xwiki.integration-azure-oauth:integration-azure-oauth-admin-ui
+    </xwiki.extension.features>
   </properties>
 
   <dependencies>
