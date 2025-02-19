@@ -170,12 +170,7 @@ public class AzureADOIDCMigrator
             String.format(BASE_ENDPOINT, tenantID, "logout"));
     }
 
-    /**
-     * Get the current wiki from context.
-     *
-     * @return the current wiki, or null if the context is not yet initialized.
-     */
-    public XWiki getXWiki()
+    private XWiki getXWiki()
     {
         XWikiContext xcontext = this.xcontextProvider.get();
 

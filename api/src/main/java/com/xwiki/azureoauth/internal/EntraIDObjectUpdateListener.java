@@ -47,6 +47,7 @@ import org.xwiki.stability.Unstable;
 import org.xwiki.wiki.descriptor.WikiDescriptorManager;
 
 import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.internal.event.XObjectUpdatedEvent;
@@ -99,6 +100,9 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
     @Inject
     private Provider<ComponentManager> componentManagerProvider;
 
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
+
     /**
      * Default constructor.
      */
@@ -135,7 +139,7 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
     {
         try {
             AzureADOIDCMigrator azureOIDCMigrator = azureOIDCMigratorProvider.get();
-            XWiki xwiki = azureOIDCMigrator.getXWiki();
+            XWiki xwiki = getXWiki();
 
             // XWiki might not be fully initialized yet in which case it means we are not installing or reloading the
             // extension. To be removed when upgrading the XWiki parent to a version >= 15.3.
@@ -175,9 +179,9 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
 
     /**
      * Prior to XWiki 15.3, to be able to select the Authentication service by using the AuthService Backport, the
-     * default XWikiAuthServiceComponent needs to be selected. To do this, we check the selected authentication service
-     * and reset it to default one if externally set, with the exception if the authentication service is set in
-     * xwiki.cfg. To be removed when upgrading the parent to a version >= 15.3.
+     * default XWikiAuthServiceComponent needs to be selected. To do this, if the selected authentication service is
+     * externally set, we reset it to default one, with the exception if the authentication service is set in xwiki.cfg.
+     * To be removed when upgrading the parent to a version >= 15.3. https://jira.xwiki.org/browse/XWIKI-20548
      */
     private void resetAuthService(XWiki xwiki) throws ComponentLookupException
     {
@@ -214,5 +218,12 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
                 }
             }
         }
+    }
+
+    private XWiki getXWiki()
+    {
+        XWikiContext xcontext = this.xcontextProvider.get();
+
+        return xcontext != null ? xcontext.getWiki() : null;
     }
 }

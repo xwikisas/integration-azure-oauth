@@ -50,6 +50,7 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.wiki.descriptor.WikiDescriptorManager;
 
 import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.internal.event.XObjectUpdatedEvent;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
@@ -123,6 +124,12 @@ class EntraIDObjectUpdateListenerTest
     @MockComponent
     private AzureADOIDCMigrator azureADOIDCMigrator;
 
+    @MockComponent
+    private Provider<XWikiContext> wikiContextProvider;
+
+    @MockComponent
+    private XWikiContext wikiContext;
+
     private XObjectUpdatedEvent event = new XObjectUpdatedEvent();
 
     private DocumentReference configReference = new DocumentReference(CONFIG_DOC, new WikiReference("mywiki"));
@@ -145,6 +152,8 @@ class EntraIDObjectUpdateListenerTest
         when(entraIDConfiguration.getOIDCTenantID()).thenReturn("old_value");
         when(entraIDConfiguration.getTenantID()).thenReturn("new_value");
         when(azureADOIDCMigrator.getEndpoints("new_value")).thenReturn(configMap);
+        when(wikiContextProvider.get()).thenReturn(wikiContext);
+        when(wikiContext.getWiki()).thenReturn(xwiki);
     }
 
     @Test
@@ -173,7 +182,6 @@ class EntraIDObjectUpdateListenerTest
     @Test
     void initializeDefault() throws InitializationException
     {
-        when(azureADOIDCMigrator.getXWiki()).thenReturn(xwiki);
         when(xwikicfg.getProperty("xwiki.authentication.authclass")).thenReturn(null);
         when(defaultAuth.getId()).thenReturn("default");
         when(xwiki.getAuthService()).thenReturn(defaultAuth);
@@ -184,7 +192,6 @@ class EntraIDObjectUpdateListenerTest
     @Test
     void initializeDifferentNoDefault() throws InitializationException, ComponentLookupException
     {
-        when(azureADOIDCMigrator.getXWiki()).thenReturn(xwiki);
         when(xwikicfg.getProperty("xwiki.authentication.authclass")).thenReturn(null);
         when(differentAuth.getId()).thenReturn("test id");
         when(xwiki.getAuthService()).thenReturn(differentAuth);
@@ -199,7 +206,6 @@ class EntraIDObjectUpdateListenerTest
     @Test
     void initializeDifferentDefault() throws InitializationException, ComponentLookupException
     {
-        when(azureADOIDCMigrator.getXWiki()).thenReturn(xwiki);
         when(xwikicfg.getProperty("xwiki.authentication.authclass")).thenReturn(null);
         when(differentAuth.getId()).thenReturn("test id");
         when(defaultAuth.getId()).thenReturn("default");
