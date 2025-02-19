@@ -20,6 +20,7 @@
 package com.xwiki.azureoauth.internal;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,10 +32,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSaveException;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.model.reference.WikiReference;
+import org.xwiki.security.authservice.XWikiAuthServiceComponent;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.junit5.LogCaptureExtension;
@@ -43,6 +49,8 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.wiki.descriptor.WikiDescriptorManager;
 
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.internal.event.XObjectUpdatedEvent;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
@@ -88,6 +96,25 @@ class EntraIDObjectUpdateListenerTest
     @MockComponent
     private Provider<AzureADOIDCMigrator> azureOIDCMigratorProvider;
 
+    @MockComponent
+    @Named("xwikicfg")
+    private ConfigurationSource xwikicfg;
+
+    @Mock
+    private XWiki xwiki;
+
+    @MockComponent
+    private XWikiAuthServiceComponent defaultAuth;
+
+    @MockComponent
+    private XWikiAuthServiceComponent differentAuth;
+
+    @MockComponent
+    private Provider<ComponentManager> componentManagerProvider;
+
+    @Mock
+    private ComponentManager componentManager;
+
     @Mock
     private XWikiDocument xWikiDocument;
 
@@ -96,6 +123,12 @@ class EntraIDObjectUpdateListenerTest
 
     @MockComponent
     private AzureADOIDCMigrator azureADOIDCMigrator;
+
+    @MockComponent
+    private Provider<XWikiContext> wikiContextProvider;
+
+    @MockComponent
+    private XWikiContext wikiContext;
 
     private XObjectUpdatedEvent event = new XObjectUpdatedEvent();
 
@@ -119,6 +152,8 @@ class EntraIDObjectUpdateListenerTest
         when(entraIDConfiguration.getOIDCTenantID()).thenReturn("old_value");
         when(entraIDConfiguration.getTenantID()).thenReturn("new_value");
         when(azureADOIDCMigrator.getEndpoints("new_value")).thenReturn(configMap);
+        when(wikiContextProvider.get()).thenReturn(wikiContext);
+        when(wikiContext.getWiki()).thenReturn(xwiki);
     }
 
     @Test
@@ -140,6 +175,50 @@ class EntraIDObjectUpdateListenerTest
         assertEquals(
             "There was an error while trying to update OIDC endpoints. Root cause is: [ConfigurationSaveException: Mock test exception.]",
             logCapture.getMessage(0));
-        assertEquals("org.xwiki.configuration.ConfigurationSaveException: Mock test exception.", exception.getMessage());
+        assertEquals("org.xwiki.configuration.ConfigurationSaveException: Mock test exception.",
+            exception.getMessage());
+    }
+
+    @Test
+    void initializeDefault() throws InitializationException
+    {
+        when(xwikicfg.getProperty("xwiki.authentication.authclass")).thenReturn(null);
+        when(defaultAuth.getId()).thenReturn("default");
+        when(xwiki.getAuthService()).thenReturn(defaultAuth);
+        objectUpdateListener.initialize();
+        verify(xwiki, Mockito.times(0)).setAuthService(null);
+    }
+
+    @Test
+    void initializeDifferentNoDefault() throws InitializationException, ComponentLookupException
+    {
+        when(xwikicfg.getProperty("xwiki.authentication.authclass")).thenReturn(null);
+        when(differentAuth.getId()).thenReturn("test id");
+        when(xwiki.getAuthService()).thenReturn(differentAuth);
+        when(componentManagerProvider.get()).thenReturn(componentManager);
+        when(componentManager.hasComponent(XWikiAuthServiceComponent.class)).thenReturn(false);
+
+        objectUpdateListener.initialize();
+        verify(xwiki, Mockito.times(1)).setAuthService(null);
+        verify(componentManager, Mockito.times(0)).getInstanceList(XWikiAuthServiceComponent.class);
+    }
+
+    @Test
+    void initializeDifferentDefault() throws InitializationException, ComponentLookupException
+    {
+        when(xwikicfg.getProperty("xwiki.authentication.authclass")).thenReturn(null);
+        when(differentAuth.getId()).thenReturn("test id");
+        when(defaultAuth.getId()).thenReturn("default");
+        when(xwiki.getAuthService()).thenReturn(differentAuth);
+        when(componentManagerProvider.get()).thenReturn(componentManager);
+        when(componentManager.hasComponent(XWikiAuthServiceComponent.class)).thenReturn(true);
+
+        when(componentManager.getInstanceList(XWikiAuthServiceComponent.class)).thenReturn(
+            Collections.singletonList(defaultAuth));
+
+        objectUpdateListener.initialize();
+        verify(xwiki, Mockito.times(1)).setAuthService(null);
+        verify(componentManager, Mockito.times(1)).getInstanceList(XWikiAuthServiceComponent.class);
+        verify(xwiki, Mockito.times(1)).setAuthService(defaultAuth);
     }
 }

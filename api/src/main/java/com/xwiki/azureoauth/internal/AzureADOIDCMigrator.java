@@ -97,6 +97,9 @@ public class AzureADOIDCMigrator
     @Inject
     private Logger logger;
 
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
+
     /**
      * Check if the current EntraID/OIDC configuration is empty and populate it with the old configuration from Azure
      * AD.
@@ -105,16 +108,20 @@ public class AzureADOIDCMigrator
      */
     public void initializeOIDCConfiguration() throws ConfigurationSaveException
     {
-        EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
-        Map<String, Object> configurationMap = generateNewConfiguration();
-        if (entraIDConfiguration.getTenantID().isEmpty()) {
-            entraIDConfiguration.setEntraIDConfiguration(getTenantIdConfiguration());
-            configurationMap.putAll(getEndpoints(identityOAuthConfigurationProvider.get().getTenantID()));
-            logger.info("Successfully set Entra ID configuration.");
-        }
-        if (!configurationMap.isEmpty()) {
-            entraIDConfiguration.setOIDCConfiguration(configurationMap);
-            logger.info("Successfully set OIDC configuration.");
+        // XWiki might not be fully initialized yet, in which case it means we are not attempting to update the
+        // configuration.
+        if (getXWiki() != null) {
+            EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
+            Map<String, Object> configurationMap = generateNewConfiguration();
+            if (entraIDConfiguration.getTenantID().isEmpty()) {
+                entraIDConfiguration.setEntraIDConfiguration(getTenantIdConfiguration());
+                configurationMap.putAll(getEndpoints(identityOAuthConfigurationProvider.get().getTenantID()));
+                logger.info("Successfully set Entra ID configuration.");
+            }
+            if (!configurationMap.isEmpty()) {
+                entraIDConfiguration.setOIDCConfiguration(configurationMap);
+                logger.info("Successfully set OIDC configuration.");
+            }
         }
     }
 
@@ -126,21 +133,26 @@ public class AzureADOIDCMigrator
      */
     public void refactorOIDCIssuer() throws QueryException, XWikiException
     {
-        List<String> results = this.queryManager.createQuery(
-                ", BaseObject as obj where doc.fullName = obj.name and obj.className = :className", Query.HQL)
-            .setWiki(this.wikiManager.getCurrentWikiId()).bindValue("className", OIDC_USER_CLASS).execute();
-        XWikiContext wikiContext = wikiContextProvider.get();
-        XWiki wiki = wikiContext.getWiki();
+        XWiki wiki = getXWiki();
 
-        for (String userRef : results) {
-            XWikiDocument userDoc = wiki.getDocument(documentReferenceResolver.resolve(userRef), wikiContext);
-            BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
-            String issuer = oidcObj.getField(ISSUER).toFormString();
-            if (issuer.endsWith(INVALID_VERSION)) {
-                int index = issuer.lastIndexOf(INVALID_VERSION);
-                String fixedIssuer = issuer.substring(0, index) + VALID_VERSION;
-                oidcObj.set(ISSUER, fixedIssuer, wikiContext);
-                wiki.saveDocument(userDoc, "Refactored OIDC issuer to the right format used by Entra ID.", wikiContext);
+        // XWiki might not be fully initialized yet, in which case it means we are not attempting to update the users.
+        if (wiki != null) {
+            List<String> results = this.queryManager.createQuery(
+                    ", BaseObject as obj where doc.fullName = obj.name and obj.className = :className", Query.HQL)
+                .setWiki(this.wikiManager.getCurrentWikiId()).bindValue("className", OIDC_USER_CLASS).execute();
+
+            for (String userRef : results) {
+                XWikiDocument userDoc =
+                    wiki.getDocument(documentReferenceResolver.resolve(userRef), xcontextProvider.get());
+                BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
+                String issuer = oidcObj.getField(ISSUER).toFormString();
+                if (issuer.endsWith(INVALID_VERSION)) {
+                    int index = issuer.lastIndexOf(INVALID_VERSION);
+                    String fixedIssuer = issuer.substring(0, index) + VALID_VERSION;
+                    oidcObj.set(ISSUER, fixedIssuer, xcontextProvider.get());
+                    wiki.saveDocument(userDoc, "Refactored OIDC issuer to the right format used by Entra ID.",
+                        xcontextProvider.get());
+                }
             }
         }
     }
@@ -156,6 +168,13 @@ public class AzureADOIDCMigrator
         return Map.of("authorizationEndpoint", String.format(BASE_ENDPOINT, tenantID, "authorize"), "tokenEndpoint",
             String.format(BASE_ENDPOINT, tenantID, "token"), "logoutEndpoint",
             String.format(BASE_ENDPOINT, tenantID, "logout"));
+    }
+
+    private XWiki getXWiki()
+    {
+        XWikiContext xcontext = this.xcontextProvider.get();
+
+        return xcontext != null ? xcontext.getWiki() : null;
     }
 
     private Map<String, Object> generateNewConfiguration()

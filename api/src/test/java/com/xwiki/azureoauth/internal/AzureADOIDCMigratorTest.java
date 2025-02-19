@@ -147,6 +147,7 @@ class AzureADOIDCMigratorTest
         when(oauthConfigurationProvider.get()).thenReturn(oauthConfiguration);
         when(entraIDConfigurationProvider.get()).thenReturn(entraIDConfiguration);
         when(wikiContextProvider.get()).thenReturn(wikiContext);
+        when(wikiContext.getWiki()).thenReturn(wiki);
 
         when(oauthConfiguration.getClientID()).thenReturn("client_id");
         when(oauthConfiguration.getScope()).thenReturn("scope1,scope2");
