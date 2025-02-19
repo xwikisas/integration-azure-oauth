@@ -27,6 +27,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
@@ -88,7 +89,11 @@ public class EntraIDScriptService implements ScriptService
     {
         XWikiContext wikiContext = wikiContextProvider.get();
         XWiki xwiki = wikiContext.getWiki();
-        XWikiDocument userDoc = xwiki.getDocument(wikiContext.getUserReference(), wikiContext);
+        DocumentReference userReference = wikiContext.getUserReference();
+        if (userReference == null) {
+            return false;
+        }
+        XWikiDocument userDoc = xwiki.getDocument(userReference, wikiContext);
         return userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS)) != null;
     }
 
