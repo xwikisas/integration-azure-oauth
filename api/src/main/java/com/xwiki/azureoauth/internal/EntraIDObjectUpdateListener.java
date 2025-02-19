@@ -181,7 +181,8 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
      * Prior to XWiki 15.3, to be able to select the Authentication service by using the AuthService Backport, the
      * default XWikiAuthServiceComponent needs to be selected. To do this, if the selected authentication service is
      * externally set, we reset it to default one, with the exception if the authentication service is set in xwiki.cfg.
-     * To be removed when upgrading the parent to a version >= 15.3. https://jira.xwiki.org/browse/XWIKI-20548
+     * To be removed when upgrading the parent to a version >= 15.3, in order to include the fix for
+     * XWIKI-20548: Allow choosing the authenticator at runtime.
      */
     private void resetAuthService(XWiki xwiki) throws ComponentLookupException
     {
