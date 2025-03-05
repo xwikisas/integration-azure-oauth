@@ -41,7 +41,7 @@
 #set ($discard = $xwiki.ssx.use('EntraID.Code.EntraOIDCClientConfigurationSheet'))
 #includeMacros("XWiki.AdminFieldsDisplaySheet")
 #set ($params = {
-  'XWiki.OIDC.ClientConfigurationClass': ['skipped', 'userInfoSkip', 'enableUser', 'scope', 'groupsClaim',
+  'XWiki.OIDC.ClientConfigurationClass': ['skipped', 'enableUser', 'scope', 'groupsClaim',
     'groupsMapping', 'allowedGroups', 'forbiddenGroups', 'userNameFormatter', 'userMapping', 'clientSecret',
     'clientId', 'xwikiLoginGroups'],
   'EntraID.Code.EntraIDConfigurationClass': ['tenantId', 'enableXWikiLoginGlobal', 'xwikiLoginGroups']
