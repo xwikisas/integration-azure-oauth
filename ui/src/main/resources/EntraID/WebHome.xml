@@ -37,8 +37,8 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#set ($reference = $services.model.createDocumentReference('xwiki', ['EntraID'], 'WebPreferences'))
-#if (!$services.licensing.licensor.hasLicensureForEntity($references))
+#set ($reference = $services.model.createDocumentReference('', ['EntraID', 'Code'], 'EntraIDConfigurationClass'))
+#if (!$services.licensing.licensor.hasLicensureForEntity($reference))
   {{missingLicenseMessage extensionName='entraID.extension.name'/}}
 #else
   $escapetool.xml($services.localization.render('entraID.extension.home.description'))
@@ -135,7 +135,6 @@
       <code>require(['jquery'], function($) {
   $(document).on('click', '#tmLogin', function(event) {
     event.preventDefault();
-    console.log('click login')
     document.cookie = "oidcProvider=EntraID; path=/";
     window.location.href = event.currentTarget.href;
   });
