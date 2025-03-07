@@ -33,8 +33,43 @@ import org.xwiki.stability.Unstable;
  */
 @Role
 @Unstable
-public interface EntraIDConfiguration extends AzureOldConfiguration
+public interface EntraIDConfiguration
 {
+    /**
+     * Return the tenant ID.
+     *
+     * @return the tenant ID.
+     */
+    String getTenantID();
+
+    /**
+     * Return the client ID.
+     *
+     * @return the client ID.
+     */
+    String getClientID();
+
+    /**
+     * Return the authentication secret.
+     *
+     * @return the authentication secret.
+     */
+    String getSecret();
+
+    /**
+     * Return the provider scope.
+     *
+     * @return the provider scope.
+     */
+    String getScope();
+
+    /**
+     * See if the provider configuration is active.
+     *
+     * @return {@code true} if the configuration is active, or {@code false} otherwise.
+     */
+    boolean isActive();
+
     /**
      * Set the configuration for the OIDC class.
      *
