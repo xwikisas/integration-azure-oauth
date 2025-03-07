@@ -71,6 +71,7 @@
   <modules>
     <module>api</module>
     <module>ui</module>
+    <module>integration-azure-oauth-xip</module>
   </modules>
   <profiles>
     <profile>
