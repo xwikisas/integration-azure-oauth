@@ -1,0 +1,119 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.5" reference="EntraID.Code.Translations" locale="">
+  <web>EntraID.Code</web>
+  <name>Translations</name>
+  <language/>
+  <defaultLanguage>en</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>plain/1.0</syntaxId>
+  <hidden>true</hidden>
+  <content>## New configuration
+entraID.extension.name=Microsoft Entra ID OpenID Connect (OIDC)
+entraID.extension.home.description=This space contains the code for the Entra ID OpenID Connect Integration of XWiki. This extensions currently allows users to login with XWiki by authorizing the transmission of profile information from an Microsoft Entra ID node. It uses the OIDC protocol.
+XWiki.OIDC.ClientConfigurationClass_enableUser=Enable user profiles on first login
+XWiki.OIDC.ClientConfigurationClass_skipped=Disable Entra ID authentication
+XWiki.OIDC.ClientConfigurationClass_scope=Scope
+XWiki.OIDC.ClientConfigurationClass_groupsClaim=Groups claim
+XWiki.OIDC.ClientConfigurationClass_groupsMapping=Groups mapping
+XWiki.OIDC.ClientConfigurationClass_allowedGroups=Allowed groups
+XWiki.OIDC.ClientConfigurationClass_forbiddenGroups=Forbidden groups
+XWiki.OIDC.ClientConfigurationClass_userNameFormatter=User name format
+XWiki.OIDC.ClientConfigurationClass_userMapping=User mapping
+XWiki.OIDC.ClientConfigurationClass_clientSecret=Secret
+XWiki.OIDC.ClientConfigurationClass_clientId=Client ID
+EntraID.Code.EntraIDConfigurationClass_tenantId=Tenant ID
+EntraID.Code.EntraIDConfigurationClass_enableXWikiLoginGlobal=Allow XWiki Login
+EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups=XWiki login user groups
+
+XWiki.OIDC.ClientConfigurationClass_enableUser.hint=If disabled, the users from Entra ID will have their accounts disabled at first login.
+XWiki.OIDC.ClientConfigurationClass_skipped.hint=Disable the Entra ID authentication.
+XWiki.OIDC.ClientConfigurationClass_scope.hint=The scopes to use when redirecting to the provider.
+XWiki.OIDC.ClientConfigurationClass_groupsClaim.hint=Indicate the field containing the list of groups (in case it's not an OpenID Connect standard).
+XWiki.OIDC.ClientConfigurationClass_groupsMapping.hint=Associates the XWiki groups with Entra ID groups.
+XWiki.OIDC.ClientConfigurationClass_allowedGroups.hint=The groups the user need to belong to be allowed to authenticate.
+XWiki.OIDC.ClientConfigurationClass_forbiddenGroups.hint=The groups that if a user belongs to, it will not be allowed to authenticate.
+XWiki.OIDC.ClientConfigurationClass_userNameFormatter.hint=The pattern to use to generate the unique identifier of the user.
+XWiki.OIDC.ClientConfigurationClass_userMapping.hint=Associate non-standard properties coming from the OpenID Connect provider with the XWiki user.
+XWiki.OIDC.ClientConfigurationClass_clientSecret.hint=The client secret registered on the provider.
+XWiki.OIDC.ClientConfigurationClass_clientId.hint=The client identifier used by the authentication.
+EntraID.Code.EntraIDConfigurationClass_tenantId.hint=Entra ID instance ID.
+EntraID.Code.EntraIDConfigurationClass_enableXWikiLoginGlobal.hint=Allow a guest user to login using the standard XWiki authenticator.
+EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups.hint=User groups allowed to log in with XWiki.
+
+entra.properties.data.newEntry=New entry
+entra.properties.data.tip.key.groupMap=XWiki group...
+entra.properties.data.tip.value.groupMap=Group object ID...
+entra.properties.data.tip.key.userMap=XWiki user property...
+entra.properties.data.tip.value.userMap=Provider property...
+entra.properties.data.tip.value.forbiddenGroup=Forbidden groups...
+entra.properties.data.tip.value.allowedGroup=Allowed groups...
+
+entra.drawer.header.login=Log in with XWiki
+entra.drawer.header.switch=Switch to XWiki user</content>
+  <object>
+    <name>EntraID.Code.Translations</name>
+    <number>0</number>
+    <className>XWiki.TranslationDocumentClass</className>
+    <guid>01d84622-baf7-448b-96a4-93fcd4276764</guid>
+    <class>
+      <name>XWiki.TranslationDocumentClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>1</number>
+        <prettyName>Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>GLOBAL|WIKI|USER|ON_DEMAND</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <scope>WIKI</scope>
+    </property>
+  </object>
+</xwikidoc>

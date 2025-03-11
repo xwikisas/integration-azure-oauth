@@ -22,21 +22,21 @@
   <parent>
     <groupId>com.xwiki.integration-azure-oauth</groupId>
     <artifactId>integration-azure-oauth-parent</artifactId>
-    <version>1.9.1-SNAPSHOT</version>
+    <version>2.0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>integration-azure-oauth-api</artifactId>
   <packaging>jar</packaging>
 
-  <name>Microsoft Azure Active Directory Single-Sign-On (SSO) (pro) API</name>
-  <description>This extension allows users to authenticate to the wiki using Azure Active Directory</description>
-
+  <name>Microsoft Entra ID SSO API</name>
+  <description>This extension allows users to authenticate to the wiki using Entra ID, formerly known as Azure Active Directory.</description>
+  <properties>
+    <!-- This module is a leftover dependency from the old Azure OAuth version, and it is no longer needed as its
+      functionalities have been replaced by OIDC. Removing this module is also necessary to allow the user to select
+      the Authentication service. -->
+    <xwiki.extension.features>com.xwiki.identity-oauth:identity-oauth-api</xwiki.extension.features>
+  </properties>
   <dependencies>
-    <dependency>
-      <groupId>com.github.scribejava</groupId>
-      <artifactId>scribejava-apis</artifactId>
-      <version>6.9.0</version>
-    </dependency>
     <dependency>
       <groupId>com.xwiki.licensing</groupId>
       <artifactId>application-licensing-licensor-api</artifactId>
@@ -53,10 +53,35 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.xwiki.identity-oauth</groupId>
-      <artifactId>identity-oauth-api</artifactId>
-      <version>${identity.oauth.version}</version>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-configuration-default</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib.oidc</groupId>
+      <artifactId>oidc-authenticator</artifactId>
+      <version>2.14.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rest-server</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-bridge</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-refactoring-api</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${commons.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>
