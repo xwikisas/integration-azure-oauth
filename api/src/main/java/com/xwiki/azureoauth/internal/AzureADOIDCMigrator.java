@@ -182,9 +182,6 @@ public class AzureADOIDCMigrator
         Map<String, Object> newConfig = new HashMap<>();
         EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
         AzureOldConfiguration oauthConfiguration = identityOAuthConfigurationProvider.get();
-        if (entraIDConfiguration.getScope().isEmpty()) {
-            newConfig.put("scope", oauthConfiguration.getScope());
-        }
         if (entraIDConfiguration.getClientID().isEmpty()) {
             newConfig.put("clientId", oauthConfiguration.getClientID());
         }
