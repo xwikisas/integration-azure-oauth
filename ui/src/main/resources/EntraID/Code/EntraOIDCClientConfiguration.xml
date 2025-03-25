@@ -370,6 +370,15 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
+      <afterLogoutURL>
+        <disabled>0</disabled>
+        <name>afterLogoutURL</name>
+        <number>30</number>
+        <prettyName>URL after Logout</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </afterLogoutURL>
       <allowedGroups>
         <contenttype>PureText</contenttype>
         <disabled>0</disabled>
@@ -670,6 +679,9 @@
       </xwikiProvider>
     </class>
     <property>
+      <afterLogoutURL/>
+    </property>
+    <property>
       <allowedGroups/>
     </property>
     <property>
@@ -715,7 +727,7 @@
       <responseType>code</responseType>
     </property>
     <property>
-      <scope/>
+      <scope>openid,profile,email,address</scope>
     </property>
     <property>
       <skipped>0</skipped>
