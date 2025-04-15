@@ -180,7 +180,6 @@ class AzureADOIDCMigratorTest
         Map<String, Object> configMap = new HashMap<>(endpoints);
         configMap.put("clientId", "client_id");
         configMap.put("clientSecret", "secret");
-        configMap.put("scope", "scope1,scope2");
         verify(entraIDConfiguration, Mockito.times(1)).setOIDCConfiguration(configMap);
     }
 
