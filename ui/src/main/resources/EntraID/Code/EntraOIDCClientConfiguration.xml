@@ -545,6 +545,17 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </scope>
+      <skipLogoutIdToken>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>select</displayType>
+        <name>skipLogoutIdToken</name>
+        <number>32</number>
+        <prettyName>Skip ID Token at logout</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </skipLogoutIdToken>
       <skipped>
         <disabled>0</disabled>
         <displayFormType>select</displayFormType>
@@ -565,14 +576,43 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </tokenEndpoint>
       <tokenEndpointMethod>
+        <cache>0</cache>
+        <defaultValue>client_secret_basic</defaultValue>
         <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
         <name>tokenEndpointMethod</name>
         <number>16</number>
         <prettyName>Token endpoint authentication method</prettyName>
-        <size>255</size>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+        <values>client_secret_basic|client_secret_post</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tokenEndpointMethod>
+      <tokenStorageScope>
+        <cache>0</cache>
+        <defaultValue>NONE</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>tokenStorageScope</name>
+        <number>31</number>
+        <prettyName>Store tokens</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>NONE|USER|WIKI</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </tokenStorageScope>
       <userInfoClaims>
         <contenttype>PureText</contenttype>
         <disabled>0</disabled>
@@ -730,6 +770,9 @@
       <scope>openid,profile,email,address</scope>
     </property>
     <property>
+      <skipLogoutIdToken>1</skipLogoutIdToken>
+    </property>
+    <property>
       <skipped>0</skipped>
     </property>
     <property>
@@ -737,6 +780,9 @@
     </property>
     <property>
       <tokenEndpointMethod>client_secret_basic</tokenEndpointMethod>
+    </property>
+    <property>
+      <tokenStorageScope>NONE</tokenStorageScope>
     </property>
     <property>
       <userInfoClaims/>
