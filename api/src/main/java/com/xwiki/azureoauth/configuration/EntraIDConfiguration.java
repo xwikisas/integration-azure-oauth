@@ -111,6 +111,7 @@ public interface EntraIDConfiguration
      * Get the token endpoint saved in the OIDC configuration.
      *
      * @return the configured token endpoint.
+     * @since 2.1
      */
     @Unstable
     String getTokenEndpoint();

@@ -57,7 +57,7 @@
     #set ($discard = $response.sendError(401, 'CSRF token verification failed!'))
   #elseif ($request.data == 'jobStatus')
     #set ($syncJobId = $request.jobId.split('/'))
-    #returnImportJobStatusJSON($syncJobId)
+    #returnSyncJobStatusJSON($syncJobId)
   #end
 #end
 {{/velocity}}</content>

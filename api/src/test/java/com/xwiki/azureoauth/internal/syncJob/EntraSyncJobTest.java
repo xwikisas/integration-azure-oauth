@@ -34,6 +34,7 @@ import com.xwiki.azureoauth.syncJob.EntraSyncJobRequest;
 import com.xwiki.azureoauth.syncJob.EntraSyncJobStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -73,8 +74,11 @@ class EntraSyncJobTest
         when(request.getId()).thenReturn(List.of("entra", "users", "sync", "true", "true"));
 
         syncJob.initialize(request);
-        doThrow(new RuntimeException("")).when(syncManager).syncUsers(true, true);
-        syncJob.runInternal();
+        doThrow(new RuntimeException("Some error")).when(syncManager).syncUsers(true, true);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            syncJob.runInternal();
+        });
+        assertEquals("java.lang.RuntimeException: Some error", exception.getMessage());
         assertEquals("Started sync job with ID: [[entra, users, sync, true, true]]", logCapture.getMessage(0));
         assertEquals("Error during user sync with Entra ID.", logCapture.getMessage(1));
         assertEquals("Finished sync job with ID: [[entra, users, sync, true, true]]", logCapture.getMessage(2));

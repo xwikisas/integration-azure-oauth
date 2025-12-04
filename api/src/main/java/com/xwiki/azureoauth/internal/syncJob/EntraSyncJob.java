@@ -82,6 +82,7 @@ public class EntraSyncJob extends AbstractJob<EntraSyncJobRequest, EntraSyncJobS
         } catch (Exception e) {
             logger.error("Error during user sync with Entra ID.", e);
             progressManager.endStep(this);
+            throw new RuntimeException(e);
         } finally {
             this.progressManager.popLevelProgress(this);
             logger.debug("Finished sync job with ID: [{}]", this.status.getJobID());
