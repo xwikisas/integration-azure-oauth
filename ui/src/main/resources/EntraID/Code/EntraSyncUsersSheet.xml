@@ -146,7 +146,7 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>define('mocca-calendar-notification', {
+      <code>define('entra-sync-notification', {
   prefix: 'entra.sync.notification.',
   keys: [
     'inprogress',
@@ -156,7 +156,7 @@
   ]
 });
 
-require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!mocca-calendar-notification'],
+require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-notification'],
         function($, xwikiMeta, JobRunner, l10n) {
   $(document).on('click', '.entra-sync-action', function (event) {
     event.preventDefault();
