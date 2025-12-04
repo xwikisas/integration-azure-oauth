@@ -112,5 +112,6 @@ public interface EntraIDConfiguration
      *
      * @return the configured token endpoint.
      */
+    @Unstable
     String getTokenEndpoint();
 }

@@ -61,5 +61,6 @@ public interface EntraIDResource extends XWikiRestComponent
      */
     @PUT
     @Path("/user/sync")
+    @Unstable
     Response syncUsers() throws XWikiRestException;
 }
