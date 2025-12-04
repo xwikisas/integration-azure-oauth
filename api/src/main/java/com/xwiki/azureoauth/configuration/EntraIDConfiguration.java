@@ -106,4 +106,11 @@ public interface EntraIDConfiguration
      * @return the user groups that are allowed to log in with XWiki.
      */
     String getXWikiLoginGroups();
+
+    /**
+     * Get the token endpoint saved in the OIDC configuration.
+     *
+     * @return the configured token endpoint.
+     */
+    String getTokenEndpoint();
 }

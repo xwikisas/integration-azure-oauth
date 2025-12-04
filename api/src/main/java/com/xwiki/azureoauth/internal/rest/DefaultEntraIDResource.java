@@ -20,6 +20,7 @@
 package com.xwiki.azureoauth.internal.rest;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,12 +32,19 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.job.Job;
+import org.xwiki.job.JobExecutor;
 import org.xwiki.rest.XWikiRestException;
+import org.xwiki.security.authorization.AccessDeniedException;
+import org.xwiki.security.authorization.ContextualAuthorizationManager;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.velocity.tools.EscapeTool;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
+import com.xwiki.azureoauth.internal.syncJob.EntraSyncJob;
 import com.xwiki.azureoauth.rest.EntraIDResource;
+import com.xwiki.azureoauth.syncJob.EntraSyncJobRequest;
 
 /**
  * Default implementation of {@link EntraIDResource}.
@@ -53,7 +61,13 @@ public class DefaultEntraIDResource implements EntraIDResource
     private Provider<XWikiContext> wikiContextProvider;
 
     @Inject
+    private ContextualAuthorizationManager contextualAuthorizationManager;
+
+    @Inject
     private Logger logger;
+
+    @Inject
+    private JobExecutor jobExecutor;
 
     @Override
     public Response xwikiLogin(String redirectDocument) throws XWikiRestException
@@ -73,5 +87,40 @@ public class DefaultEntraIDResource implements EntraIDResource
                 ExceptionUtils.getRootCauseMessage(e));
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public Response syncUsers() throws XWikiRestException
+    {
+        try {
+            contextualAuthorizationManager.checkAccess(Right.ADMIN);
+
+            String disable = getRequestField("disable");
+            String remove = getRequestField("remove");
+            List<String> jobId = List.of("entra", "users", "sync", disable, remove);
+            Job job = this.jobExecutor.getJob(jobId);
+            if (job == null) {
+                EntraSyncJobRequest entraSyncJobRequest =
+                    new EntraSyncJobRequest(jobId, Boolean.parseBoolean(disable), Boolean.parseBoolean(remove));
+                this.jobExecutor.execute(EntraSyncJob.JOB_TYPE, entraSyncJobRequest);
+                return Response.status(201).build();
+            } else {
+                return Response.status(200).build();
+            }
+        } catch (AccessDeniedException deniedException) {
+            logger.warn("Failed to synchronize users with EntraID due to restricted rights.");
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        } catch (Exception e) {
+            String errorMessage = String.format("Failed to synchronize users with EntraID. Root cause is: [%s]",
+                ExceptionUtils.getRootCauseMessage(e));
+            logger.warn(errorMessage, e);
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private String getRequestField(String field)
+    {
+        XWikiContext wikiContext = wikiContextProvider.get();
+        return wikiContext.getRequest().get(field);
     }
 }

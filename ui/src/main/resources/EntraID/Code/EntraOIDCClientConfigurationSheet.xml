@@ -51,11 +51,13 @@
 #set ($configClassName = 'XWiki.OIDC.ClientConfigurationClass')
 {{/velocity}}
 
+{{include reference="EntraID.Code.EntraSyncUsersSheet" /}}
 {{velocity}}
 #if ("$!section" != '')
   {{html clean="false"}}
   #set($formId = "${section.toLowerCase()}_${configClassName}")
-
+  &lt;hr&gt;
+  &lt;h3&gt;$escapetool.xml($services.localization.render('entra.administration.configuration.title'))&lt;/h3&gt;
   &lt;form id="$escapetool.xml($formId)" method="post"
       action="$escapetool.xml($xwiki.getURL($configDoc, 'saveandcontinue'))"
       class="xform"&gt;

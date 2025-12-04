@@ -105,4 +105,11 @@ class DefaultEntraIDConfigurationTest
         when(entraIDConfig.getProperty("xwikiLoginGroups", "")).thenReturn("wiki_group1,wiki_gr2");
         assertEquals("wiki_group1,wiki_gr2", defaultEntraIDConfiguration.getXWikiLoginGroups());
     }
+
+    @Test
+    void getTokenEndpointTest()
+    {
+        when(oidcConfig.getProperty("tokenEndpoint", "")).thenReturn("token endpoint");
+        assertEquals("token endpoint", defaultEntraIDConfiguration.getTokenEndpoint());
+    }
 }

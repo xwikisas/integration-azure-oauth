@@ -19,13 +19,22 @@
  */
 package com.xwiki.azureoauth.internal.rest;
 
+import java.util.List;
+
 import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mock;
+import org.xwiki.job.JobException;
+import org.xwiki.job.JobExecutor;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.rest.XWikiRestException;
+import org.xwiki.security.authorization.AccessDeniedException;
+import org.xwiki.security.authorization.ContextualAuthorizationManager;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -34,9 +43,15 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.web.XWikiRequest;
+import com.xwiki.azureoauth.internal.syncJob.EntraSyncJob;
+import com.xwiki.azureoauth.syncJob.EntraSyncJobRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @ComponentTest
@@ -54,14 +69,35 @@ class DefaultEntraIDResourceTest
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
+    @MockComponent
+    private ContextualAuthorizationManager contextualAuthorizationManager;
+
+    @MockComponent
+    private JobExecutor jobExecutor;
+
+    @Mock
+    private EntraSyncJob job;
+
+    @Mock
+    private XWikiRequest request;
+
     @Mock
     private XWiki wiki;
+
+    @Mock
+    private DocumentReference user;
+
+    @BeforeEach
+    void setup()
+    {
+        when(wikiContextProvider.get()).thenReturn(wikiContext);
+        when(wikiContext.getWiki()).thenReturn(wiki);
+        when(wikiContext.getRequest()).thenReturn(request);
+    }
 
     @Test
     void xwikiLoginTest() throws XWikiRestException
     {
-        when(wikiContextProvider.get()).thenReturn(wikiContext);
-        when(wikiContext.getWiki()).thenReturn(wiki);
         String redirectDocumentURL = "http://localhost:8080/xwiki/bin/view/Sandbox/WebHome";
         when(wiki.getURL("Sandbox.WebHome", "view", "", wikiContext)).thenReturn(redirectDocumentURL);
         String parameters = String.format("xredirect=%s&loginLink=1&oidc.skipped=true", redirectDocumentURL);
@@ -70,10 +106,8 @@ class DefaultEntraIDResourceTest
     }
 
     @Test
-    void xwikiLoginTestFail() throws XWikiRestException
+    void xwikiLoginTestFail()
     {
-        when(wikiContextProvider.get()).thenReturn(wikiContext);
-        when(wikiContext.getWiki()).thenReturn(wiki);
         String redirectDocumentURL = null;
         when(wiki.getURL("Sandbox.WebHome", "view", "", wikiContext)).thenReturn(redirectDocumentURL);
         String parameters = String.format("xredirect=%s&loginLink=1&oidc.skipped=true", redirectDocumentURL);
@@ -81,7 +115,57 @@ class DefaultEntraIDResourceTest
         WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
             defaultEntraIDResource.xwikiLogin("Sandbox.WebHome");
         });
-        assertEquals("Failed to generate the log in redirect URL. Root cause: [NullPointerException: ]", logCapture.getMessage(0));
+        assertEquals("Failed to generate the log in redirect URL. Root cause: [NullPointerException: ]",
+            logCapture.getMessage(0));
         assertEquals(500, exception.getResponse().getStatus());
+    }
+
+    @Test
+    void syncUsersTestNotAdmin() throws AccessDeniedException
+    {
+        doThrow(new AccessDeniedException(Right.ADMIN, user, null)).when(contextualAuthorizationManager)
+            .checkAccess(Right.ADMIN);
+        WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
+            defaultEntraIDResource.syncUsers();
+        });
+        assertEquals(401, exception.getResponse().getStatus());
+        assertEquals("Failed to synchronize users with EntraID due to restricted rights.", logCapture.getMessage(0));
+    }
+
+    @Test
+    void syncUsersTestJobFound() throws XWikiRestException
+    {
+        when(request.get("disable")).thenReturn("true");
+        when(request.get("remove")).thenReturn("true");
+        List<String> jobId = List.of("entra", "users", "sync", "true", "true");
+        when(jobExecutor.getJob(jobId)).thenReturn(job);
+        assertEquals(200, defaultEntraIDResource.syncUsers().getStatus());
+    }
+
+    @Test
+    void syncUsersTestFail() throws JobException
+    {
+        when(request.get("disable")).thenReturn("true");
+        when(request.get("remove")).thenReturn("true");
+        List<String> jobId = List.of("entra", "users", "sync", "true", "true");
+        when(jobExecutor.getJob(jobId)).thenReturn(null);
+        when(jobExecutor.execute(eq(EntraSyncJob.JOB_TYPE), any(EntraSyncJobRequest.class))).thenThrow(
+            new JobException("Job execution error"));
+        WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
+            defaultEntraIDResource.syncUsers();
+        });
+        assertEquals(500, exception.getResponse().getStatus());
+        assertEquals("Failed to synchronize users with EntraID. Root cause is: [JobException: Job execution error]",
+            logCapture.getMessage(0));
+    }
+
+    @Test
+    void syncUsersTest() throws XWikiRestException
+    {
+        when(request.get("disable")).thenReturn("true");
+        when(request.get("remove")).thenReturn("true");
+        List<String> jobId = List.of("entra", "users", "sync", "true", "true");
+        when(jobExecutor.getJob(jobId)).thenReturn(null);
+        assertEquals(201, defaultEntraIDResource.syncUsers().getStatus());
     }
 }
