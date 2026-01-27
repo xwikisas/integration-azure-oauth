@@ -17,15 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.internal.network;
+package com.xwiki.azureoauth.internal;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map;
 
+import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -38,7 +38,6 @@ import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -84,7 +83,7 @@ public class EntraIDNetworkManagerTest
     {
         when(httpResponse.statusCode()).thenReturn(500);
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            entraIDNetworkManager.getEntraUsersJsonMap();
+            entraIDNetworkManager.getEntraUsersJson();
         });
         assertEquals("Failed to get token", exception.getMessage());
     }
@@ -103,7 +102,7 @@ public class EntraIDNetworkManagerTest
         when(httpClient.send(eq(request), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponse2);
         when(httpResponse2.statusCode()).thenReturn(500);
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            entraIDNetworkManager.getEntraUsersJsonMap();
+            entraIDNetworkManager.getEntraUsersJson();
         });
 
         assertEquals("Graph request did not return a valid response.", exception.getMessage());
@@ -118,13 +117,9 @@ public class EntraIDNetworkManagerTest
             + "{ \"id\": \"user3\", \"accountEnabled\": true }]}";
 
         when(httpResponse.body()).thenReturn(jsonBody);
-
-        Map<String, Boolean> jsonMap = entraIDNetworkManager.getEntraUsersJsonMap();
-        assertTrue(jsonMap.containsKey("user1"));
-        assertTrue(jsonMap.containsKey("user2"));
-        assertTrue(jsonMap.containsKey("user3"));
-        assertTrue(jsonMap.get("user3"));
-        assertFalse(jsonMap.get("user2"));
-        assertTrue(jsonMap.get("user1"));
+        JSONArray jsonArray = entraIDNetworkManager.getEntraUsersJson();
+        assertEquals("user1", jsonArray.getJSONObject(0).optString("id"));
+        assertFalse(jsonArray.getJSONObject(1).optBoolean("accountEnabled"));
+        assertEquals("user3", jsonArray.getJSONObject(2).optString("id"));
     }
 }

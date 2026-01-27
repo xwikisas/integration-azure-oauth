@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.internal.syncJob;
+package com.xwiki.azureoauth.internal.user.sync;
 
 import java.util.List;
 
@@ -29,8 +29,8 @@ import org.xwiki.job.AbstractJob;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.JobGroupPath;
 
-import com.xwiki.azureoauth.syncJob.EntraSyncJobRequest;
-import com.xwiki.azureoauth.syncJob.EntraSyncJobStatus;
+import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobRequest;
+import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobStatus;
 
 /**
  * Job that handles the user sync between XWiki users and Entra ID users.
@@ -39,8 +39,9 @@ import com.xwiki.azureoauth.syncJob.EntraSyncJobStatus;
  * @since 2.1
  */
 @Component
-@Named(EntraSyncJob.JOB_TYPE)
-public class EntraSyncJob extends AbstractJob<EntraSyncJobRequest, EntraSyncJobStatus> implements GroupedJob
+@Named(EntraIdUsersSyncJob.JOB_TYPE)
+public class EntraIdUsersSyncJob extends AbstractJob<EntraIdUsersSyncJobRequest, EntraIdUsersSyncJobStatus>
+    implements GroupedJob
 {
     /**
      * Entra users sync job type.
@@ -48,7 +49,7 @@ public class EntraSyncJob extends AbstractJob<EntraSyncJobRequest, EntraSyncJobS
     public static final String JOB_TYPE = "entra.users.sync";
 
     @Inject
-    private EntraSyncManager syncManager;
+    private EntraIdUsersSyncManager syncManager;
 
     @Override
     public JobGroupPath getGroupPath()
@@ -63,9 +64,9 @@ public class EntraSyncJob extends AbstractJob<EntraSyncJobRequest, EntraSyncJobS
     }
 
     @Override
-    protected EntraSyncJobStatus createNewStatus(EntraSyncJobRequest request)
+    protected EntraIdUsersSyncJobStatus createNewStatus(EntraIdUsersSyncJobRequest request)
     {
-        return new EntraSyncJobStatus(JOB_TYPE, request, observationManager, loggerManager);
+        return new EntraIdUsersSyncJobStatus(JOB_TYPE, request, observationManager, loggerManager);
     }
 
     @Override

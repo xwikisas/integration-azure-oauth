@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.syncJob;
+package com.xwiki.azureoauth.user.sync;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import org.xwiki.stability.Unstable;
  * @since 2.1
  */
 @Unstable
-public class EntraSyncJobRequest extends AbstractRequest
+public class EntraIdUsersSyncJobRequest extends AbstractRequest
 {
     private boolean disable;
 
@@ -40,19 +40,19 @@ public class EntraSyncJobRequest extends AbstractRequest
     /**
      * Default constructor.
      */
-    public EntraSyncJobRequest()
+    public EntraIdUsersSyncJobRequest()
     {
         setDefaultId();
     }
 
     /**
-     * Creates a specific request for package upload job.
+     * Creates a specific request for users sync job.
      *
      * @param jobId the ID of the request.
      * @param disable {@code true} if the sync should also sync disabled users, or {@code false} otherwise
      * @param remove {@code true} if the sync should also sync removed users, or {@code false} otherwise
      */
-    public EntraSyncJobRequest(List<String> jobId, boolean disable, boolean remove)
+    public EntraIdUsersSyncJobRequest(List<String> jobId, boolean disable, boolean remove)
     {
         setId(jobId);
         this.disable = disable;

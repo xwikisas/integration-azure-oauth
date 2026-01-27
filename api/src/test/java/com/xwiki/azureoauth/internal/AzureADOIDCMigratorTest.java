@@ -87,7 +87,7 @@ class AzureADOIDCMigratorTest
     private XWikiContext wikiContext;
 
     @MockComponent
-    private EntraQueryManager entraQueryManager;
+    private EntraIdUserQueryService entraQueryManager;
 
     @MockComponent
     @Named("current")
@@ -168,7 +168,7 @@ class AzureADOIDCMigratorTest
     void refactorOIDCIssuerTest() throws QueryException, XWikiException
     {
         when(documentReferenceResolver.resolve("XWiki.OIDC.UserClass")).thenReturn(classReference);
-        when(entraQueryManager.getAzureUsers()).thenReturn(List.of(wikiDocument1, wikiDocument2));
+        when(entraQueryManager.getEntraIdUsers()).thenReturn(List.of(wikiDocument1, wikiDocument2));
         when(wikiDocument1.getXObject(classReference)).thenReturn(baseObject1);
         when(wikiDocument2.getXObject(classReference)).thenReturn(baseObject2);
         when(baseObject1.getField("issuer")).thenReturn(propertyInterface1);

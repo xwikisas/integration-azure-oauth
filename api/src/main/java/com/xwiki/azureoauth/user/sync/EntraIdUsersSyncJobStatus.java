@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.syncJob;
+package com.xwiki.azureoauth.user.sync;
 
 import java.util.List;
 
@@ -27,30 +27,30 @@ import org.xwiki.observation.ObservationManager;
 import org.xwiki.stability.Unstable;
 
 /**
- * The status of a sync job.
+ * The status of a users sync job.
  *
  * @version $Id$
  * @since 2.1
  */
 @Unstable
-public class EntraSyncJobStatus extends DefaultJobStatus<EntraSyncJobRequest>
+public class EntraIdUsersSyncJobStatus extends DefaultJobStatus<EntraIdUsersSyncJobRequest>
 {
     /**
-     * Create a new sync job status.
+     * Create a new users sync job status.
      *
      * @param jobType the job type.
      * @param request the request provided when the job was started.
      * @param observationManager the observation manager.
      * @param loggerManager the logger manager.
      */
-    public EntraSyncJobStatus(String jobType, EntraSyncJobRequest request, ObservationManager observationManager,
-        LoggerManager loggerManager)
+    public EntraIdUsersSyncJobStatus(String jobType, EntraIdUsersSyncJobRequest request,
+        ObservationManager observationManager, LoggerManager loggerManager)
     {
         super(jobType, request, null, observationManager, loggerManager);
     }
 
     /**
-     * Get the ID for the job.
+     * Get the ID of the job.
      *
      * @return the job ID as a {@link List}.
      */

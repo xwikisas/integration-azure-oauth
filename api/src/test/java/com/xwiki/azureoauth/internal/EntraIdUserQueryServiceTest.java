@@ -45,15 +45,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for {@link EntraQueryManagerTest}
+ * Unit test for {@link EntraIdUserQueryServiceTest}
  *
  * @version $Id$
  */
 @ComponentTest
-class EntraQueryManagerTest
+class EntraIdUserQueryServiceTest
 {
     @InjectMockComponents
-    private EntraQueryManager entraQueryManager;
+    private EntraIdUserQueryService entraIdUserQueryService;
 
     @MockComponent
     private WikiDescriptorManager wikiManager;
@@ -107,6 +107,6 @@ class EntraQueryManagerTest
         when(wiki.getDocument(documentReference1, wikiContext)).thenReturn(wikiDocument1);
         when(wiki.getDocument(documentReference2, wikiContext)).thenReturn(wikiDocument2);
 
-        assertEquals(List.of(wikiDocument1, wikiDocument2), entraQueryManager.getAzureUsers());
+        assertEquals(List.of(wikiDocument1, wikiDocument2), entraIdUserQueryService.getEntraIdUsers());
     }
 }

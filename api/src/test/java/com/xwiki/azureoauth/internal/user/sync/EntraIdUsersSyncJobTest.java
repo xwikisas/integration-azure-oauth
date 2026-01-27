@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.internal.syncJob;
+package com.xwiki.azureoauth.internal.user.sync;
 
 import java.util.List;
 
@@ -30,8 +30,8 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
-import com.xwiki.azureoauth.syncJob.EntraSyncJobRequest;
-import com.xwiki.azureoauth.syncJob.EntraSyncJobStatus;
+import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobRequest;
+import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,21 +41,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for {@link EntraSyncJobTest}
+ * Unit test for {@link EntraIdUsersSyncJobTest}
  *
  * @version $Id$
  */
 @ComponentTest
-class EntraSyncJobTest
+class EntraIdUsersSyncJobTest
 {
     @InjectMockComponents
-    private EntraSyncJob syncJob;
+    private EntraIdUsersSyncJob syncJob;
 
     @MockComponent
-    private EntraSyncManager syncManager;
+    private EntraIdUsersSyncManager syncManager;
 
     @Mock
-    private EntraSyncJobRequest request;
+    private EntraIdUsersSyncJobRequest request;
 
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
@@ -63,7 +63,7 @@ class EntraSyncJobTest
     @Test
     void createNewStatus()
     {
-        assertEquals(EntraSyncJobStatus.class, syncJob.createNewStatus(new EntraSyncJobRequest()).getClass());
+        assertEquals(EntraIdUsersSyncJobStatus.class, syncJob.createNewStatus(new EntraIdUsersSyncJobRequest()).getClass());
     }
 
     @Test

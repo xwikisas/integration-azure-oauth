@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.internal.syncJob;
+package com.xwiki.azureoauth.internal.user.sync;
 
 import java.util.List;
 import java.util.Map;
@@ -39,37 +39,32 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.PropertyInterface;
-import com.xwiki.azureoauth.internal.EntraQueryManager;
-import com.xwiki.azureoauth.internal.network.EntraIDNetworkManager;
+import com.xwiki.azureoauth.user.EntraIdUserService;
+import com.xwiki.azureoauth.user.ExternalUser;
 
-import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration.OIDC_USER_CLASS;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for {@link EntraSyncManagerTest}
+ * Unit test for {@link EntraIdUsersSyncManagerTest}
  *
  * @version $Id$
  */
 @ComponentTest
-class EntraSyncManagerTest
+class EntraIdUsersSyncManagerTest
 {
     @InjectMockComponents
-    private EntraSyncManager syncManager;
+    private EntraIdUsersSyncManager syncManager;
 
     @MockComponent
-    private EntraIDNetworkManager entraIDNetworkManager;
+    private EntraIdUserService entraIdUserService;
 
     @MockComponent
     private Provider<XWikiContext> wikiContextProvider;
 
     @MockComponent
     private WikiDescriptorManager wikiManager;
-
-    @MockComponent
-    private EntraQueryManager entraQueryManager;
 
     @MockComponent
     @Named("current")
@@ -80,9 +75,6 @@ class EntraSyncManagerTest
 
     @Mock
     private XWiki wiki;
-
-    @Mock
-    private DocumentReference oidcUserClassDocRef;
 
     @Mock
     private DocumentReference userClassDocRef;
@@ -97,25 +89,7 @@ class EntraSyncManagerTest
     private XWikiDocument userDoc3;
 
     @Mock
-    private BaseObject object1;
-
-    @Mock
-    private BaseObject object2;
-
-    @Mock
     private BaseObject objectUserClass2;
-
-    @Mock
-    private BaseObject object3;
-
-    @Mock
-    private PropertyInterface property1;
-
-    @Mock
-    private PropertyInterface property2;
-
-    @Mock
-    private PropertyInterface property3;
 
     @BeforeEach
     void setUp() throws Exception
@@ -123,19 +97,11 @@ class EntraSyncManagerTest
         when(wikiContextProvider.get()).thenReturn(wikiContext);
         when(wikiContext.getWiki()).thenReturn(wiki);
         when(wikiManager.getCurrentWikiId()).thenReturn("testWiki");
-        when(entraQueryManager.getAzureUsers()).thenReturn(List.of(userDoc1, userDoc2, userDoc3));
-        when(documentReferenceResolver.resolve(OIDC_USER_CLASS)).thenReturn(oidcUserClassDocRef);
-        when(userDoc1.getXObject(oidcUserClassDocRef)).thenReturn(object1);
-        when(userDoc2.getXObject(oidcUserClassDocRef)).thenReturn(object2);
-        when(userDoc3.getXObject(oidcUserClassDocRef)).thenReturn(object3);
-        when(object1.getField("subject")).thenReturn(property1);
-        when(object2.getField("subject")).thenReturn(property2);
-        when(object3.getField("subject")).thenReturn(property3);
-        when(property1.toFormString()).thenReturn("subject1");
-        when(property2.toFormString()).thenReturn("subject2");
-        when(property3.toFormString()).thenReturn("subject3");
-        Map<String, Boolean> jsonMap = Map.of("subject1", true, "subject2", false);
-        when(entraIDNetworkManager.getEntraUsersJsonMap()).thenReturn(jsonMap);
+        when(entraIdUserService.getInternalUsers()).thenReturn(
+            Map.of("subject1", userDoc1, "subject2", userDoc2, "subject3", userDoc3));
+        List<ExternalUser> externalUsers =
+            List.of(new ExternalUser("subject1", true), new ExternalUser("subject2", false));
+        when(entraIdUserService.getExternalUsers()).thenReturn(externalUsers);
 
         when(documentReferenceResolver.resolve("XWiki.XWikiUsers")).thenReturn(userClassDocRef);
         when(userDoc2.getXObject(userClassDocRef)).thenReturn(objectUserClass2);

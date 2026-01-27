@@ -85,7 +85,7 @@ public class AzureADOIDCMigrator
     private Provider<XWikiContext> xcontextProvider;
 
     @Inject
-    private EntraQueryManager entraQueryManager;
+    private EntraIdUserQueryService userQueryService;
 
     /**
      * Check if the current EntraID/OIDC configuration is empty and populate it with the old configuration from Azure
@@ -124,7 +124,7 @@ public class AzureADOIDCMigrator
 
         // XWiki might not be fully initialized yet, in which case it means we are not attempting to update the users.
         if (wiki != null) {
-            List<XWikiDocument> users = entraQueryManager.getAzureUsers();
+            List<XWikiDocument> users = userQueryService.getEntraIdUsers();
             for (XWikiDocument userDoc : users) {
                 BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
                 String issuer = oidcObj.getField(ISSUER).toFormString();

@@ -17,11 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.internal.syncJob;
+package com.xwiki.azureoauth.internal.user.sync;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,17 +31,13 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.query.QueryException;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xwiki.azureoauth.internal.EntraQueryManager;
-import com.xwiki.azureoauth.internal.network.EntraIDNetworkManager;
-
-import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration.OIDC_USER_CLASS;
+import com.xwiki.azureoauth.user.EntraIdUserService;
+import com.xwiki.azureoauth.user.ExternalUser;
 
 /**
  * Manager class handling the sync between Entra ID users and XWiki users.
@@ -48,9 +45,9 @@ import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfigur
  * @version $Id$
  * @since 2.1
  */
-@Component(roles = EntraSyncManager.class)
+@Component(roles = EntraIdUsersSyncManager.class)
 @Singleton
-public class EntraSyncManager
+public class EntraIdUsersSyncManager
 {
     private static final String USER_CLASS = "XWiki.XWikiUsers";
 
@@ -58,14 +55,11 @@ public class EntraSyncManager
     private Provider<XWikiContext> wikiContextProvider;
 
     @Inject
-    private EntraQueryManager entraQueryManager;
-
-    @Inject
-    private EntraIDNetworkManager entraIDNetworkManager;
-
-    @Inject
     @Named("current")
     private DocumentReferenceResolver<String> documentReferenceResolver;
+
+    @Inject
+    private EntraIdUserService userService;
 
     /**
      * Sync XWiki users that have the OIDC user class with the ones from Entra ID.
@@ -76,37 +70,28 @@ public class EntraSyncManager
      */
     public void syncUsers(boolean disable, boolean remove) throws Exception
     {
-        Map<String, XWikiDocument> usersMap = getAzureUsersMap();
-        Map<String, Boolean> jsonMap = entraIDNetworkManager.getEntraUsersJsonMap();
+        Map<String, XWikiDocument> usersMap = userService.getInternalUsers();
+        List<ExternalUser> externalUsers = userService.getExternalUsers();
+        // We index the values in a map to improve performance.
+        Map<String, ExternalUser> externalUsersById = externalUsers.stream()
+            .collect(Collectors.toMap(ExternalUser::getId, Function.identity()));
         XWikiContext wikiContext = wikiContextProvider.get();
         XWiki wiki = wikiContext.getWiki();
         for (Map.Entry<String, XWikiDocument> entry : usersMap.entrySet()) {
             XWikiDocument userDoc = entry.getValue();
-            if (!jsonMap.containsKey(entry.getKey())) {
+            String subject = entry.getKey();
+            ExternalUser externalUser = externalUsersById.get(subject);
+            if (externalUser == null) {
                 if (remove) {
                     wiki.deleteDocument(userDoc, wikiContext);
                 }
                 continue;
             }
-            boolean jsonActive = jsonMap.get(entry.getKey());
-            if (disable && !jsonActive) {
+            if (disable && !externalUser.isEnabled()) {
                 BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(USER_CLASS));
                 oidcObj.set("active", 0, wikiContext);
                 wiki.saveDocument(userDoc, wikiContext);
             }
         }
-    }
-
-    private Map<String, XWikiDocument> getAzureUsersMap() throws XWikiException, QueryException
-    {
-        List<XWikiDocument> users = entraQueryManager.getAzureUsers();
-        Map<String, XWikiDocument> userMap = new HashMap<>();
-
-        for (XWikiDocument userDoc : users) {
-            BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
-            String subject = oidcObj.getField("subject").toFormString();
-            userMap.put(subject, userDoc);
-        }
-        return userMap;
     }
 }

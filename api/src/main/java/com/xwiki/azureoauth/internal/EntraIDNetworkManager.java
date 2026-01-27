@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.internal.network;
+package com.xwiki.azureoauth.internal;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -25,7 +25,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -47,6 +46,8 @@ import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 @Singleton
 public class EntraIDNetworkManager
 {
+    private static final String USERS_API = "https://graph.microsoft.com/v1.0/users?$select=id,accountEnabled";
+
     @Inject
     private HttpClientBuilderFactory httpClientBuilderFactory;
 
@@ -57,15 +58,15 @@ public class EntraIDNetworkManager
      * Get the users from the Entra ID application as a {@link Map} formed of the user ID as a key and whether the
      * account is enabled or not as a value.
      *
-     * @return a {@link Map} consisting of the user ID as a key and whether the account is enabled or not as a value.
+     * @return a {@link JSONArray} consisting of the user ID and whether the account is enabled or not.
      * @throws Exception if any error occurs
      */
-    public Map<String, Boolean> getEntraUsersJsonMap() throws Exception
+    public JSONArray getEntraUsersJson() throws Exception
     {
         String accessToken = getAccessToken();
         HttpRequest request =
-            HttpRequest.newBuilder().uri(URI.create("https://graph.microsoft.com/v1.0/users?$select=id,accountEnabled"))
-                .header("Authorization", "Bearer " + accessToken).GET().build();
+            HttpRequest.newBuilder().uri(URI.create(USERS_API)).header("Authorization", "Bearer " + accessToken).GET()
+                .build();
 
         HttpClient client = httpClientBuilderFactory.getHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -74,15 +75,7 @@ public class EntraIDNetworkManager
         }
         JSONObject json = new JSONObject(response.body());
 
-        JSONArray users = json.getJSONArray("value");
-        Map<String, Boolean> jsonMap = new HashMap<>();
-        for (int i = 0; i < users.length(); i++) {
-            JSONObject user = users.getJSONObject(i);
-            String id = user.optString("id");
-            Boolean enabled = user.optBoolean("accountEnabled");
-            jsonMap.put(id, enabled);
-        }
-        return jsonMap;
+        return json.getJSONArray("value");
     }
 
     private String getAccessToken() throws Exception

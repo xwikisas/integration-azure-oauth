@@ -17,37 +17,39 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.internal.network;
+package com.xwiki.azureoauth.user;
 
-import java.net.http.HttpClient;
+import java.util.List;
+import java.util.Map;
 
-import javax.inject.Singleton;
+import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
-import org.xwiki.component.annotation.Component;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Simple factory for creating a HttpClient to help testing.
+ * Access XWiki internal and EntraId external users.
  *
  * @version $Id$
  * @since 2.1
  */
-@Component(roles = HttpClientBuilderFactory.class)
-@Singleton
-public class HttpClientBuilderFactory
+@Role
+@Unstable
+public interface EntraIdUserService
 {
-    private HttpClient httpClient;
+    /**
+     * Get a {@link Map} of internal users that are created from EntraId, with the user id (subject) as the key.
+     *
+     * @return the internal users that are created from EntraId
+     * @throws Exception if there are any errors while getting the users.
+     */
+    Map<String, XWikiDocument> getInternalUsers() throws Exception;
 
     /**
-     * Creates a HttpClient.
+     * Get a {@link List} of external users from EntraId.
      *
-     * @return a new HttpClient
+     * @return the external users info stored in {@link ExternalUser}
+     * @throws Exception if there are any errors while getting the users.
      */
-    public HttpClient getHttpClient()
-    {
-        if (httpClient == null) {
-            httpClient = HttpClient.newHttpClient();
-            return httpClient;
-        }
-        return httpClient;
-    }
+    List<ExternalUser> getExternalUsers() throws Exception;
 }

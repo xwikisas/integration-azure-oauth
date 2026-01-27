@@ -1,6 +1,6 @@
 com.xwiki.azureoauth.internal.AzureADOIDCMigrator
 com.xwiki.azureoauth.internal.EntraIDObjectUpdateListener
-com.xwiki.azureoauth.internal.EntraQueryManager
+com.xwiki.azureoauth.internal.EntraIdUserQueryService
 com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration
 com.xwiki.azureoauth.internal.configuration.OIDCClientConfigurationSource
 com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSource
@@ -8,8 +8,9 @@ com.xwiki.azureoauth.internal.oldConfiguration.OldAzureOAuthConfiguration
 com.xwiki.azureoauth.internal.oldConfiguration.OldAzureConfigurationSource
 com.xwiki.azureoauth.internal.oldConfiguration.OldIdentityOAuthConfigurationSource
 com.xwiki.azureoauth.internal.rest.DefaultEntraIDResource
-com.xwiki.azureoauth.internal.syncJob.EntraSyncManager
-com.xwiki.azureoauth.internal.network.HttpClientBuilderFactory
-com.xwiki.azureoauth.internal.network.EntraIDNetworkManager
-com.xwiki.azureoauth.internal.syncJob.EntraSyncJob
+com.xwiki.azureoauth.internal.user.DefaultEntraIdUserService
+com.xwiki.azureoauth.internal.user.sync.EntraIdUsersSyncManager
+com.xwiki.azureoauth.internal.HttpClientBuilderFactory
+com.xwiki.azureoauth.internal.EntraIDNetworkManager
+com.xwiki.azureoauth.internal.user.sync.EntraIdUsersSyncJob
 com.xwiki.azureoauth.script.EntraIDScriptService

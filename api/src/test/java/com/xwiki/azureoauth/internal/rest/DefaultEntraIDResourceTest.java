@@ -44,8 +44,8 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.web.XWikiRequest;
-import com.xwiki.azureoauth.internal.syncJob.EntraSyncJob;
-import com.xwiki.azureoauth.syncJob.EntraSyncJobRequest;
+import com.xwiki.azureoauth.internal.user.sync.EntraIdUsersSyncJob;
+import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -76,7 +76,7 @@ class DefaultEntraIDResourceTest
     private JobExecutor jobExecutor;
 
     @Mock
-    private EntraSyncJob job;
+    private EntraIdUsersSyncJob job;
 
     @Mock
     private XWikiRequest request;
@@ -149,7 +149,7 @@ class DefaultEntraIDResourceTest
         when(request.get("remove")).thenReturn("true");
         List<String> jobId = List.of("entra", "users", "sync", "true", "true");
         when(jobExecutor.getJob(jobId)).thenReturn(null);
-        when(jobExecutor.execute(eq(EntraSyncJob.JOB_TYPE), any(EntraSyncJobRequest.class))).thenThrow(
+        when(jobExecutor.execute(eq(EntraIdUsersSyncJob.JOB_TYPE), any(EntraIdUsersSyncJobRequest.class))).thenThrow(
             new JobException("Job execution error"));
         WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
             defaultEntraIDResource.syncUsers();

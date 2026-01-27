@@ -40,20 +40,20 @@
 #set ($discard = $xwiki.jsx.use('EntraID.Code.EntraSyncUsersSheet'))
 {{html}}
 &lt;form id="entra-sync" action="$request.getContextPath()/rest/entraid/user/sync"&gt;
-    &lt;h3&gt;$escapetool.xml($services.localization.render('entra.administration.sync.title'))&lt;/h3&gt;
-    &lt;p&gt;$escapetool.xml($services.localization.render('entra.administration.sync.description'))&lt;/p&gt;
-    &lt;label&gt;
-        &lt;input type="checkbox" name="disable" checked&gt;
-        $escapetool.xml($services.localization.render('entra.administration.sync.checkbox.disable'))
-    &lt;/label&gt;
-    &lt;br/&gt;
-    &lt;label&gt;
-        &lt;input type="checkbox" name="remove" checked&gt;
-        $escapetool.xml($services.localization.render('entra.administration.sync.checkbox.remove'))
-    &lt;/label&gt;
-    &lt;br/&gt;&lt;br/&gt;
-    &lt;button class="entra-sync-action btn btn-primary" type="submit"&gt;
-      $escapetool.xml($services.localization.render('entra.administration.sync.button'))&lt;/button&gt;
+  &lt;h3&gt;$escapetool.xml($services.localization.render('entra.administration.sync.title'))&lt;/h3&gt;
+  &lt;p&gt;$escapetool.xml($services.localization.render('entra.administration.sync.description'))&lt;/p&gt;
+  &lt;label&gt;
+    &lt;input type="checkbox" name="disable" checked&gt;
+    $escapetool.xml($services.localization.render('entra.administration.sync.checkbox.disable'))
+  &lt;/label&gt;
+  &lt;br/&gt;
+  &lt;label&gt;
+    &lt;input type="checkbox" name="remove" checked&gt;
+    $escapetool.xml($services.localization.render('entra.administration.sync.checkbox.remove'))
+  &lt;/label&gt;
+  &lt;br/&gt;&lt;br/&gt;
+  &lt;button class="entra-sync-action btn btn-primary" type="submit"&gt;
+    $escapetool.xml($services.localization.render('entra.administration.sync.button'))&lt;/button&gt;
 &lt;/form&gt;
 {{/html}}
 {{/velocity}}
@@ -163,8 +163,7 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
     const form = $(this).closest('form');
     const disable = String(form.find('input[name="disable"]').prop('checked'));
     const remove   = String(form.find('input[name="remove"]').prop('checked'));
-    if (disable === 'false' &amp;&amp; remove === 'false')
-    {
+    if (disable === 'false' &amp;&amp; remove === 'false') {
       const notification = new XWiki.widgets.Notification(l10n.get('noAction'), 'info');
     } else {
       $(this).prop('disabled', true);

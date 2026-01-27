@@ -48,9 +48,9 @@ import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfigur
  * @version $Id$
  * @since 2.1
  */
-@Component(roles = EntraQueryManager.class)
+@Component(roles = EntraIdUserQueryService.class)
 @Singleton
-public class EntraQueryManager
+public class EntraIdUserQueryService
 {
     @Inject
     private QueryManager queryManager;
@@ -72,7 +72,7 @@ public class EntraQueryManager
      * @throws XWikiException if there is any error while retrieving the documents
      * @throws QueryException if the query execution fails
      */
-    public List<XWikiDocument> getAzureUsers() throws XWikiException, QueryException
+    public List<XWikiDocument> getEntraIdUsers() throws XWikiException, QueryException
     {
         List<XWikiDocument> azureUsers = new ArrayList<>();
         XWikiContext wikiContext = wikiContextProvider.get();
