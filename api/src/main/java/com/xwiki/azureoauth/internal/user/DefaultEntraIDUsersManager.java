@@ -46,20 +46,20 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xwiki.azureoauth.internal.EntraIDApiClient;
-import com.xwiki.azureoauth.user.EntraIDUserService;
+import com.xwiki.azureoauth.user.EntraIDUsersManager;
 import com.xwiki.azureoauth.user.ExternalUser;
 
 import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration.OIDC_USER_CLASS;
 
 /**
- * Default implementation of {@link EntraIDUserService}.
+ * Default implementation of {@link EntraIDUsersManager}.
  *
  * @version $Id$
  * @since 2.1
  */
 @Component
 @Singleton
-public class DefaultEntraIDUserService implements EntraIDUserService
+public class DefaultEntraIDUsersManager implements EntraIDUsersManager
 {
     private static final String ENTRA_ISSUER = "login.microsoftonline.com";
 
@@ -84,9 +84,9 @@ public class DefaultEntraIDUserService implements EntraIDUserService
     private QueryFilter documentReferenceFilter;
 
     @Override
-    public Map<String, XWikiDocument> getEntraUsersMap() throws QueryException, XWikiException
+    public Map<String, XWikiDocument> getXWikiUsersMap() throws QueryException, XWikiException
     {
-        List<XWikiDocument> users = getEntraUsers();
+        List<XWikiDocument> users = getXWikiUsers();
         Map<String, XWikiDocument> userMap = new HashMap<>();
 
         for (XWikiDocument userDoc : users) {
@@ -98,7 +98,7 @@ public class DefaultEntraIDUserService implements EntraIDUserService
     }
 
     @Override
-    public List<XWikiDocument> getEntraUsers() throws XWikiException, QueryException
+    public List<XWikiDocument> getXWikiUsers() throws XWikiException, QueryException
     {
         List<XWikiDocument> azureUsers = new ArrayList<>();
         XWikiContext wikiContext = wikiContextProvider.get();

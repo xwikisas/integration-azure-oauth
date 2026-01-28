@@ -38,7 +38,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  */
 @Role
 @Unstable
-public interface EntraIDUserService
+public interface EntraIDUsersManager
 {
     /**
      * Get a {@link Map} of internal users that are created from EntraId, with the user id (subject) as the key.
@@ -46,7 +46,7 @@ public interface EntraIDUserService
      * @return the internal users that are created from EntraId
      * @throws Exception if there are any errors while getting the users.
      */
-    Map<String, XWikiDocument> getEntraUsersMap() throws Exception;
+    Map<String, XWikiDocument> getXWikiUsersMap() throws Exception;
 
     /**
      * Get a {@link List} of internal users that are created from EntraId.
@@ -55,7 +55,7 @@ public interface EntraIDUserService
      * @throws XWikiException if there is any error while retrieving the documents
      * @throws QueryException if the query execution fails
      */
-    List<XWikiDocument> getEntraUsers() throws XWikiException, QueryException;
+    List<XWikiDocument> getXWikiUsers() throws XWikiException, QueryException;
 
     /**
      * Get a {@link List} of external users from EntraId.

@@ -7,7 +7,7 @@ com.xwiki.azureoauth.internal.oldConfiguration.OldAzureOAuthConfiguration
 com.xwiki.azureoauth.internal.oldConfiguration.OldAzureConfigurationSource
 com.xwiki.azureoauth.internal.oldConfiguration.OldIdentityOAuthConfigurationSource
 com.xwiki.azureoauth.internal.rest.DefaultEntraIDResource
-com.xwiki.azureoauth.internal.user.DefaultEntraIDUserService
+com.xwiki.azureoauth.internal.user.DefaultEntraIDUsersManager
 com.xwiki.azureoauth.internal.user.sync.EntraIDUsersSyncManager
 com.xwiki.azureoauth.internal.HttpClientBuilderFactory
 com.xwiki.azureoauth.internal.EntraIDApiClient

@@ -55,15 +55,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for {@link DefaultEntraIDUserService}
+ * Unit test for {@link DefaultEntraIDUsersManager}
  *
  * @version $Id$
  */
 @ComponentTest
-class DefaultEntraIDUserServiceTest
+class DefaultEntraIDUsersManagerTest
 {
     @InjectMockComponents
-    private DefaultEntraIDUserService defaultEntraIdUserService;
+    private DefaultEntraIDUsersManager defaultEntraIDUsersManager;
 
     @MockComponent
     private EntraIDApiClient entraIDApiClient;
@@ -188,7 +188,7 @@ class DefaultEntraIDUserServiceTest
 
         JSONArray jsonArray = new JSONArray(jsonBody);
         when(entraIDApiClient.getUsers()).thenReturn(jsonArray);
-        List<ExternalUser> externalUsers = defaultEntraIdUserService.getEntraServerUsers();
+        List<ExternalUser> externalUsers = defaultEntraIDUsersManager.getEntraServerUsers();
         assertEquals("user1", externalUsers.get(0).getId());
         assertFalse(externalUsers.get(1).isEnabled());
         assertEquals("user3", externalUsers.get(2).getId());
@@ -206,13 +206,13 @@ class DefaultEntraIDUserServiceTest
         when(property3.toFormString()).thenReturn("subject3");
 
         Map<String, XWikiDocument> map = Map.of("subject1", userDoc1, "subject3", userDoc3);
-        Map<String, XWikiDocument> resultMap = defaultEntraIdUserService.getEntraUsersMap();
+        Map<String, XWikiDocument> resultMap = defaultEntraIDUsersManager.getXWikiUsersMap();
         assertEquals(map, resultMap);
     }
 
     @Test
     void getEntraUsersTest() throws QueryException, XWikiException
     {
-        assertEquals(List.of(userDoc1, userDoc3), defaultEntraIdUserService.getEntraUsers());
+        assertEquals(List.of(userDoc1, userDoc3), defaultEntraIDUsersManager.getXWikiUsers());
     }
 }

@@ -36,7 +36,7 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xwiki.azureoauth.user.EntraIDUserService;
+import com.xwiki.azureoauth.user.EntraIDUsersManager;
 import com.xwiki.azureoauth.user.ExternalUser;
 
 /**
@@ -61,7 +61,7 @@ public class EntraIDUsersSyncManager
     private DocumentReferenceResolver<String> documentReferenceResolver;
 
     @Inject
-    private EntraIDUserService userService;
+    private EntraIDUsersManager usersManager;
 
     /**
      * Sync XWiki users that have the OIDC user class with the ones from Entra ID.
@@ -72,8 +72,8 @@ public class EntraIDUsersSyncManager
      */
     public void syncUsers(boolean disable, boolean remove) throws Exception
     {
-        Map<String, XWikiDocument> usersMap = userService.getEntraUsersMap();
-        List<ExternalUser> externalUsers = userService.getEntraServerUsers();
+        Map<String, XWikiDocument> usersMap = usersManager.getXWikiUsersMap();
+        List<ExternalUser> externalUsers = usersManager.getEntraServerUsers();
         // We index the values in a map to improve performance.
         Map<String, ExternalUser> externalUsersById = externalUsers.stream()
             .collect(Collectors.toMap(ExternalUser::getId, Function.identity()));
