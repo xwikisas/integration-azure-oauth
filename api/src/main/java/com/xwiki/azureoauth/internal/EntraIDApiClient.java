@@ -37,14 +37,15 @@ import org.xwiki.component.annotation.Component;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 
 /**
- * Handles network requests needed by the Entra ID application.
+ * Client for interacting with Microsoft Entra ID, including access token acquisition and retrieval of identity data via
+ * Entra ID APIs.
  *
  * @version $Id$
  * @since 2.1
  */
-@Component(roles = EntraIDNetworkManager.class)
+@Component(roles = EntraIDApiClient.class)
 @Singleton
-public class EntraIDNetworkManager
+public class EntraIDApiClient
 {
     private static final String USERS_API = "https://graph.microsoft.com/v1.0/users?$select=id,accountEnabled";
 
@@ -61,7 +62,7 @@ public class EntraIDNetworkManager
      * @return a {@link JSONArray} consisting of the user ID and whether the account is enabled or not.
      * @throws Exception if any error occurs
      */
-    public JSONArray getEntraUsersJson() throws Exception
+    public JSONArray getUsers() throws Exception
     {
         String accessToken = getAccessToken();
         HttpRequest request =

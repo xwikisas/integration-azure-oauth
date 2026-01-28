@@ -33,7 +33,7 @@ import org.xwiki.stability.Unstable;
  * @since 2.1
  */
 @Unstable
-public class EntraIdUsersSyncJobStatus extends DefaultJobStatus<EntraIdUsersSyncJobRequest>
+public class EntraIDUsersSyncJobStatus extends DefaultJobStatus<EntraIDUsersSyncJobRequest>
 {
     /**
      * Create a new users sync job status.
@@ -43,7 +43,7 @@ public class EntraIdUsersSyncJobStatus extends DefaultJobStatus<EntraIdUsersSync
      * @param observationManager the observation manager.
      * @param loggerManager the logger manager.
      */
-    public EntraIdUsersSyncJobStatus(String jobType, EntraIdUsersSyncJobRequest request,
+    public EntraIDUsersSyncJobStatus(String jobType, EntraIDUsersSyncJobRequest request,
         ObservationManager observationManager, LoggerManager loggerManager)
     {
         super(jobType, request, null, observationManager, loggerManager);

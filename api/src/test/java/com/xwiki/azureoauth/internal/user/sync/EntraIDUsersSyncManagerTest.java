@@ -39,7 +39,7 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xwiki.azureoauth.user.EntraIdUserService;
+import com.xwiki.azureoauth.user.EntraIDUserService;
 import com.xwiki.azureoauth.user.ExternalUser;
 
 import static org.mockito.Mockito.times;
@@ -47,18 +47,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for {@link EntraIdUsersSyncManagerTest}
+ * Unit test for {@link EntraIDUsersSyncManagerTest}
  *
  * @version $Id$
  */
 @ComponentTest
-class EntraIdUsersSyncManagerTest
+class EntraIDUsersSyncManagerTest
 {
     @InjectMockComponents
-    private EntraIdUsersSyncManager syncManager;
+    private EntraIDUsersSyncManager syncManager;
 
     @MockComponent
-    private EntraIdUserService entraIdUserService;
+    private EntraIDUserService entraIdUserService;
 
     @MockComponent
     private Provider<XWikiContext> wikiContextProvider;
@@ -97,11 +97,11 @@ class EntraIdUsersSyncManagerTest
         when(wikiContextProvider.get()).thenReturn(wikiContext);
         when(wikiContext.getWiki()).thenReturn(wiki);
         when(wikiManager.getCurrentWikiId()).thenReturn("testWiki");
-        when(entraIdUserService.getInternalUsers()).thenReturn(
+        when(entraIdUserService.getEntraUsersMap()).thenReturn(
             Map.of("subject1", userDoc1, "subject2", userDoc2, "subject3", userDoc3));
         List<ExternalUser> externalUsers =
             List.of(new ExternalUser("subject1", true), new ExternalUser("subject2", false));
-        when(entraIdUserService.getExternalUsers()).thenReturn(externalUsers);
+        when(entraIdUserService.getEntraServerUsers()).thenReturn(externalUsers);
 
         when(documentReferenceResolver.resolve("XWiki.XWikiUsers")).thenReturn(userClassDocRef);
         when(userDoc2.getXObject(userClassDocRef)).thenReturn(objectUserClass2);

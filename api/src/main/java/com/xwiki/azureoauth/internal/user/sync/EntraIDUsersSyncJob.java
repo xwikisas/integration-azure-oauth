@@ -29,8 +29,8 @@ import org.xwiki.job.AbstractJob;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.JobGroupPath;
 
-import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobRequest;
-import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobStatus;
+import com.xwiki.azureoauth.user.sync.EntraIDUsersSyncJobRequest;
+import com.xwiki.azureoauth.user.sync.EntraIDUsersSyncJobStatus;
 
 /**
  * Job that handles the user sync between XWiki users and Entra ID users.
@@ -39,8 +39,8 @@ import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobStatus;
  * @since 2.1
  */
 @Component
-@Named(EntraIdUsersSyncJob.JOB_TYPE)
-public class EntraIdUsersSyncJob extends AbstractJob<EntraIdUsersSyncJobRequest, EntraIdUsersSyncJobStatus>
+@Named(EntraIDUsersSyncJob.JOB_TYPE)
+public class EntraIDUsersSyncJob extends AbstractJob<EntraIDUsersSyncJobRequest, EntraIDUsersSyncJobStatus>
     implements GroupedJob
 {
     /**
@@ -49,7 +49,7 @@ public class EntraIdUsersSyncJob extends AbstractJob<EntraIdUsersSyncJobRequest,
     public static final String JOB_TYPE = "entra.users.sync";
 
     @Inject
-    private EntraIdUsersSyncManager syncManager;
+    private EntraIDUsersSyncManager syncManager;
 
     @Override
     public JobGroupPath getGroupPath()
@@ -64,9 +64,9 @@ public class EntraIdUsersSyncJob extends AbstractJob<EntraIdUsersSyncJobRequest,
     }
 
     @Override
-    protected EntraIdUsersSyncJobStatus createNewStatus(EntraIdUsersSyncJobRequest request)
+    protected EntraIDUsersSyncJobStatus createNewStatus(EntraIDUsersSyncJobRequest request)
     {
-        return new EntraIdUsersSyncJobStatus(JOB_TYPE, request, observationManager, loggerManager);
+        return new EntraIDUsersSyncJobStatus(JOB_TYPE, request, observationManager, loggerManager);
     }
 
     @Override
@@ -74,19 +74,19 @@ public class EntraIdUsersSyncJob extends AbstractJob<EntraIdUsersSyncJobRequest,
     {
         try {
             if (!status.isCanceled()) {
-                logger.debug("Started sync job with ID: [{}]", this.status.getJobID());
+                logger.debug("Started EntraID user sync job with ID: [{}]", this.status.getJobID());
                 this.progressManager.pushLevelProgress(1, this);
                 progressManager.startStep(this);
                 syncManager.syncUsers(request.shouldDisable(), request.shouldRemove());
                 progressManager.endStep(this);
             }
         } catch (Exception e) {
-            logger.error("Error during user sync with Entra ID.", e);
+            logger.error("Failed to synchronize EntraID users.", e);
             progressManager.endStep(this);
             throw new RuntimeException(e);
         } finally {
             this.progressManager.popLevelProgress(this);
-            logger.debug("Finished sync job with ID: [{}]", this.status.getJobID());
+            logger.debug("Finished EntraID user sync job with ID: [{}]", this.status.getJobID());
         }
     }
 }

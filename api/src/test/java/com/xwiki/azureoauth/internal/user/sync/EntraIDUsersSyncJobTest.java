@@ -30,8 +30,8 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
-import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobRequest;
-import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobStatus;
+import com.xwiki.azureoauth.user.sync.EntraIDUsersSyncJobRequest;
+import com.xwiki.azureoauth.user.sync.EntraIDUsersSyncJobStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,21 +41,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for {@link EntraIdUsersSyncJobTest}
+ * Unit test for {@link EntraIDUsersSyncJobTest}
  *
  * @version $Id$
  */
 @ComponentTest
-class EntraIdUsersSyncJobTest
+class EntraIDUsersSyncJobTest
 {
     @InjectMockComponents
-    private EntraIdUsersSyncJob syncJob;
+    private EntraIDUsersSyncJob syncJob;
 
     @MockComponent
-    private EntraIdUsersSyncManager syncManager;
+    private EntraIDUsersSyncManager syncManager;
 
     @Mock
-    private EntraIdUsersSyncJobRequest request;
+    private EntraIDUsersSyncJobRequest request;
 
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
@@ -63,7 +63,7 @@ class EntraIdUsersSyncJobTest
     @Test
     void createNewStatus()
     {
-        assertEquals(EntraIdUsersSyncJobStatus.class, syncJob.createNewStatus(new EntraIdUsersSyncJobRequest()).getClass());
+        assertEquals(EntraIDUsersSyncJobStatus.class, syncJob.createNewStatus(new EntraIDUsersSyncJobRequest()).getClass());
     }
 
     @Test
@@ -79,9 +79,9 @@ class EntraIdUsersSyncJobTest
             syncJob.runInternal();
         });
         assertEquals("java.lang.RuntimeException: Some error", exception.getMessage());
-        assertEquals("Started sync job with ID: [[entra, users, sync, true, true]]", logCapture.getMessage(0));
-        assertEquals("Error during user sync with Entra ID.", logCapture.getMessage(1));
-        assertEquals("Finished sync job with ID: [[entra, users, sync, true, true]]", logCapture.getMessage(2));
+        assertEquals("Started EntraID user sync job with ID: [[entra, users, sync, true, true]]", logCapture.getMessage(0));
+        assertEquals("Failed to synchronize EntraID users.", logCapture.getMessage(1));
+        assertEquals("Finished EntraID user sync job with ID: [[entra, users, sync, true, true]]", logCapture.getMessage(2));
     }
 
     @Test
@@ -93,7 +93,7 @@ class EntraIdUsersSyncJobTest
         syncJob.initialize(request);
         syncJob.runInternal();
         verify(syncManager, times(1)).syncUsers(true, false);
-        assertEquals("Started sync job with ID: [[entra, users, sync, true, false]]", logCapture.getMessage(0));
-        assertEquals("Finished sync job with ID: [[entra, users, sync, true, false]]", logCapture.getMessage(1));
+        assertEquals("Started EntraID user sync job with ID: [[entra, users, sync, true, false]]", logCapture.getMessage(0));
+        assertEquals("Finished EntraID user sync job with ID: [[entra, users, sync, true, false]]", logCapture.getMessage(1));
     }
 }

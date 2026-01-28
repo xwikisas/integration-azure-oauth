@@ -25,13 +25,13 @@ import org.xwiki.job.AbstractRequest;
 import org.xwiki.stability.Unstable;
 
 /**
- * Represents a request to start a sync job.
+ * Represents a request to start a EntraID users sync job.
  *
  * @version $Id$
  * @since 2.1
  */
 @Unstable
-public class EntraIdUsersSyncJobRequest extends AbstractRequest
+public class EntraIDUsersSyncJobRequest extends AbstractRequest
 {
     private boolean disable;
 
@@ -40,7 +40,7 @@ public class EntraIdUsersSyncJobRequest extends AbstractRequest
     /**
      * Default constructor.
      */
-    public EntraIdUsersSyncJobRequest()
+    public EntraIDUsersSyncJobRequest()
     {
         setDefaultId();
     }
@@ -52,7 +52,7 @@ public class EntraIdUsersSyncJobRequest extends AbstractRequest
      * @param disable {@code true} if the sync should also sync disabled users, or {@code false} otherwise
      * @param remove {@code true} if the sync should also sync removed users, or {@code false} otherwise
      */
-    public EntraIdUsersSyncJobRequest(List<String> jobId, boolean disable, boolean remove)
+    public EntraIDUsersSyncJobRequest(List<String> jobId, boolean disable, boolean remove)
     {
         setId(jobId);
         this.disable = disable;

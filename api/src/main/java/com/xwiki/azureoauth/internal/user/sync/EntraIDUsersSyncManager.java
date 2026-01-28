@@ -36,20 +36,22 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xwiki.azureoauth.user.EntraIdUserService;
+import com.xwiki.azureoauth.user.EntraIDUserService;
 import com.xwiki.azureoauth.user.ExternalUser;
 
 /**
- * Manager class handling the sync between Entra ID users and XWiki users.
+ * Manage the sync between Entra ID users and XWiki users.
  *
  * @version $Id$
  * @since 2.1
  */
-@Component(roles = EntraIdUsersSyncManager.class)
+@Component(roles = EntraIDUsersSyncManager.class)
 @Singleton
-public class EntraIdUsersSyncManager
+public class EntraIDUsersSyncManager
 {
     private static final String USER_CLASS = "XWiki.XWikiUsers";
+
+    private static final String SAVE_MESSAGE = "Disable user during EntraId user synchronization";
 
     @Inject
     private Provider<XWikiContext> wikiContextProvider;
@@ -59,7 +61,7 @@ public class EntraIdUsersSyncManager
     private DocumentReferenceResolver<String> documentReferenceResolver;
 
     @Inject
-    private EntraIdUserService userService;
+    private EntraIDUserService userService;
 
     /**
      * Sync XWiki users that have the OIDC user class with the ones from Entra ID.
@@ -70,8 +72,8 @@ public class EntraIdUsersSyncManager
      */
     public void syncUsers(boolean disable, boolean remove) throws Exception
     {
-        Map<String, XWikiDocument> usersMap = userService.getInternalUsers();
-        List<ExternalUser> externalUsers = userService.getExternalUsers();
+        Map<String, XWikiDocument> usersMap = userService.getEntraUsersMap();
+        List<ExternalUser> externalUsers = userService.getEntraServerUsers();
         // We index the values in a map to improve performance.
         Map<String, ExternalUser> externalUsersById = externalUsers.stream()
             .collect(Collectors.toMap(ExternalUser::getId, Function.identity()));
@@ -90,7 +92,7 @@ public class EntraIdUsersSyncManager
             if (disable && !externalUser.isEnabled()) {
                 BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(USER_CLASS));
                 oidcObj.set("active", 0, wikiContext);
-                wiki.saveDocument(userDoc, wikiContext);
+                wiki.saveDocument(userDoc, SAVE_MESSAGE, wikiContext);
             }
         }
     }

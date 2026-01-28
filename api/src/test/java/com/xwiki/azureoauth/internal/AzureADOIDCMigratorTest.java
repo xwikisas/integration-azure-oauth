@@ -47,6 +47,7 @@ import com.xpn.xwiki.objects.PropertyInterface;
 import com.xwiki.azureoauth.configuration.AzureOldConfiguration;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 import com.xwiki.azureoauth.internal.oldConfiguration.OldAzureOAuthConfiguration;
+import com.xwiki.azureoauth.user.EntraIDUserService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -87,7 +88,7 @@ class AzureADOIDCMigratorTest
     private XWikiContext wikiContext;
 
     @MockComponent
-    private EntraIdUserQueryService entraQueryManager;
+    private EntraIDUserService userService;
 
     @MockComponent
     @Named("current")
@@ -168,7 +169,7 @@ class AzureADOIDCMigratorTest
     void refactorOIDCIssuerTest() throws QueryException, XWikiException
     {
         when(documentReferenceResolver.resolve("XWiki.OIDC.UserClass")).thenReturn(classReference);
-        when(entraQueryManager.getEntraIdUsers()).thenReturn(List.of(wikiDocument1, wikiDocument2));
+        when(userService.getEntraUsers()).thenReturn(List.of(wikiDocument1, wikiDocument2));
         when(wikiDocument1.getXObject(classReference)).thenReturn(baseObject1);
         when(wikiDocument2.getXObject(classReference)).thenReturn(baseObject2);
         when(baseObject1.getField("issuer")).thenReturn(propertyInterface1);

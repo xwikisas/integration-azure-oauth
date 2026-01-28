@@ -42,9 +42,9 @@ import org.xwiki.velocity.tools.EscapeTool;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
-import com.xwiki.azureoauth.internal.user.sync.EntraIdUsersSyncJob;
+import com.xwiki.azureoauth.internal.user.sync.EntraIDUsersSyncJob;
 import com.xwiki.azureoauth.rest.EntraIDResource;
-import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobRequest;
+import com.xwiki.azureoauth.user.sync.EntraIDUsersSyncJobRequest;
 
 /**
  * Default implementation of {@link EntraIDResource}.
@@ -100,9 +100,9 @@ public class DefaultEntraIDResource implements EntraIDResource
             List<String> jobId = List.of("entra", "users", "sync", disable, remove);
             Job job = this.jobExecutor.getJob(jobId);
             if (job == null) {
-                EntraIdUsersSyncJobRequest entraIdUsersSyncJobRequest =
-                    new EntraIdUsersSyncJobRequest(jobId, Boolean.parseBoolean(disable), Boolean.parseBoolean(remove));
-                this.jobExecutor.execute(EntraIdUsersSyncJob.JOB_TYPE, entraIdUsersSyncJobRequest);
+                EntraIDUsersSyncJobRequest entraIdUsersSyncJobRequest =
+                    new EntraIDUsersSyncJobRequest(jobId, Boolean.parseBoolean(disable), Boolean.parseBoolean(remove));
+                this.jobExecutor.execute(EntraIDUsersSyncJob.JOB_TYPE, entraIdUsersSyncJobRequest);
                 return Response.status(201).build();
             } else {
                 return Response.status(200).build();

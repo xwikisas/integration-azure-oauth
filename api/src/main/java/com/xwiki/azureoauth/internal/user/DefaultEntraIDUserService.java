@@ -17,18 +17,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.azureoauth.internal;
+package com.xwiki.azureoauth.internal.user;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryFilter;
@@ -39,19 +44,32 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+import com.xwiki.azureoauth.internal.EntraIDApiClient;
+import com.xwiki.azureoauth.user.EntraIDUserService;
+import com.xwiki.azureoauth.user.ExternalUser;
 
 import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration.OIDC_USER_CLASS;
 
 /**
- * Handles query calls needed by the Entra ID application.
+ * Default implementation of {@link EntraIDUserService}.
  *
  * @version $Id$
  * @since 2.1
  */
-@Component(roles = EntraIdUserQueryService.class)
+@Component
 @Singleton
-public class EntraIdUserQueryService
+public class DefaultEntraIDUserService implements EntraIDUserService
 {
+    private static final String ENTRA_ISSUER = "login.microsoftonline.com";
+
+    @Inject
+    private EntraIDApiClient entraIDApiClient;
+
+    @Inject
+    @Named("current")
+    private DocumentReferenceResolver<String> documentReferenceResolver;
+
     @Inject
     private QueryManager queryManager;
 
@@ -65,14 +83,22 @@ public class EntraIdUserQueryService
     @Named("document")
     private QueryFilter documentReferenceFilter;
 
-    /**
-     * Get the users that have the "XWiki.OIDC.UserClass" object from the current wiki.
-     *
-     * @return a {@link List} of the user documents
-     * @throws XWikiException if there is any error while retrieving the documents
-     * @throws QueryException if the query execution fails
-     */
-    public List<XWikiDocument> getEntraIdUsers() throws XWikiException, QueryException
+    @Override
+    public Map<String, XWikiDocument> getEntraUsersMap() throws QueryException, XWikiException
+    {
+        List<XWikiDocument> users = getEntraUsers();
+        Map<String, XWikiDocument> userMap = new HashMap<>();
+
+        for (XWikiDocument userDoc : users) {
+            BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
+            String subject = oidcObj.getField("subject").toFormString();
+            userMap.put(subject, userDoc);
+        }
+        return userMap;
+    }
+
+    @Override
+    public List<XWikiDocument> getEntraUsers() throws XWikiException, QueryException
     {
         List<XWikiDocument> azureUsers = new ArrayList<>();
         XWikiContext wikiContext = wikiContextProvider.get();
@@ -85,8 +111,26 @@ public class EntraIdUserQueryService
 
         for (DocumentReference userRef : results) {
             XWikiDocument userDoc = wiki.getDocument(userRef, wikiContext);
-            azureUsers.add(userDoc);
+            BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
+            String issuer = oidcObj.getField("issuer").toFormString();
+            if (issuer.contains(ENTRA_ISSUER)) {
+                azureUsers.add(userDoc);
+            }
         }
         return azureUsers;
+    }
+
+    @Override
+    public List<ExternalUser> getEntraServerUsers() throws Exception
+    {
+        JSONArray users = entraIDApiClient.getUsers();
+        List<ExternalUser> externalUsers = new ArrayList<>();
+        for (int i = 0; i < users.length(); i++) {
+            JSONObject user = users.getJSONObject(i);
+            String id = user.optString("id");
+            Boolean enabled = user.optBoolean("accountEnabled");
+            externalUsers.add(new ExternalUser(id, enabled));
+        }
+        return externalUsers;
     }
 }

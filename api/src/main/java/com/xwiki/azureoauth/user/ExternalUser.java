@@ -22,7 +22,7 @@ package com.xwiki.azureoauth.user;
 import org.xwiki.stability.Unstable;
 
 /**
- * Object class used to store Entra Id users info.
+ * An Entra ID server user.
  *
  * @version $Id$
  * @since 2.1

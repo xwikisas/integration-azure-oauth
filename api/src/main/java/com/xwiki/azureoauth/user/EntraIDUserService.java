@@ -23,19 +23,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.query.QueryException;
 import org.xwiki.stability.Unstable;
 
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Access XWiki internal and EntraId external users.
+ * Expose the EntraID users which are already present on the XWiki instance, or the list which is provided by the
+ * EntraID server.
  *
  * @version $Id$
  * @since 2.1
  */
 @Role
 @Unstable
-public interface EntraIdUserService
+public interface EntraIDUserService
 {
     /**
      * Get a {@link Map} of internal users that are created from EntraId, with the user id (subject) as the key.
@@ -43,7 +46,16 @@ public interface EntraIdUserService
      * @return the internal users that are created from EntraId
      * @throws Exception if there are any errors while getting the users.
      */
-    Map<String, XWikiDocument> getInternalUsers() throws Exception;
+    Map<String, XWikiDocument> getEntraUsersMap() throws Exception;
+
+    /**
+     * Get a {@link List} of internal users that are created from EntraId.
+     *
+     * @return a {@link List} of the user documents
+     * @throws XWikiException if there is any error while retrieving the documents
+     * @throws QueryException if the query execution fails
+     */
+    List<XWikiDocument> getEntraUsers() throws XWikiException, QueryException;
 
     /**
      * Get a {@link List} of external users from EntraId.
@@ -51,5 +63,5 @@ public interface EntraIdUserService
      * @return the external users info stored in {@link ExternalUser}
      * @throws Exception if there are any errors while getting the users.
      */
-    List<ExternalUser> getExternalUsers() throws Exception;
+    List<ExternalUser> getEntraServerUsers() throws Exception;
 }

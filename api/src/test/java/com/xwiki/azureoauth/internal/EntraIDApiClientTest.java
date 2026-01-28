@@ -43,18 +43,18 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for {@link EntraIDNetworkManager}
+ * Unit test for {@link EntraIDApiClient}
  *
  * @version $Id$
  */
 @ComponentTest
-public class EntraIDNetworkManagerTest
+public class EntraIDApiClientTest
 {
     @Mock
     HttpClient httpClient;
 
     @InjectMockComponents
-    private EntraIDNetworkManager entraIDNetworkManager;
+    private EntraIDApiClient entraIDApiClient;
 
     @MockComponent
     private HttpClientBuilderFactory httpClientBuilderFactory;
@@ -83,7 +83,7 @@ public class EntraIDNetworkManagerTest
     {
         when(httpResponse.statusCode()).thenReturn(500);
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            entraIDNetworkManager.getEntraUsersJson();
+            entraIDApiClient.getUsers();
         });
         assertEquals("Failed to get token", exception.getMessage());
     }
@@ -102,7 +102,7 @@ public class EntraIDNetworkManagerTest
         when(httpClient.send(eq(request), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponse2);
         when(httpResponse2.statusCode()).thenReturn(500);
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            entraIDNetworkManager.getEntraUsersJson();
+            entraIDApiClient.getUsers();
         });
 
         assertEquals("Graph request did not return a valid response.", exception.getMessage());
@@ -117,7 +117,7 @@ public class EntraIDNetworkManagerTest
             + "{ \"id\": \"user3\", \"accountEnabled\": true }]}";
 
         when(httpResponse.body()).thenReturn(jsonBody);
-        JSONArray jsonArray = entraIDNetworkManager.getEntraUsersJson();
+        JSONArray jsonArray = entraIDApiClient.getUsers();
         assertEquals("user1", jsonArray.getJSONObject(0).optString("id"));
         assertFalse(jsonArray.getJSONObject(1).optBoolean("accountEnabled"));
         assertEquals("user3", jsonArray.getJSONObject(2).optString("id"));

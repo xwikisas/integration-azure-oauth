@@ -44,8 +44,8 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.web.XWikiRequest;
-import com.xwiki.azureoauth.internal.user.sync.EntraIdUsersSyncJob;
-import com.xwiki.azureoauth.user.sync.EntraIdUsersSyncJobRequest;
+import com.xwiki.azureoauth.internal.user.sync.EntraIDUsersSyncJob;
+import com.xwiki.azureoauth.user.sync.EntraIDUsersSyncJobRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -76,7 +76,7 @@ class DefaultEntraIDResourceTest
     private JobExecutor jobExecutor;
 
     @Mock
-    private EntraIdUsersSyncJob job;
+    private EntraIDUsersSyncJob job;
 
     @Mock
     private XWikiRequest request;
@@ -149,7 +149,7 @@ class DefaultEntraIDResourceTest
         when(request.get("remove")).thenReturn("true");
         List<String> jobId = List.of("entra", "users", "sync", "true", "true");
         when(jobExecutor.getJob(jobId)).thenReturn(null);
-        when(jobExecutor.execute(eq(EntraIdUsersSyncJob.JOB_TYPE), any(EntraIdUsersSyncJobRequest.class))).thenThrow(
+        when(jobExecutor.execute(eq(EntraIDUsersSyncJob.JOB_TYPE), any(EntraIDUsersSyncJobRequest.class))).thenThrow(
             new JobException("Job execution error"));
         WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
             defaultEntraIDResource.syncUsers();
