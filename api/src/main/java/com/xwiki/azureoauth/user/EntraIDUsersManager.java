@@ -58,7 +58,7 @@ public interface EntraIDUsersManager
     List<XWikiDocument> getXWikiUsers() throws XWikiException, QueryException;
 
     /**
-     * Get a {@link List} of external users from EntraId.
+     * Get a {@link List} of users present on the EntraID server.
      *
      * @return the external users info stored in {@link ExternalUser}
      * @throws Exception if there are any errors while getting the users.

@@ -100,7 +100,7 @@ public class DefaultEntraIDUsersManager implements EntraIDUsersManager
     @Override
     public List<XWikiDocument> getXWikiUsers() throws XWikiException, QueryException
     {
-        List<XWikiDocument> azureUsers = new ArrayList<>();
+        List<XWikiDocument> xwikiEntraUsers = new ArrayList<>();
         XWikiContext wikiContext = wikiContextProvider.get();
         XWiki wiki = wikiContext.getWiki();
 
@@ -114,10 +114,10 @@ public class DefaultEntraIDUsersManager implements EntraIDUsersManager
             BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
             String issuer = oidcObj.getField("issuer").toFormString();
             if (issuer.contains(ENTRA_ISSUER)) {
-                azureUsers.add(userDoc);
+                xwikiEntraUsers.add(userDoc);
             }
         }
-        return azureUsers;
+        return xwikiEntraUsers;
     }
 
     @Override

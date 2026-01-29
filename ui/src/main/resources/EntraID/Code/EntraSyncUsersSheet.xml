@@ -162,7 +162,7 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
     event.preventDefault();
     const form = $(this).closest('form');
     const disable = String(form.find('input[name="disable"]').prop('checked'));
-    const remove   = String(form.find('input[name="remove"]').prop('checked'));
+    const remove = String(form.find('input[name="remove"]').prop('checked'));
     if (disable === 'false' &amp;&amp; remove === 'false') {
       const notification = new XWiki.widgets.Notification(l10n.get('noAction'), 'info');
     } else {
@@ -181,7 +181,7 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
         },
         error: function (xhr) {
           console.error('Error:', xhr);
-          notification.replace(new XWiki.widgets.Notification(l10n.get('error'),'error'));
+          notification.replace(new XWiki.widgets.Notification(l10n.get('error'), 'error'));
           $(this).prop('disabled', false);
         }
       });
@@ -217,10 +217,10 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
       if (response.error) {
         throw new Error(response.error.message);
       } else {
-        notification.replace(new XWiki.widgets.Notification(l10n.get('done'),'done'));
+        notification.replace(new XWiki.widgets.Notification(l10n.get('done'), 'done'));
       }
     }).catch((reason) =&gt; {
-      notification.replace(new XWiki.widgets.Notification(l10n.get('error'),'error'));
+      notification.replace(new XWiki.widgets.Notification(l10n.get('error'), 'error'));
       return Promise.reject(reason);
     }).finally(() =&gt; {
       $('.entra-sync-action').prop('disabled', false);
