@@ -51,7 +51,7 @@ public class EntraIDUsersSyncManager
 {
     private static final String USER_CLASS = "XWiki.XWikiUsers";
 
-    private static final String SAVE_MESSAGE = "Disable user during EntraId user synchronization";
+    private static final String SAVE_MESSAGE = "Disable user during EntraID user synchronization";
 
     @Inject
     private Provider<XWikiContext> wikiContextProvider;
