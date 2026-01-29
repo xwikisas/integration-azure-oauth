@@ -46,12 +46,10 @@
     &lt;input type="checkbox" name="disable" checked&gt;
     $escapetool.xml($services.localization.render('entra.administration.sync.checkbox.disable'))
   &lt;/label&gt;
-  &lt;br/&gt;
   &lt;label&gt;
     &lt;input type="checkbox" name="remove" checked&gt;
     $escapetool.xml($services.localization.render('entra.administration.sync.checkbox.remove'))
   &lt;/label&gt;
-  &lt;br/&gt;&lt;br/&gt;
   &lt;button class="entra-sync-action btn btn-primary" type="submit"&gt;
     $escapetool.xml($services.localization.render('entra.administration.sync.button'))&lt;/button&gt;
 &lt;/form&gt;
@@ -229,7 +227,7 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
 });</code>
     </property>
     <property>
-      <name>EntraIDSyncJS</name>
+      <name>EntraIDUserSyncJS</name>
     </property>
     <property>
       <parse/>

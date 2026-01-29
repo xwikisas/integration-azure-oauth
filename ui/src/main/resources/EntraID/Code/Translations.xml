@@ -71,7 +71,7 @@ EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups.hint=User groups allowed
 
 entra.administration.configuration.title=Configuration
 entra.administration.sync.title=Sync EntraID Users
-entra.administration.sync.description=This will run the synchronization job using the Microsoft Graph API.
+entra.administration.sync.description=Synchronize XWiki users with Microsoft Entra ID, ensuring that users deleted or disabled in Entra ID are also updated in XWiki.
 entra.administration.sync.checkbox.disable=Disable users
 entra.administration.sync.checkbox.remove=Remove users
 entra.administration.sync.button=Run sync

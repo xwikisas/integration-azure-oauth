@@ -64,7 +64,7 @@ public class EntraIDUsersSyncManager
     private EntraIDUsersManager usersManager;
 
     /**
-     * Sync XWiki users that have the OIDC user class with the ones from Entra ID.
+     * Synchronize the state of the XWiki users created from Entra ID with their state from the Microsoft server.
      *
      * @param disable {@code true} if the sync should also sync disabled users, or {@code false} otherwise
      * @param remove {@code true} if the sync should also sync removed users, or {@code false} otherwise

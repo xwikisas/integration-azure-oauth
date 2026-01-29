@@ -639,6 +639,12 @@ div.selectize-control, div.selectize-input, input.key, input.value {
   width: -webkit-fill-available;
   height: 4rem;
 }
+
+#entra-sync {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 </code>
     </property>
     <property>
