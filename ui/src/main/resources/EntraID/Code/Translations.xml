@@ -69,6 +69,17 @@ EntraID.Code.EntraIDConfigurationClass_tenantId.hint=Entra ID instance ID.
 EntraID.Code.EntraIDConfigurationClass_enableXWikiLoginGlobal.hint=Allow a guest user to login using the standard XWiki authenticator.
 EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups.hint=User groups allowed to log in with XWiki.
 
+entra.administration.configuration.title=Configuration
+entra.administration.sync.title=Sync EntraID Users
+entra.administration.sync.description=Synchronize XWiki users with Microsoft Entra ID, ensuring that users deleted or disabled in Entra ID are also updated in XWiki.
+entra.administration.sync.checkbox.disable=Disable users
+entra.administration.sync.checkbox.remove=Remove users
+entra.administration.sync.button=Run sync
+entra.sync.notification.done=Sync successful!
+entra.sync.notification.error=There was an error during the sync.
+entra.sync.notification.inprogress=Sync in progress...
+entra.sync.notification.noAction=No action selected.
+
 entra.properties.data.newEntry=New entry
 entra.properties.data.tip.key.groupMap=XWiki group...
 entra.properties.data.tip.value.groupMap=Group object ID...

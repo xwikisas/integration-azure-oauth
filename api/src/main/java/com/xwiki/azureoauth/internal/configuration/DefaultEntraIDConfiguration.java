@@ -128,4 +128,10 @@ public class DefaultEntraIDConfiguration implements EntraIDConfiguration
     {
         return this.entraIDConfiguration.getProperty("xwikiLoginGroups", "");
     }
+
+    @Override
+    public String getTokenEndpoint()
+    {
+        return this.oidcConfiguration.getProperty("tokenEndpoint", "");
+    }
 }

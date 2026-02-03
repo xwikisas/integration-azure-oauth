@@ -31,16 +31,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.xwiki.configuration.ConfigurationSaveException;
-import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
-import org.xwiki.query.QueryManager;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
-import org.xwiki.wiki.descriptor.WikiDescriptorManager;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -51,6 +47,7 @@ import com.xpn.xwiki.objects.PropertyInterface;
 import com.xwiki.azureoauth.configuration.AzureOldConfiguration;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 import com.xwiki.azureoauth.internal.oldConfiguration.OldAzureOAuthConfiguration;
+import com.xwiki.azureoauth.user.EntraIDUsersManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -85,26 +82,17 @@ class AzureADOIDCMigratorTest
     private EntraIDConfiguration entraIDConfiguration;
 
     @MockComponent
-    private WikiDescriptorManager wikiManager;
-
-    @MockComponent
-    private InstalledExtensionRepository installedRepository;
-
-    @MockComponent
-    private QueryManager queryManager;
-
-    @MockComponent
     private Provider<XWikiContext> wikiContextProvider;
 
     @MockComponent
     private XWikiContext wikiContext;
 
     @MockComponent
+    private EntraIDUsersManager usersManager;
+
+    @MockComponent
     @Named("current")
     private DocumentReferenceResolver<String> documentReferenceResolver;
-
-    @Mock
-    private Query query;
 
     @Mock
     private XWiki wiki;
@@ -114,12 +102,6 @@ class AzureADOIDCMigratorTest
 
     @Mock
     private XWikiDocument wikiDocument2;
-
-    @Mock
-    private DocumentReference documentReference1;
-
-    @Mock
-    private DocumentReference documentReference2;
 
     @Mock
     private DocumentReference classReference;
@@ -186,21 +168,8 @@ class AzureADOIDCMigratorTest
     @Test
     void refactorOIDCIssuerTest() throws QueryException, XWikiException
     {
-        when(
-            queryManager.createQuery(", BaseObject as obj where doc.fullName = obj.name and obj.className = :className",
-                Query.HQL)).thenReturn(query);
-        when(wikiManager.getCurrentWikiId()).thenReturn("wiki_id");
-        when(query.setWiki("wiki_id")).thenReturn(query);
-        when(query.bindValue("className", "XWiki.OIDC.UserClass")).thenReturn(query);
-        when(query.execute()).thenReturn(List.of("user1", "user2"));
-        when(wikiContext.getWiki()).thenReturn(wiki);
-
-        when(documentReferenceResolver.resolve("user1")).thenReturn(documentReference1);
-        when(documentReferenceResolver.resolve("user2")).thenReturn(documentReference2);
         when(documentReferenceResolver.resolve("XWiki.OIDC.UserClass")).thenReturn(classReference);
-        when(wiki.getDocument(documentReference1, wikiContext)).thenReturn(wikiDocument1);
-        when(wiki.getDocument(documentReference2, wikiContext)).thenReturn(wikiDocument2);
-
+        when(usersManager.getXWikiUsers()).thenReturn(List.of(wikiDocument1, wikiDocument2));
         when(wikiDocument1.getXObject(classReference)).thenReturn(baseObject1);
         when(wikiDocument2.getXObject(classReference)).thenReturn(baseObject2);
         when(baseObject1.getField("issuer")).thenReturn(propertyInterface1);

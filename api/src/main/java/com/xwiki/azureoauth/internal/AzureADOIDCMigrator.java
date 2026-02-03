@@ -31,13 +31,9 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSaveException;
-import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.model.reference.DocumentReferenceResolver;
-import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
-import org.xwiki.query.QueryManager;
 import org.xwiki.stability.Unstable;
-import org.xwiki.wiki.descriptor.WikiDescriptorManager;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -47,6 +43,7 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xwiki.azureoauth.configuration.AzureOldConfiguration;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 import com.xwiki.azureoauth.internal.oldConfiguration.OldAzureOAuthConfiguration;
+import com.xwiki.azureoauth.user.EntraIDUsersManager;
 
 import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration.OIDC_USER_CLASS;
 
@@ -79,18 +76,6 @@ public class AzureADOIDCMigrator
     private Provider<EntraIDConfiguration> entraIDConfigurationProvider;
 
     @Inject
-    private WikiDescriptorManager wikiManager;
-
-    @Inject
-    private InstalledExtensionRepository installedRepository;
-
-    @Inject
-    private QueryManager queryManager;
-
-    @Inject
-    private Provider<XWikiContext> wikiContextProvider;
-
-    @Inject
     @Named("current")
     private DocumentReferenceResolver<String> documentReferenceResolver;
 
@@ -99,6 +84,9 @@ public class AzureADOIDCMigrator
 
     @Inject
     private Provider<XWikiContext> xcontextProvider;
+
+    @Inject
+    private EntraIDUsersManager usersManager;
 
     /**
      * Check if the current EntraID/OIDC configuration is empty and populate it with the old configuration from Azure
@@ -137,13 +125,8 @@ public class AzureADOIDCMigrator
 
         // XWiki might not be fully initialized yet, in which case it means we are not attempting to update the users.
         if (wiki != null) {
-            List<String> results = this.queryManager.createQuery(
-                    ", BaseObject as obj where doc.fullName = obj.name and obj.className = :className", Query.HQL)
-                .setWiki(this.wikiManager.getCurrentWikiId()).bindValue("className", OIDC_USER_CLASS).execute();
-
-            for (String userRef : results) {
-                XWikiDocument userDoc =
-                    wiki.getDocument(documentReferenceResolver.resolve(userRef), xcontextProvider.get());
+            List<XWikiDocument> users = usersManager.getXWikiUsers();
+            for (XWikiDocument userDoc : users) {
                 BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
                 String issuer = oidcObj.getField(ISSUER).toFormString();
                 if (issuer.endsWith(INVALID_VERSION)) {

@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebElement;
+import org.xwiki.administration.test.po.AdministrationPage;
 import org.xwiki.administration.test.po.EditGroupModal;
 import org.xwiki.administration.test.po.GroupsPage;
 import org.xwiki.model.reference.DocumentReference;
@@ -37,6 +38,7 @@ import org.xwiki.test.ui.TestUtils;
 import org.xwiki.test.ui.po.LoginPage;
 
 import com.xwiki.entraid.test.po.AuthServiceViewPage;
+import com.xwiki.entraid.test.po.EntraIDConfigurationViewPage;
 import com.xwiki.entraid.test.po.EntraIDViewPage;
 import com.xwiki.entraid.test.po.MicrosoftLoginViewPage;
 
@@ -175,5 +177,43 @@ class EntraIdIT
         testUtils.login(FIRST_USER_NAME, PASSWORD);
         entraIDViewPage.goToHomePage();
         assertFalse(entraIDViewPage.isSwitchUserDisplayed());
+    }
+
+    @Order(4)
+    @Test
+    void syncUsers(TestUtils testUtils)
+    {
+        testUtils.loginAsAdmin();
+        goToAdministrationPage();
+
+        EntraIDConfigurationViewPage confViewPage = new EntraIDConfigurationViewPage();
+        WebElement disableCheck = confViewPage.getDisableCheck();
+        WebElement removeCheck = confViewPage.getRemoveCheck();
+        assertTrue(disableCheck.isSelected());
+        assertTrue(removeCheck.isSelected());
+        disableCheck.click();
+        removeCheck.click();
+        assertFalse(disableCheck.isSelected());
+        assertFalse(removeCheck.isSelected());
+        WebElement syncButton = confViewPage.getSyncButton();
+        syncButton.click();
+        WebElement notification = confViewPage.getNotification();
+        assertEquals("No action selected.", notification.getText());
+        disableCheck.click();
+        removeCheck.click();
+        syncButton.click();
+        notification = confViewPage.getNotification();
+        assertEquals("Sync in progress...", notification.getText());
+        WebElement errorNotification = confViewPage.getErrorNotification();
+        // We cannot actually test that the Entra ID communication works, as we would have to use private information
+        // (secret, client id). Therefore, we only test that the job is started and the proper error message is
+        // displayed.
+        assertEquals("There was an error during the sync.", errorNotification.getText());
+    }
+
+    private void goToAdministrationPage()
+    {
+        AdministrationPage adminPage = AdministrationPage.gotoPage();
+        adminPage.clickSection("Other", "Entra ID");
     }
 }

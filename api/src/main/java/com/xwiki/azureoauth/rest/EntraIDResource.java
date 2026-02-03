@@ -20,6 +20,7 @@
 package com.xwiki.azureoauth.rest;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
@@ -40,11 +41,26 @@ public interface EntraIDResource extends XWikiRestComponent
 {
     /**
      * Redirect the user to the XWiki login page, skipping the OIDC authenticator.
+     *
      * @param redirectDocument the page where to be redirected after log in.
-     * @return status code 303 SEE OTHER and the log in link for redirecting.
+     * @return status code 303 SEE OTHER and the login link for redirecting.
      * @throws XWikiRestException if an error occurred while building the redirect URL.
      */
     @GET
     @Path("/login/xwiki/{redirectDocument}")
     Response xwikiLogin(@PathParam("redirectDocument") String redirectDocument) throws XWikiRestException;
+
+    /**
+     * Sync XWiki users with the users from Entra ID.
+     *
+     * @return status code 201 if a new job has been created, or status code 200 if a job with the same ID already
+     *     exists
+     * @throws XWikiRestException with status code 401 if the user requesting is missing admin rights, or code 500
+     *     if any error occurs
+     * @since 2.1
+     */
+    @PUT
+    @Path("/user/sync")
+    @Unstable
+    Response syncUsers() throws XWikiRestException;
 }
