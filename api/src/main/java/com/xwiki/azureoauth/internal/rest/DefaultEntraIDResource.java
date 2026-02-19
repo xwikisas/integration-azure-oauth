@@ -90,13 +90,11 @@ public class DefaultEntraIDResource implements EntraIDResource
     }
 
     @Override
-    public Response syncUsers() throws XWikiRestException
+    public Response syncUsers(String disable, String remove) throws XWikiRestException
     {
         try {
             contextualAuthorizationManager.checkAccess(Right.ADMIN);
-
-            String disable = getRequestField("disable");
-            String remove = getRequestField("remove");
+            logger.debug("Received actions: disabled [{}]; remove [{}]", disable, remove);
             List<String> jobId = List.of("entra", "users", "sync", disable, remove);
             Job job = this.jobExecutor.getJob(jobId);
             if (job == null) {
@@ -116,11 +114,5 @@ public class DefaultEntraIDResource implements EntraIDResource
             logger.warn(errorMessage, e);
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private String getRequestField(String field)
-    {
-        XWikiContext wikiContext = wikiContextProvider.get();
-        return wikiContext.getRequest().get(field);
     }
 }

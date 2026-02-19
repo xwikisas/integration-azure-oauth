@@ -172,7 +172,7 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
       const notification = new XWiki.widgets.Notification(l10n.get('inprogress'), 'inprogress');
       $.ajax({
         url: form.attr('action'),
-        type: 'PUT',
+        type: 'POST',
         data: $.param(data),
         success: function (response) {
           checkSyncJob(disable, remove, notification)

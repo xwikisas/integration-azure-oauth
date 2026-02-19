@@ -19,8 +19,10 @@
  */
 package com.xwiki.azureoauth.rest;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
@@ -53,14 +55,17 @@ public interface EntraIDResource extends XWikiRestComponent
     /**
      * Sync XWiki users with the users from Entra ID.
      *
+     * @param disable flag if the user sync operation should synchronize disabled users from Entra ID
+     * @param remove flag if the user sync operation should synchronize removed users from Entra ID
      * @return status code 201 if a new job has been created, or status code 200 if a job with the same ID already
      *     exists
      * @throws XWikiRestException with status code 401 if the user requesting is missing admin rights, or code 500
      *     if any error occurs
      * @since 2.1
      */
-    @PUT
+    @POST
     @Path("/user/sync")
     @Unstable
-    Response syncUsers() throws XWikiRestException;
+    Response syncUsers(@FormParam("disable") @DefaultValue("false") String disable,
+        @FormParam("remove") @DefaultValue("false") String remove) throws XWikiRestException;
 }
