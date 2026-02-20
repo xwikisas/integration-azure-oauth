@@ -21,6 +21,7 @@ package com.xwiki.azureoauth.internal.rest;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -90,11 +91,15 @@ public class DefaultEntraIDResource implements EntraIDResource
     }
 
     @Override
-    public Response syncUsers(String disable, String remove) throws XWikiRestException
+    public Response syncUsers() throws XWikiRestException
     {
         try {
             contextualAuthorizationManager.checkAccess(Right.ADMIN);
-            logger.debug("Received actions: disabled [{}]; remove [{}]", disable, remove);
+            Map<String, String[]> parameters = wikiContextProvider.get().getRequest().getParameterMap();
+            String disable = parameters.get("disable")[0];
+            String remove = parameters.get("remove")[0];
+            logger.debug("Requested actions: disabled [{}]; remove [{}]", disable, remove);
+
             List<String> jobId = List.of("entra", "users", "sync", disable, remove);
             Job job = this.jobExecutor.getJob(jobId);
             if (job == null) {
