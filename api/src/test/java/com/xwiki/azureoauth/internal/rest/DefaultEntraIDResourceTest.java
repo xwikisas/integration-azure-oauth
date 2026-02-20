@@ -20,6 +20,7 @@
 package com.xwiki.azureoauth.internal.rest;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
@@ -123,10 +124,13 @@ class DefaultEntraIDResourceTest
     @Test
     void syncUsersTestNotAdmin() throws AccessDeniedException
     {
+        when(request.getParameterMap()).thenReturn(
+            Map.of("disable", new String[] { "false" }, "remove", new String[] { "false" }));
+
         doThrow(new AccessDeniedException(Right.ADMIN, user, null)).when(contextualAuthorizationManager)
             .checkAccess(Right.ADMIN);
         WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-            defaultEntraIDResource.syncUsers("false", "false");
+            defaultEntraIDResource.syncUsers();
         });
 
         assertEquals(401, exception.getResponse().getStatus());
@@ -136,24 +140,28 @@ class DefaultEntraIDResourceTest
     @Test
     void syncUsersTestJobFound() throws XWikiRestException
     {
+        when(request.getParameterMap()).thenReturn(
+            Map.of("disable", new String[] { "true" }, "remove", new String[] { "true" }));
         List<String> jobId = List.of("entra", "users", "sync", "true", "true");
         when(jobExecutor.getJob(jobId)).thenReturn(job);
-        assertEquals(200, defaultEntraIDResource.syncUsers("true", "true").getStatus());
-        assertEquals("Received actions: disabled [true]; remove [true]", logCapture.getMessage(0));
+        assertEquals(200, defaultEntraIDResource.syncUsers().getStatus());
+        assertEquals("Requested actions: disabled [true]; remove [true]", logCapture.getMessage(0));
     }
 
     @Test
     void syncUsersTestFail() throws JobException
     {
+        when(request.getParameterMap()).thenReturn(
+            Map.of("disable", new String[] { "true" }, "remove", new String[] { "true" }));
         List<String> jobId = List.of("entra", "users", "sync", "true", "true");
         when(jobExecutor.getJob(jobId)).thenReturn(null);
         when(jobExecutor.execute(eq(EntraIDUsersSyncJob.JOB_TYPE), any(EntraIDUsersSyncJobRequest.class))).thenThrow(
             new JobException("Job execution error"));
         WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
-            defaultEntraIDResource.syncUsers("true", "true");
+            defaultEntraIDResource.syncUsers();
         });
         assertEquals(500, exception.getResponse().getStatus());
-        assertEquals("Received actions: disabled [true]; remove [true]", logCapture.getMessage(0));
+        assertEquals("Requested actions: disabled [true]; remove [true]", logCapture.getMessage(0));
         assertEquals("Failed to synchronize users with EntraID. Root cause is: [JobException: Job execution error]",
             logCapture.getMessage(1));
     }
@@ -161,9 +169,11 @@ class DefaultEntraIDResourceTest
     @Test
     void syncUsersTest() throws XWikiRestException
     {
+        when(request.getParameterMap()).thenReturn(
+            Map.of("disable", new String[] { "true" }, "remove", new String[] { "false" }));
         List<String> jobId = List.of("entra", "users", "sync", "true", "false");
         when(jobExecutor.getJob(jobId)).thenReturn(null);
-        assertEquals(201, defaultEntraIDResource.syncUsers("true", "false").getStatus());
-        assertEquals("Received actions: disabled [true]; remove [false]", logCapture.getMessage(0));
+        assertEquals(201, defaultEntraIDResource.syncUsers().getStatus());
+        assertEquals("Requested actions: disabled [true]; remove [false]", logCapture.getMessage(0));
     }
 }
