@@ -20,7 +20,6 @@
 package com.xwiki.azureoauth.internal;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSaveException;
@@ -40,6 +38,7 @@ import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.model.reference.WikiReference;
+import org.xwiki.query.QueryException;
 import org.xwiki.security.authservice.XWikiAuthServiceComponent;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.annotation.BeforeComponent;
@@ -51,6 +50,7 @@ import org.xwiki.wiki.descriptor.WikiDescriptorManager;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.internal.event.XObjectUpdatedEvent;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
@@ -180,45 +180,48 @@ class EntraIDObjectUpdateListenerTest
     }
 
     @Test
-    void initializeDefault() throws InitializationException
+    void initializeFailedRefactoring() throws QueryException, XWikiException
     {
         when(xwikicfg.getProperty("xwiki.authentication.authclass")).thenReturn(null);
         when(defaultAuth.getId()).thenReturn("default");
         when(xwiki.getAuthService()).thenReturn(defaultAuth);
-        objectUpdateListener.initialize();
-        verify(xwiki, Mockito.times(0)).setAuthService(null);
+        doThrow(new XWikiException()).when(azureADOIDCMigrator).refactorOIDCIssuer();
+        InitializationException exception = assertThrows(InitializationException.class, () -> {
+            objectUpdateListener.initialize();
+        });
+        assertEquals("There was an error while trying to refactor the OIDC class for old AzureAD users. Root cause "
+            + "is: [XWikiException: Error number 0 in 0]", logCapture.getMessage(0));
+        assertEquals("XWikiException: Error number 0 in 0", exception.getMessage());
     }
 
     @Test
-    void initializeDifferentNoDefault() throws InitializationException, ComponentLookupException
+    void initializeFailedConfigInit() throws ConfigurationSaveException
     {
         when(xwikicfg.getProperty("xwiki.authentication.authclass")).thenReturn(null);
-        when(differentAuth.getId()).thenReturn("test id");
-        when(xwiki.getAuthService()).thenReturn(differentAuth);
-        when(componentManagerProvider.get()).thenReturn(componentManager);
-        when(componentManager.hasComponent(XWikiAuthServiceComponent.class)).thenReturn(false);
-
-        objectUpdateListener.initialize();
-        verify(xwiki, Mockito.times(1)).setAuthService(null);
-        verify(componentManager, Mockito.times(0)).getInstanceList(XWikiAuthServiceComponent.class);
-    }
-
-    @Test
-    void initializeDifferentDefault() throws InitializationException, ComponentLookupException
-    {
-        when(xwikicfg.getProperty("xwiki.authentication.authclass")).thenReturn(null);
-        when(differentAuth.getId()).thenReturn("test id");
         when(defaultAuth.getId()).thenReturn("default");
-        when(xwiki.getAuthService()).thenReturn(differentAuth);
-        when(componentManagerProvider.get()).thenReturn(componentManager);
-        when(componentManager.hasComponent(XWikiAuthServiceComponent.class)).thenReturn(true);
+        when(xwiki.getAuthService()).thenReturn(defaultAuth);
+        doThrow(new ConfigurationSaveException("test error")).when(azureADOIDCMigrator).initializeOIDCConfiguration();
+        InitializationException exception = assertThrows(InitializationException.class, () -> {
+            objectUpdateListener.initialize();
+        });
+        assertEquals("There was an error while trying to migrate the old Identity OAuth configuration to OIDC "
+            + "configuration. Root cause is: [ConfigurationSaveException: test error]", logCapture.getMessage(0));
+        assertEquals("ConfigurationSaveException: test error", exception.getMessage());
+    }
 
-        when(componentManager.getInstanceList(XWikiAuthServiceComponent.class)).thenReturn(
-            Collections.singletonList(defaultAuth));
-
-        objectUpdateListener.initialize();
-        verify(xwiki, Mockito.times(1)).setAuthService(null);
-        verify(componentManager, Mockito.times(1)).getInstanceList(XWikiAuthServiceComponent.class);
-        verify(xwiki, Mockito.times(1)).setAuthService(defaultAuth);
+    @Test
+    void initializeGeneralError() throws ConfigurationSaveException
+    {
+        when(xwikicfg.getProperty("xwiki.authentication.authclass")).thenReturn(null);
+        when(defaultAuth.getId()).thenReturn("default");
+        when(xwiki.getAuthService()).thenReturn(defaultAuth);
+        doThrow(new RuntimeException("test error general")).when(azureADOIDCMigrator).initializeOIDCConfiguration();
+        InitializationException exception = assertThrows(InitializationException.class, () -> {
+            objectUpdateListener.initialize();
+        });
+        assertEquals(
+            "There was an error while initializing the listener. Root cause is: [RuntimeException: test error general]",
+            logCapture.getMessage(0));
+        assertEquals("RuntimeException: test error general", exception.getMessage());
     }
 }

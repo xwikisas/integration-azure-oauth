@@ -19,8 +19,11 @@
  */
 package com.xwiki.entraid.test.po;
 
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.test.ui.po.Select;
 import org.xwiki.test.ui.po.ViewPage;
 
@@ -33,6 +36,10 @@ import org.xwiki.test.ui.po.ViewPage;
  */
 public class AuthServiceViewPage extends ViewPage
 {
+    private static final List<String> AUTH_SPACE = List.of("XWiki", "Authentication");
+
+    private static final LocalDocumentReference AUTH_DOC = new LocalDocumentReference(AUTH_SPACE, "Administration");
+
     public void switchToOIDCAuthenticationService()
     {
         navigateToAuthenticationAdmin();
@@ -47,17 +54,13 @@ public class AuthServiceViewPage extends ViewPage
 
     public boolean isOIDCSelected()
     {
-        WebElement authService = getDriver().findElement(By.className("codeToExecute"));
-        return authService.getText().contains("OpenID Connect Authenticator");
+        navigateToAuthenticationAdmin();
+        WebElement authService = getDriver().findElement(By.id("xwikicontent"));
+        return authService.getText().contains("org.xwiki.contrib.oidc.auth.internal.OIDCAuthService");
     }
 
     private void navigateToAuthenticationAdmin()
     {
-        toggleDrawer();
-        WebElement adminHyperlink = getDriver().findElement(By.id("tmAdminWiki"));
-        adminHyperlink.click();
-        WebElement panelHeadingOther = getDriver().findElement(By.id("panel-heading-other"));
-        panelHeadingOther.click();
-        getDriver().findElement(By.cssSelector("a[data-id='Authentication']")).click();
+        getUtil().gotoPage(AUTH_DOC);
     }
 }

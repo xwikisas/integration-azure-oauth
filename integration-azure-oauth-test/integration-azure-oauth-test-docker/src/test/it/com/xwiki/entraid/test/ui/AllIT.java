@@ -17,28 +17,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xwiki.entraid.test.po;
+package com.xwiki.entraid.test.ui;
 
-import java.util.List;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.xwiki.test.ui.po.ViewPage;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.xwiki.test.docker.junit5.UITest;
 
 /**
- * Represents actions that can be done on the Microsoft login container. This container is externally provided and might
- * suffer changes that can break the tests.
+ * All UI tests for the Entra ID integration application.
  *
  * @version $Id$
- * @since 2.0
  */
-public class MicrosoftLoginViewPage extends ViewPage
+@UITest
+class AllIT
 {
-    private static final String CONTAINER_ID = "exceptionMessageContainer";
-
-    public List<WebElement> getMicrosoftContainer()
+    @Nested
+    @DisplayName("Entra ID UI")
+    class NestedEntraIdIT extends EntraIdIT
     {
-        this.getDriver().waitUntilElementIsVisible(By.id(CONTAINER_ID));
-        return getDriver().findElements(By.id(CONTAINER_ID));
     }
 }
