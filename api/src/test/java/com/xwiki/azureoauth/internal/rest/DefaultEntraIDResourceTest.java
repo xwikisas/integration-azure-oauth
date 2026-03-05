@@ -116,8 +116,8 @@ class DefaultEntraIDResourceTest
         WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
             defaultEntraIDResource.xwikiLogin("Sandbox.WebHome");
         });
-        assertEquals("Failed to generate the log in redirect URL. Root cause: [NullPointerException: ]",
-            logCapture.getMessage(0));
+        assertEquals("Failed to generate the log in redirect URL. Root cause: [NullPointerException: "
+            + "Cannot invoke \"String.length()\" because \"this.input\" is null]", logCapture.getMessage(0));
         assertEquals(500, exception.getResponse().getStatus());
     }
 

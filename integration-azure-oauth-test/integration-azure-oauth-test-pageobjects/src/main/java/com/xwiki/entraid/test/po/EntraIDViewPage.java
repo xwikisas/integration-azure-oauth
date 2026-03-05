@@ -19,9 +19,6 @@
  */
 package com.xwiki.entraid.test.po;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.xwiki.test.ui.po.ViewPage;
@@ -42,23 +39,35 @@ public class EntraIDViewPage extends ViewPage
         getUtil().gotoPage("Main", "WebHome");
     }
 
-    public WebElement getLoginButton()
+    public void defaultLogin()
     {
-        toggleDrawer();
-        return getDriver().findElement(By.id("tmLogin"));
+        openDrawer();
+        this.getDriver().findElement(By.id("tmLogin")).click();
     }
 
-    public Optional<WebElement> getBypassLoginButton()
+    public void clickBypassLoginButton()
     {
-        toggleDrawer();
-        List<WebElement> elements = getDriver().findElements(By.id("tmLogin-bypass"));
-        return elements.stream().findFirst();
+        openDrawer();
+        this.getDriver().findElement(By.id("tmLogin-bypass")).click();
+    }
+
+    public boolean isBypassLoginButtonDisplayed()
+    {
+        openDrawer();
+        return !this.getDriver().findElements(By.id("tmLogin-bypass")).isEmpty();
     }
 
     public boolean isSwitchUserDisplayed()
     {
-        toggleDrawer();
-        List<WebElement> webElements = getDriver().findElements(By.id("tmLogout-xwiki-switch"));
-        return !webElements.isEmpty();
+        openDrawer();
+        return !this.getDriver().findElements(By.id("tmLogout-xwiki-switch")).isEmpty();
+    }
+
+    private void openDrawer()
+    {
+        WebElement drawer = this.getDriver().findElement(By.className("drawer-menu"));
+        if (!drawer.isDisplayed()) {
+            this.getDriver().findElement(By.id("tmDrawerActivator")).click();
+        }
     }
 }

@@ -55,11 +55,29 @@
       <version>${licensing.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- Remove when this app has the same parent as the licensing application and this is upgraded to 15.10. -->
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-extension-api</artifactId>
-      <version>${commons.version}</version>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-administration-ui</artifactId>
+      <version>${platform.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-security-authentication-ui</artifactId>
+      <version>${platform.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-security-authentication-default</artifactId>
+      <version>${platform.version}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-mail-ui</artifactId>
+      <version>${platform.version}</version>
+      <type>xar</type>
     </dependency>
     <!-- Test only dependencies. -->
     <dependency>
