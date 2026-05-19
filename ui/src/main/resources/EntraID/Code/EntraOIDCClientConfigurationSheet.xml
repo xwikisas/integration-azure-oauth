@@ -271,61 +271,53 @@ require(['jquery', 'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'], functi
       const value = $(this).find('.value').val();
       return value ? escapeValue(value, options) : null;
     }).get().join(options.separator);
-    if ($(input).prop('tagName').toLowerCase() === 'textarea') {
-      $(input).text(propertiesStr);
-    } else {
-      $(input).val(propertiesStr);
-    }
+    $(input).val(propertiesStr);
   };
 
   function updateMapValue(input, options) {
     const propertiesStr = $(input).siblings('.property-entry').map(function() {
       const key = $(this).find('.key').val();
       const value = $(this).find('.value').val();
-      return key &amp;&amp; value ? `${escapeValue(key, options)}=${escapeValue(value, options)}` : null;
+      return key &amp;&amp; value ? escapeValue(key, options) + '=' + escapeValue(value, options) : null;
     }).get().join(options.separator);
-    if ($(input).prop('tagName').toLowerCase() === 'textarea') {
-      $(input).text(propertiesStr);
-    } else {
-      $(input).val(propertiesStr);
-    }
+    $(input).val(propertiesStr);
   };
 
   function createMapPropertyEntry(key, value, input, options) {
-    const $entry = $('&lt;div&gt;').addClass('property-entry');
-    const $keyInput = $('&lt;input&gt;').attr('type', 'text').addClass('key').addClass($(input).data('keyClass')).attr('placeholder',
+    const entry = $('&lt;div&gt;').addClass('property-entry');
+    const keyInput = $('&lt;input&gt;').attr('type', 'text').addClass('key').addClass($(input).data('keyClass')).attr('placeholder',
       l10n.get($(input).data('keyTip'))).val(key || '');
 
-    const $valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
+    const valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
       l10n.get($(input).data('valueTip'))).val(value || '');
 
-    const $removeBtn = $('&lt;span&gt;').addClass('remove').click(function() {
+    const removeBtn = $('&lt;span&gt;').addClass('remove').on('click', function() {
       $(this).closest('.property-entry').remove();
       updateMapValue(input, options);
     });
 
-    $keyInput.change(function() {
+    keyInput.on('change', function() {
       updateMapValue(input, options);
     });
-    $valueInput.change(function() {
+    valueInput.on('change', function() {
       updateMapValue(input, options);
     });
 
-    return $entry.append($keyInput, options.mapsToString, $valueInput, $removeBtn);
+    return entry.append(keyInput, options.mapsToString, valueInput, removeBtn);
   };
 
   function createListPropertyEntry(value, input, options) {
-    const $entry = $('&lt;div&gt;').addClass('property-entry');
-    const $valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
+    const entry = $('&lt;div&gt;').addClass('property-entry');
+    const valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
       l10n.get($(input).data('valueTip'))).val(value || '');
-    const $removeBtn = $('&lt;span&gt;').addClass('remove').click(function() {
+    const removeBtn = $('&lt;span&gt;').addClass('remove').on('click', function() {
       $(this).closest('.property-entry').remove();
       updateListValue(input, options);
     });
-    $valueInput.change(function() {
+    valueInput.on('change', function() {
       updateListValue(input, options);
     });
-    return $entry.append($valueInput, $removeBtn);
+    return entry.append(valueInput, removeBtn);
   };
 
   $(function() {
@@ -367,7 +359,7 @@ require(['jquery', 'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'], functi
       <name>Property editor</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
