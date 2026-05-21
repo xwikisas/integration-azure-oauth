@@ -164,7 +164,8 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
     if (disable === 'false' &amp;&amp; remove === 'false') {
       const notification = new XWiki.widgets.Notification(l10n.get('noAction'), 'info');
     } else {
-      $(this).prop('disabled', true);
+      const syncButton = $(this);
+      syncButton.prop('disabled', true);
       const data = {
         disable: disable,
         remove: remove
@@ -180,7 +181,7 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
         error: function (xhr) {
           console.error('Error:', xhr);
           notification.replace(new XWiki.widgets.Notification(l10n.get('error'), 'error'));
-          $(this).prop('disabled', false);
+          syncButton.prop('disabled', false);
         }
       });
     }
