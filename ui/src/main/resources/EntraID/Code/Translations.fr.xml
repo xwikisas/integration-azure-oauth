@@ -1,1 +1,127 @@
+<?xml version="1.1" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.5" reference="EntraID.Code.Translations" locale="">
+  <web>EntraID.Code</web>
+  <name>Translations</name>
+  <language/>
+  <defaultLanguage>en</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>plain/1.0</syntaxId>
+  <hidden>true</hidden>
+  <content>## New configuration
+entraID.extension.name=Microsoft Entra ID OpenID Connect (OIDC)
+entraID.extension.home.description=Cet espace contient le code pour l'intégration d'Entra ID OpenID Connect dans XWiki. Ces extensions permettent actuellement aux utilisateurs de s'identifier dans XWiki en autorisant la transmission d'informations de profil depuis un nœud Microsoft Entra ID. Cela utilise le protocole OIDC.
+XWiki.OIDC.ClientConfigurationClass_enableUser=Activer les profils utilisateurs à la première identification
+XWiki.OIDC.ClientConfigurationClass_skipped=Désactiver l'authentification Entra ID
+XWiki.OIDC.ClientConfigurationClass_scope=Périmètre
+XWiki.OIDC.ClientConfigurationClass_groupsClaim=Récupération des groupes
+XWiki.OIDC.ClientConfigurationClass_groupsMapping=Correspondance des groupes
+XWiki.OIDC.ClientConfigurationClass_allowedGroups=Groupes autorisés
+XWiki.OIDC.ClientConfigurationClass_forbiddenGroups=Groupes interdits
+XWiki.OIDC.ClientConfigurationClass_userNameFormatter=Format du nom utilisateur
+XWiki.OIDC.ClientConfigurationClass_userMapping=Correspondance des utilisateurs
+XWiki.OIDC.ClientConfigurationClass_clientSecret=Secret
+XWiki.OIDC.ClientConfigurationClass_clientId=ID client
+EntraID.Code.EntraIDConfigurationClass_tenantId=ID du locataire (tenant)
+EntraID.Code.EntraIDConfigurationClass_enableXWikiLoginGlobal=Autoriser l'identification XWiki
+EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups=Groupes des utilisateurs autorisés à s'authentifier sur XWiki
+XWiki.OIDC.ClientConfigurationClass_enableUser.hint=Si désactivé, les utilisateurs d'Entra ID auront leur compte désactivé lors de leur première authentification.
+XWiki.OIDC.ClientConfigurationClass_skipped.hint=Désactive l'authentification Entra ID.
+XWiki.OIDC.ClientConfigurationClass_scope.hint=Le périmètre (scope) à utiliser lors de la redirection vers le fournisseur.
+XWiki.OIDC.ClientConfigurationClass_groupsClaim.hint=Indiquer le champ contenant la liste des groupes (dans le cas ou ce n'est pas un standard OpenID Connect).
+XWiki.OIDC.ClientConfigurationClass_groupsMapping.hint=Associe les groupes XWiki aux groupes Entra ID.
+XWiki.OIDC.ClientConfigurationClass_allowedGroups.hint=Les groupes auxquels l'utilisateur doit appartenir pour être autorisé à s'authentifier.
+XWiki.OIDC.ClientConfigurationClass_forbiddenGroups.hint=Si un utilisateur appartient à ces groupes, il ne sera pas autorisé à s'identifier.
+XWiki.OIDC.ClientConfigurationClass_userNameFormatter.hint=Le motif à utiliser pour générer l'identifiant unique de l'utilisateur.
+XWiki.OIDC.ClientConfigurationClass_userMapping.hint=Associer des propriétés non-standards venant du fournisseur OpenID Connect aux utilisateurs XWiki.
+XWiki.OIDC.ClientConfigurationClass_clientSecret.hint=Le secret client enregistré au niveau du fournisseur.
+XWiki.OIDC.ClientConfigurationClass_clientId.hint=L'identifiant client utilisé par l'authentification.
+EntraID.Code.EntraIDConfigurationClass_tenantId.hint=ID de l'instance Entra ID.
+EntraID.Code.EntraIDConfigurationClass_enableXWikiLoginGlobal.hint=Permettre aux utilisateurs invités de s'identifier en utilisant la méthode d'authentification standard de XWiki.
+EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups.hint=Groupes d'utilisateurs autorisés à s'authentifier avec la méthode XWiki.
+entra.administration.configuration.title=Configuration
+entra.administration.sync.title=Synchroniser les utilisateurs EntraID
+entra.administration.sync.description=Synchronise les utilisateurs XWiki avec ceux de Microsoft Entra ID, assurant que les utilisateurs supprimés ou désactivés dans Entra ID sont aussi mis à jour dans XWiki.
+entra.administration.sync.checkbox.disable=Désactiver les utilisateurs
+entra.administration.sync.checkbox.remove=Supprimer les utilisateurs
+entra.administration.sync.button=Exécuter la synchronisation
+entra.sync.notification.done=Synchronisation réalisée avec succès !
+entra.sync.notification.error=Il y a eu une erreur lors de la synchronisation.
+entra.sync.notification.inprogress=Synchronisation en cours...
+entra.sync.notification.noAction=Aucune action sélectionnée.
+entra.properties.data.newEntry=Nouvelle entrée
+entra.properties.data.tip.key.groupMap=Groupe XWiki...
+entra.properties.data.tip.value.groupMap=ID de l'objet groupe...
+entra.properties.data.tip.key.userMap=Propriété de l'utilisateur XWiki...
+entra.properties.data.tip.value.userMap=Propriété du fournisseur...
+entra.properties.data.tip.value.forbiddenGroup=Groupes interdits...
+entra.properties.data.tip.value.allowedGroup=Groupes autorisés...
+entra.drawer.header.login=S'authentifier avec XWiki
+entra.drawer.header.switch=Basculer vers l'utilisateur XWiki
+</content>
+  <object>
+    <name>EntraID.Code.Translations</name>
+    <number>0</number>
+    <className>XWiki.TranslationDocumentClass</className>
+    <guid>01d84622-baf7-448b-96a4-93fcd4276764</guid>
+    <class>
+      <name>XWiki.TranslationDocumentClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>1</number>
+        <prettyName>Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>GLOBAL|WIKI|USER|ON_DEMAND</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <scope>WIKI</scope>
+    </property>
+  </object>
+</xwikidoc>
