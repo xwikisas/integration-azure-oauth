@@ -53,7 +53,7 @@ class DefaultEntraIDConfigurationTest
     @Test
     void getOIDCTenantIDTest()
     {
-        when(oidcConfig.getProperty("authorizationEndpoint", "")).thenReturn("http.test.com/test_value/oauth2/v2");
+        when(oidcConfig.getProperty("provider", "")).thenReturn("https://login.microsoftonline.com/test_value/v2.0");
         assertEquals("test_value", defaultEntraIDConfiguration.getOIDCTenantID());
     }
 

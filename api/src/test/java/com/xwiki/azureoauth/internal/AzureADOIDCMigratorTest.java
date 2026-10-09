@@ -62,7 +62,9 @@ import static org.mockito.Mockito.when;
 @ComponentTest
 class AzureADOIDCMigratorTest
 {
-    private static final String BASE_ENDPOINT = "https://login.microsoftonline.com/%s/oauth2/v2.0/%s";
+    private static final String PROVIDER_ENDPOINT = "https://login.microsoftonline.com/%s/v2.0";
+
+    private static final String TOKEN_ENDPOINT = "https://login.microsoftonline.com/%s/oauth2/v2.0/token";
 
     @InjectMockComponents
     private AzureADOIDCMigrator azureADOIDCMigrator;
@@ -118,10 +120,9 @@ class AzureADOIDCMigratorTest
     @Mock
     private PropertyInterface propertyInterface2;
 
-    private Map<String, Object> endpoints =
-        Map.of("authorizationEndpoint", String.format(BASE_ENDPOINT, "tenant_id", "authorize"), "tokenEndpoint",
-            String.format(BASE_ENDPOINT, "tenant_id", "token"), "logoutEndpoint",
-            String.format(BASE_ENDPOINT, "tenant_id", "logout"));
+    private Map<String, Object> providerEndpoint =
+        Map.of("provider", String.format(PROVIDER_ENDPOINT, "tenant_id"), "tokenEndpoint",
+            String.format(TOKEN_ENDPOINT, "tenant_id"), "authorizationEndpoint", "", "logoutEndpoint", "");
 
     @BeforeEach
     void setUp()
@@ -145,9 +146,24 @@ class AzureADOIDCMigratorTest
         when(entraIDConfiguration.getScope()).thenReturn("scope1,scope2");
         when(entraIDConfiguration.getSecret()).thenReturn("secret");
         when(entraIDConfiguration.getTenantID()).thenReturn("tenant_id");
+        when(entraIDConfiguration.getOIDCTenantID()).thenReturn("tenant_id");
 
         azureADOIDCMigrator.initializeOIDCConfiguration();
         verify(entraIDConfiguration, Mockito.times(0)).setOIDCConfiguration(anyMap());
+    }
+
+    @Test
+    void initializeConfigurationWithOldEndpointsTest() throws ConfigurationSaveException
+    {
+        when(entraIDConfiguration.getClientID()).thenReturn("client_id");
+        when(entraIDConfiguration.getSecret()).thenReturn("secret");
+        when(entraIDConfiguration.getTenantID()).thenReturn("tenant_id");
+        // The provider endpoint is not set, so the tenant ID cannot be extracted from the OIDC configuration.
+        when(entraIDConfiguration.getOIDCTenantID()).thenReturn("");
+
+        azureADOIDCMigrator.initializeOIDCConfiguration();
+        verify(entraIDConfiguration, Mockito.times(0)).setEntraIDConfiguration(anyMap());
+        verify(entraIDConfiguration, Mockito.times(1)).setOIDCConfiguration(providerEndpoint);
     }
 
     @Test
@@ -159,7 +175,7 @@ class AzureADOIDCMigratorTest
         when(entraIDConfiguration.getTenantID()).thenReturn("");
 
         azureADOIDCMigrator.initializeOIDCConfiguration();
-        Map<String, Object> configMap = new HashMap<>(endpoints);
+        Map<String, Object> configMap = new HashMap<>(providerEndpoint);
         configMap.put("clientId", "client_id");
         configMap.put("clientSecret", "secret");
         verify(entraIDConfiguration, Mockito.times(1)).setOIDCConfiguration(configMap);
@@ -187,6 +203,6 @@ class AzureADOIDCMigratorTest
     @Test
     void getEndpointsTest()
     {
-        assertEquals(endpoints, azureADOIDCMigrator.getEndpoints("tenant_id"));
+        assertEquals(providerEndpoint, azureADOIDCMigrator.getEndpoints("tenant_id"));
     }
 }
