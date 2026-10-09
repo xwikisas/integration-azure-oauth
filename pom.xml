@@ -37,6 +37,7 @@
     <licensing.version>1.33</licensing.version>
     <xwiki.minversion>15.10</xwiki.minversion>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
+    <oidc.version>2.28.1</oidc.version>
   </properties>
 
   <issueManagement>

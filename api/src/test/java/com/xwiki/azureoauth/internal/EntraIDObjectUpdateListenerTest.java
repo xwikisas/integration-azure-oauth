@@ -70,7 +70,7 @@ import static org.mockito.Mockito.when;
 @ComponentTest
 class EntraIDObjectUpdateListenerTest
 {
-    private static final String BASE_ENDPOINT = "https://login.microsoftonline.com/%s/oauth2/v2.0/%s";
+    private static final String PROVIDER_ENDPOINT = "https://login.microsoftonline.com/%s/v2.0";
 
     private static final List<String> SPACE = Arrays.asList("EntraID", "Code");
 
@@ -135,7 +135,7 @@ class EntraIDObjectUpdateListenerTest
     private DocumentReference configReference = new DocumentReference(CONFIG_DOC, new WikiReference("mywiki"));
 
     private Map<String, Object> configMap =
-        Map.of("authorizationEndpoint", String.format(BASE_ENDPOINT, "new_value", "authorize"));
+        Map.of("provider", String.format(PROVIDER_ENDPOINT, "new_value"));
 
     @BeforeComponent
     void setUp()

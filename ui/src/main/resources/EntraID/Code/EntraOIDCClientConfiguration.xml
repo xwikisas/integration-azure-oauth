@@ -820,7 +820,7 @@
       <userInfoClaims/>
     </property>
     <property>
-      <userInfoEndpoint>https://graph.microsoft.com/oidc/userinfo</userInfoEndpoint>
+      <userInfoEndpoint/>
     </property>
     <property>
       <userInfoEndpointHeaders/>

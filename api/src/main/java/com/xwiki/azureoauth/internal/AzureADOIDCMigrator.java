@@ -65,7 +65,9 @@ public class AzureADOIDCMigrator
 
     private static final String ISSUER = "issuer";
 
-    private static final String BASE_ENDPOINT = "https://login.microsoftonline.com/%s/oauth2/v2.0/%s";
+    private static final String PROVIDER_ENDPOINT = "https://login.microsoftonline.com/%s/v2.0";
+
+    private static final String TOKEN_ENDPOINT = "https://login.microsoftonline.com/%s/oauth2/v2.0/token";
 
     @Inject
     @Named(OldAzureOAuthConfiguration.HINT)
@@ -99,16 +101,22 @@ public class AzureADOIDCMigrator
         // XWiki might not be fully initialized yet, in which case it means we are not attempting to update the
         // configuration.
         if (getXWiki() != null) {
-            EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
+            EntraIDConfiguration entraIDConfiguration = this.entraIDConfigurationProvider.get();
             Map<String, Object> configurationMap = generateNewConfiguration();
-            if (entraIDConfiguration.getTenantID().isEmpty()) {
+            String tenantID = entraIDConfiguration.getTenantID();
+            if (tenantID.isEmpty()) {
                 entraIDConfiguration.setEntraIDConfiguration(getTenantIdConfiguration());
-                configurationMap.putAll(getEndpoints(identityOAuthConfigurationProvider.get().getTenantID()));
-                logger.info("Successfully set Entra ID configuration.");
+                configurationMap.putAll(getEndpoints(this.identityOAuthConfigurationProvider.get().getTenantID()));
+                this.logger.info("Successfully set Entra ID configuration.");
+            } else if (!tenantID.equals(entraIDConfiguration.getOIDCTenantID())) {
+                // The OIDC configuration doesn't have the provider endpoint yet, so it still uses the separate
+                // endpoints set by previous versions, which need to be replaced.
+                // TODO: Remove this migration step once users have updated the application to a version above 2.2.3.
+                configurationMap.putAll(getEndpoints(tenantID));
             }
             if (!configurationMap.isEmpty()) {
                 entraIDConfiguration.setOIDCConfiguration(configurationMap);
-                logger.info("Successfully set OIDC configuration.");
+                this.logger.info("Successfully set OIDC configuration.");
             }
         }
     }
@@ -125,32 +133,35 @@ public class AzureADOIDCMigrator
 
         // XWiki might not be fully initialized yet, in which case it means we are not attempting to update the users.
         if (wiki != null) {
-            List<XWikiDocument> users = usersManager.getXWikiUsers();
+            List<XWikiDocument> users = this.usersManager.getXWikiUsers();
             for (XWikiDocument userDoc : users) {
-                BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
+                BaseObject oidcObj = userDoc.getXObject(this.documentReferenceResolver.resolve(OIDC_USER_CLASS));
                 String issuer = oidcObj.getField(ISSUER).toFormString();
                 if (issuer.endsWith(INVALID_VERSION)) {
                     int index = issuer.lastIndexOf(INVALID_VERSION);
                     String fixedIssuer = issuer.substring(0, index) + VALID_VERSION;
-                    oidcObj.set(ISSUER, fixedIssuer, xcontextProvider.get());
+                    oidcObj.set(ISSUER, fixedIssuer, this.xcontextProvider.get());
                     wiki.saveDocument(userDoc, "Refactored OIDC issuer to the right format used by Entra ID.",
-                        xcontextProvider.get());
+                        this.xcontextProvider.get());
                 }
             }
         }
     }
 
     /**
-     * Generates the endpoints that are required by OIDC configuration.
+     * Generates the provider and token endpoints required by the OIDC configuration, and resets the authorization and
+     * logout endpoints set by previous versions, which are now discovered from the provider. The token endpoint is kept
+     * since it is also used for the Entra ID users synchronization.
      *
      * @param tenantID the AD tenant ID.
-     * @return the formatted endpoints.
+     * @return the OIDC endpoints configuration.
      */
     public Map<String, Object> getEndpoints(String tenantID)
     {
-        return Map.of("authorizationEndpoint", String.format(BASE_ENDPOINT, tenantID, "authorize"), "tokenEndpoint",
-            String.format(BASE_ENDPOINT, tenantID, "token"), "logoutEndpoint",
-            String.format(BASE_ENDPOINT, tenantID, "logout"));
+        // TODO: Stop clearing the old authorization and logout endpoints once users have updated the application to
+        // a version above 2.2.3.
+        return Map.of("provider", String.format(PROVIDER_ENDPOINT, tenantID), "tokenEndpoint",
+            String.format(TOKEN_ENDPOINT, tenantID), "authorizationEndpoint", "", "logoutEndpoint", "");
     }
 
     private XWiki getXWiki()
@@ -163,8 +174,8 @@ public class AzureADOIDCMigrator
     private Map<String, Object> generateNewConfiguration()
     {
         Map<String, Object> newConfig = new HashMap<>();
-        EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
-        AzureOldConfiguration oauthConfiguration = identityOAuthConfigurationProvider.get();
+        EntraIDConfiguration entraIDConfiguration = this.entraIDConfigurationProvider.get();
+        AzureOldConfiguration oauthConfiguration = this.identityOAuthConfigurationProvider.get();
         if (entraIDConfiguration.getClientID().isEmpty()) {
             newConfig.put("clientId", oauthConfiguration.getClientID());
         }
@@ -176,6 +187,6 @@ public class AzureADOIDCMigrator
 
     private Map<String, Object> getTenantIdConfiguration()
     {
-        return Map.of("tenantId", identityOAuthConfigurationProvider.get().getTenantID());
+        return Map.of("tenantId", this.identityOAuthConfigurationProvider.get().getTenantID());
     }
 }
