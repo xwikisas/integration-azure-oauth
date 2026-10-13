@@ -30,7 +30,10 @@ import org.xwiki.administration.test.po.EditGroupModal;
 import org.xwiki.administration.test.po.GroupsPage;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.LocalDocumentReference;
+import org.xwiki.model.reference.ObjectPropertyReference;
+import org.xwiki.model.reference.ObjectReference;
 import org.xwiki.rest.model.jaxb.Object;
+import org.xwiki.rest.model.jaxb.Property;
 import org.xwiki.test.docker.junit5.UITest;
 import org.xwiki.test.ui.TestUtils;
 import org.xwiki.test.ui.po.LoginPage;
@@ -60,7 +63,14 @@ class EntraIdIT
 
     private static final String ENTRAID_CONFIGURATION_CLASSNAME = "EntraID.Code.EntraIDConfigurationClass";
 
+    private static final String OIDC_CONFIGURATION_CLASSNAME = "XWiki.OIDC.ClientConfigurationClass";
+
     private static final String PASSWORD = "pass";
+
+    private static final String TENANT_ID = "test_tenantId";
+
+    private static final String AUTHORIZATION_ENDPOINT =
+        String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/authorize", TENANT_ID);
 
     @BeforeAll
     static void setup(TestUtils setup) throws Exception
@@ -80,9 +90,18 @@ class EntraIdIT
         groupsPage = GroupsPage.gotoPage();
         assertEquals("2", groupsPage.getMemberCount(GROUP_NAME));
 
-        // Modify the tenant ID to update the OIDC configuration so that the Microsoft login page is displayed.
+        // Modify the tenant ID and check that the OIDC provider is updated accordingly.
         setup.updateObject(ENTRAID_CONFIGURATION_REFERENCE, ENTRAID_CONFIGURATION_CLASSNAME, 0, "tenantId",
-            "test_tenantId");
+            TENANT_ID);
+        Property provider = setup.rest().get(new ObjectPropertyReference("provider",
+            new ObjectReference(OIDC_CONFIGURATION_CLASSNAME + "[0]", ENTRAID_CONFIGURATION_REFERENCE)));
+        assertEquals(String.format("https://login.microsoftonline.com/%s/v2.0", TENANT_ID), provider.getValue());
+
+        // The OIDC endpoints are discovered from the provider metadata, which cannot be retrieved for a fake tenant.
+        // Set the authorization endpoint and the client ID explicitly so that the Microsoft login page is displayed
+        // without contacting the provider.
+        setup.updateObject(ENTRAID_CONFIGURATION_REFERENCE, OIDC_CONFIGURATION_CLASSNAME, 0, "authorizationEndpoint",
+            AUTHORIZATION_ENDPOINT, "clientId", "test_clientId");
 
         // Configure the OIDC user class for the second user to be able to test the switch to XWiki user functionality.
         Object userObject =
@@ -110,7 +129,7 @@ class EntraIdIT
         entraIDViewPage.defaultLogin();
         // We cannot actually test that the Entra ID login works, as we would have to use private information.
         // Therefore, we only test that the Microsoft login page is called.
-        assertTrue(testUtils.getDriver().getCurrentUrl().contains("login.microsoftonline.com/test_tenantId"));
+        assertTrue(testUtils.getDriver().getCurrentUrl().startsWith(AUTHORIZATION_ENDPOINT));
         entraIDViewPage.goToHomePage();
     }
 
