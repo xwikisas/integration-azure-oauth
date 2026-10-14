@@ -39,6 +39,9 @@
   <content>{{velocity output="false"}}
 #set ($discard = $xwiki.jsx.use('EntraID.Code.EntraOIDCClientConfigurationSheet'))
 #set ($discard = $xwiki.ssx.use('EntraID.Code.EntraOIDCClientConfigurationSheet'))
+#set ($discard = $xwiki.ssx.use('EntraID.Code.PropertiesEditor'))
+#set ($discard = $xwiki.linkx.use($services.webjars.url('com.xwiki.commons:xwiki-pro-commons-webjar',
+  'xwikiPropertize/xwikiPropertize.css', {'evaluate': true}), {'type': 'text/css', 'rel': 'stylesheet'}))
 #includeMacros("XWiki.AdminFieldsDisplaySheet")
 #set ($params = {
   'XWiki.OIDC.ClientConfigurationClass': ['skipped', 'enableUser', 'scope', 'groupsClaim',
@@ -188,304 +191,39 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>define('entra-properties', {
-  prefix: 'entra.properties.data.',
-  keys: [
-    'newEntry',
-    'tip.key.groupMap',
-    'tip.value.groupMap',
-    'tip.key.userMap',
-    'tip.value.userMap',
-    'tip.value.forbiddenGroup',
-    'tip.value.allowedGroup',
-  ]
-});
+      <code>#set ($propertiesEditorDoc = $xwiki.getDocument('EntraID.Code.PropertiesEditor'))
 require.config({
   paths: {
-    'xwiki-suggestGroups': "$xwiki.getSkinFile('uicomponents/suggest/suggestUsersAndGroups.js', true)" +
-      "?v=$escapetool.url($xwiki.version)"
+    'entraid-properties-editor':
+      "$propertiesEditorDoc.getURL('jsx', "v=$escapetool.url($propertiesEditorDoc.version)")"
   }
 });
-
-require(['jquery', 'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'], function($, l10n) {
-  function maybeMakeFieldSelectable(input) {
-      if ($(input).data('selectize')) {
-        let key = '.' + $(input).data('keyClass');
-        $(key).suggestGroups({
-          userScope: 'LOCAL_ONLY'
-        });
-      }
-    };
-
-  // Function to initialize and display existing properties.
-  function initializeAndDisplayExistingProperties(input, options) {
-    const propStr = $(input).val();
-    const properties = [];
-    let escaped = false;
-    let currentProp = '';
-
-    for (let i = 0; i &lt; propStr.length; i++) {
-      const c = propStr[i];
-      if (escaped) {
-        currentProp += c;
-        escaped = false;
-      } else if (c === options.escapeChar) {
-        escaped = true;
-      } else if (c === options.separator) {
-        addProp(properties, currentProp);
-        currentProp = '';
-      } else {
-        currentProp += c;
-      }
-    }
-    if (currentProp.length &gt; 0) {
-      addProp(properties, currentProp);
-    }
-
-    // Render each property depending on data type
-    const dataType = $(input).data('type');
-    $.each(properties, function(_, prop) {
-      if(dataType === 'map') {
-        $(input).before(createMapPropertyEntry(prop[0], prop[1], input, options));
-      } else if (dataType === 'list') {
-        $(input).before(createListPropertyEntry(prop[1], input, options));
-      }
-      maybeMakeFieldSelectable(input);
-    });
-  };
-
-  function addProp(properties, prop) {
-    const key = prop.substring(0, prop.indexOf('='));
-    const value = prop.substring(prop.indexOf('=') + 1) || '';
-    properties.push([key, value]);
-  };
-
-  function escapeValue(value, options) {
-    return value.split('').map(function(c) {
-      return c === options.separator || c === options.escapeChar ? options.escapeChar + c : c;
-    }).join('');
-  };
-
-  function updateListValue(input, options) {
-    const propertiesStr = $(input).siblings('.property-entry').map(function() {
-      const value = $(this).find('.value').val();
-      return value ? escapeValue(value, options) : null;
-    }).get().join(options.separator);
-    $(input).val(propertiesStr);
-  };
-
-  function updateMapValue(input, options) {
-    const propertiesStr = $(input).siblings('.property-entry').map(function() {
-      const key = $(this).find('.key').val();
-      const value = $(this).find('.value').val();
-      return key &amp;&amp; value ? escapeValue(key, options) + '=' + escapeValue(value, options) : null;
-    }).get().join(options.separator);
-    $(input).val(propertiesStr);
-  };
-
-  function createMapPropertyEntry(key, value, input, options) {
-    const entry = $('&lt;div&gt;').addClass('property-entry');
-    const keyInput = $('&lt;input&gt;').attr('type', 'text').addClass('key').addClass($(input).data('keyClass')).attr('placeholder',
-      l10n.get($(input).data('keyTip'))).val(key || '');
-
-    const valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
-      l10n.get($(input).data('valueTip'))).val(value || '');
-
-    const removeBtn = $('&lt;span&gt;').addClass('remove').on('click', function() {
-      $(this).closest('.property-entry').remove();
-      updateMapValue(input, options);
-    });
-
-    keyInput.on('change', function() {
-      updateMapValue(input, options);
-    });
-    valueInput.on('change', function() {
-      updateMapValue(input, options);
-    });
-
-    return entry.append(keyInput, options.mapsToString, valueInput, removeBtn);
-  };
-
-  function createListPropertyEntry(value, input, options) {
-    const entry = $('&lt;div&gt;').addClass('property-entry');
-    const valueInput = $('&lt;input&gt;').attr('type', 'text').addClass('value').attr('placeholder',
-      l10n.get($(input).data('valueTip'))).val(value || '');
-    const removeBtn = $('&lt;span&gt;').addClass('remove').on('click', function() {
-      $(this).closest('.property-entry').remove();
-      updateListValue(input, options);
-    });
-    valueInput.on('change', function() {
-      updateListValue(input, options);
-    });
-    return entry.append(valueInput, removeBtn);
-  };
-
+require(['jquery', 'entraid-properties-editor', 'xwiki-selectize'], function($, propertiesEditor) {
   $(function() {
-    const defaultOptions = {
-      separator: ',',
-      mapsToString: ' \u2192 ',
-      escapeChar: '\\',
-      newEntryMessage: l10n.get('newEntry')
+    const getPropertyInput = function(propertyName) {
+      return $(document.getElementById('XWiki.OIDC.ClientConfigurationClass_0_' + propertyName));
     };
-
-    $(document).on('click', '.new-entry', function() {
-      const input = this.previous('textarea');
-      const options = $(this).data('options');
-      const dataType = $(input).data('type');
-      if(dataType === 'map') {
-        $(this).before(createMapPropertyEntry('', '', input, options));
-      } else if (dataType === 'list') {
-        $(this).before(createListPropertyEntry('', input, options));
-      }
-      maybeMakeFieldSelectable(input);
+    propertiesEditor.propertize(getPropertyInput('groupsMapping'), {
+      separator: ',',
+      keyTip: 'tip.key.groupMap',
+      valueTip: 'tip.value.groupMap',
+      suggestGroups: true
     });
-
-    $('.properties-editor').each(function() {
-      const options = {
-        separator: $(this).data('separator') || defaultOptions.separator,
-        mapsToString: defaultOptions.mapsToString,
-        escapeChar: $(this).data('escape-character') || defaultOptions.escapeChar,
-        newEntryMessage: defaultOptions.newEntryMessage
-      };
-      // Hide original input, display New Entry button, and initialize properties.
-      $(this).hide();
-      $(this).after($('&lt;span&gt;').addClass('new-entry').text(options.newEntryMessage).data('options', options));
-      initializeAndDisplayExistingProperties(this, options);
+    propertiesEditor.propertize(getPropertyInput('userMapping'), {
+      separator: ',',
+      keyTip: 'tip.key.userMap',
+      valueTip: 'tip.value.userMap'
     });
+    ['allowedGroups', 'forbiddenGroups'].forEach(propertyName =&gt; getPropertyInput(propertyName).xwikiSelectize({
+      delimiter: ',',
+      create: true,
+      persist: false
+    }));
   });
 });</code>
     </property>
     <property>
       <name>Property editor</name>
-    </property>
-    <property>
-      <parse>1</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <name>EntraID.Code.EntraOIDCClientConfigurationSheet</name>
-    <number>1</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>dc307977-eb98-4e28-bef5-4915f49b9f98</guid>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <defaultValue>long</defaultValue>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <freeText>forbidden</freeText>
-        <largeStorage>0</largeStorage>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <contenttype>PureText</contenttype>
-        <disabled>0</disabled>
-        <editor>PureText</editor>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <restricted>0</restricted>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <freeText>forbidden</freeText>
-        <largeStorage>0</largeStorage>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>$(document).on('xwiki:dom:loaded', function() {
-  var groupMapping = $('XWiki.OIDC.ClientConfigurationClass_0_groupsMapping');
-  var userMapping = $('XWiki.OIDC.ClientConfigurationClass_0_userMapping');
-  var allowedGroups = $('XWiki.OIDC.ClientConfigurationClass_0_allowedGroups');
-  var forbiddenGroups = $('XWiki.OIDC.ClientConfigurationClass_0_forbiddenGroups');
-
-  groupMapping.setAttribute('data-key-tip', 'tip.key.groupMap');
-  groupMapping.setAttribute('data-value-tip', 'tip.value.groupMap');
-  groupMapping.setAttribute('data-type', 'map');
-  groupMapping.setAttribute('data-key-class', 'group-map-key');
-  groupMapping.setAttribute('data-selectize', true);
-  groupMapping.addClassName('properties-editor');
-
-  userMapping.setAttribute('data-key-tip', 'tip.key.userMap');
-  userMapping.setAttribute('data-value-tip', 'tip.value.userMap');
-  userMapping.setAttribute('data-type', 'map');
-  userMapping.setAttribute('data-key-class', 'user-map-key');
-  userMapping.setAttribute('data-selectize', false);
-  userMapping.addClassName('properties-editor');
-
-  allowedGroups.setAttribute('data-value-tip', 'tip.value.allowedGroup');
-  allowedGroups.setAttribute('data-type', 'list');
-  allowedGroups.setAttribute('data-selectize', false);
-  allowedGroups.addClassName('properties-editor');
-
-  forbiddenGroups.setAttribute('data-value-tip', 'tip.value.forbiddenGroup');
-  forbiddenGroups.setAttribute('data-type', 'list');
-  forbiddenGroups.setAttribute('data-selectize', false);
-  forbiddenGroups.addClassName('properties-editor');
-});</code>
-    </property>
-    <property>
-      <name>Properties definition</name>
     </property>
     <property>
       <parse>1</parse>
@@ -604,40 +342,11 @@ require(['jquery', 'xwiki-l10n!entra-properties', 'xwiki-suggestGroups'], functi
   text-transform: none !important;
 }
 
-div.property-entry span.remove {
-  min-height: 1.5rem;
-  min-width: 1.5rem;
-  margin-left: 1rem;
-  background: url($xwiki.getSkinFile('icons/silk/cross.png')) no-repeat;
-  cursor: pointer;
-}
-
-div.property-entry {
-  padding: 0.5rem 0rem;
-  display: flex;
-  align-items: center;
-}
-
-span.new-entry {
-  font-size: 0.9em;
-  background:url($xwiki.getSkinFile('icons/silk/add.png')) no-repeat;
-  padding-left:2rem;
-  display:inline-block;
-  margin-top:0.5rem;
-  cursor:pointer;
-}
-
-div.selectize-control, div.selectize-input, input.key, input.value {
-  width: -webkit-fill-available;
-  height: 4rem;
-}
-
 #entra-sync {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-</code>
+}</code>
     </property>
     <property>
       <contentType>CSS</contentType>
