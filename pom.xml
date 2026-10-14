@@ -38,6 +38,7 @@
     <xwiki.minversion>15.10</xwiki.minversion>
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
     <oidc.version>2.28.1</oidc.version>
+    <xwikipro.commons.version>1.5.0</xwikipro.commons.version>
   </properties>
 
   <issueManagement>
