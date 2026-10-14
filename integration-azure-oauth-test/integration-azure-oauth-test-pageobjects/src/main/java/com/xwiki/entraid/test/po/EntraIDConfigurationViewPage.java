@@ -43,6 +43,15 @@ public class EntraIDConfigurationViewPage extends ViewPage
         return getDriver().findElement(By.className("entra-sync-action"));
     }
 
+    /**
+     * @return the description of the users synchronization
+     * @since 2.2.5
+     */
+    public String getSyncDescription()
+    {
+        return getDriver().findElement(By.cssSelector("#entra-sync p")).getText();
+    }
+
     public WebElement getDisableCheck()
     {
         return getDriver().findElement(By.cssSelector("#entra-sync input[name='disable']"));

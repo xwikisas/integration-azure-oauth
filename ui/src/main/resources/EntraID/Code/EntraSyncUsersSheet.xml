@@ -37,11 +37,20 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
+## Set $entraSyncConfiguration before including this sheet to sync the users of a specific Entra ID client
+## configuration. Otherwise, the users of the default configuration are synced.
 #set ($discard = $xwiki.jsx.use('EntraID.Code.EntraSyncUsersSheet'))
+#set ($discard = $xwiki.ssx.use('EntraID.Code.EntraSyncUsersSheet'))
+#if ("$!entraSyncConfiguration" != '')
+  #set ($syncDescriptionKey = 'entra.administration.sync.configuration.description')
+#else
+  #set ($syncDescriptionKey = 'entra.administration.sync.description')
+#end
 {{html}}
-&lt;form id="entra-sync" action="$request.getContextPath()/rest/entraid/user/sync"&gt;
+&lt;form id="entra-sync" action="$escapetool.xml("${request.contextPath}/rest/entraid/user/sync")"
+    #if ("$!entraSyncConfiguration" != '')data-configuration="$escapetool.xml($entraSyncConfiguration)"#end&gt;
   &lt;h3&gt;$escapetool.xml($services.localization.render('entra.administration.sync.title'))&lt;/h3&gt;
-  &lt;p&gt;$escapetool.xml($services.localization.render('entra.administration.sync.description'))&lt;/p&gt;
+  &lt;p&gt;$escapetool.xml($services.localization.render($syncDescriptionKey))&lt;/p&gt;
   &lt;label&gt;
     &lt;input type="checkbox" name="disable" checked&gt;
     $escapetool.xml($services.localization.render('entra.administration.sync.checkbox.disable'))
@@ -155,55 +164,14 @@
 });
 
 require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-notification'],
-        function($, xwikiMeta, JobRunner, l10n) {
-  $(document).on('click', '.entra-sync-action', function (event) {
-    event.preventDefault();
-    const form = $(this).closest('form');
-    const disable = String(form.find('input[name="disable"]').prop('checked'));
-    const remove = String(form.find('input[name="remove"]').prop('checked'));
-    if (disable === 'false' &amp;&amp; remove === 'false') {
-      const notification = new XWiki.widgets.Notification(l10n.get('noAction'), 'info');
-    } else {
-      const syncButton = $(this);
-      syncButton.prop('disabled', true);
-      const data = {
-        disable: disable,
-        remove: remove
-      };
-      const notification = new XWiki.widgets.Notification(l10n.get('inprogress'), 'inprogress');
-      $.ajax({
-        url: form.attr('action'),
-        type: 'POST',
-        data: $.param(data),
-        success: function (response) {
-          checkSyncJob(disable, remove, notification)
-        },
-        error: function (xhr) {
-          console.error('Error:', xhr);
-          notification.replace(new XWiki.widgets.Notification(l10n.get('error'), 'error'));
-          syncButton.prop('disabled', false);
-        }
-      });
-    }
-  });
-
-  const checkSyncJob = function(disable, remove, notification) {
-    let documentReference = XWiki.Model.resolve('EntraID.Code.SyncJobResource', XWiki.EntityType.DOCUMENT);
-    var targetURL = new XWiki.Document(documentReference).getURL('get');
-    var targetJobId = ['entra', 'users', 'sync', disable, remove];
-    var data = [];
-    data.push(
-      {name: 'outputSyntax', value: 'plain'},
-      {name: 'sheet', value: 'EntraID.Code.SyncJobResource'},
-      {name: 'action', value: 'jobStatus'},
-      {name: 'jobId', value: targetJobId.join('/')},
-      {name: 'data', value: 'jobStatus'},
-      {name: 'form_token', value: xwikiMeta.form_token}
-    );
+    function($, xwikiMeta, JobRunner, l10n) {
+  const checkSyncJob = function(jobId, notification) {
+    const statusDocumentReference = XWiki.Model.resolve('EntraID.Code.SyncJobResource', XWiki.EntityType.DOCUMENT);
+    const statusURL = new XWiki.Document(statusDocumentReference).getURL('get');
     return Promise.resolve(new JobRunner({
       createStatusRequest: function(jobId) {
         return {
-          url: targetURL,
+          url: statusURL,
           data: {
             outputSyntax: 'plain',
             sheet: 'EntraID.Code.SyncJobResource',
@@ -212,19 +180,59 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
           }
         };
       }
-    }).run(targetURL, data)).then((response) =&gt; {
+    }).run(statusURL, [
+      {name: 'outputSyntax', value: 'plain'},
+      {name: 'sheet', value: 'EntraID.Code.SyncJobResource'},
+      {name: 'action', value: 'jobStatus'},
+      {name: 'jobId', value: jobId.join('/')},
+      {name: 'data', value: 'jobStatus'},
+      {name: 'form_token', value: xwikiMeta.form_token}
+    ])).then(response =&gt; {
       if (response.error) {
         throw new Error(response.error.message);
-      } else {
-        notification.replace(new XWiki.widgets.Notification(l10n.get('done'), 'done'));
       }
-    }).catch((reason) =&gt; {
+      notification.replace(new XWiki.widgets.Notification(l10n.get('done'), 'done'));
+    }).catch(reason =&gt; {
+      console.error(reason);
       notification.replace(new XWiki.widgets.Notification(l10n.get('error'), 'error'));
-      return Promise.reject(reason);
     }).finally(() =&gt; {
       $('.entra-sync-action').prop('disabled', false);
     });
   };
+
+  $(document).on('click', '.entra-sync-action', function(event) {
+    event.preventDefault();
+    const form = $(this).closest('form');
+    // Missing when the users of the default configuration are synced.
+    const configuration = form.data('configuration');
+    const disable = String(form.find('input[name="disable"]').prop('checked'));
+    const remove = String(form.find('input[name="remove"]').prop('checked'));
+    if (disable === 'false' &amp;&amp; remove === 'false') {
+      new XWiki.widgets.Notification(l10n.get('noAction'), 'info');
+      return;
+    }
+    const syncButton = $(this).prop('disabled', true);
+    const notification = new XWiki.widgets.Notification(l10n.get('inprogress'), 'inprogress');
+    const data = {disable, remove};
+    // Keep the same job ID as the REST resource.
+    const jobId = ['entra', 'users', 'sync'];
+    if (configuration !== undefined) {
+      data.configuration = String(configuration);
+      jobId.push(data.configuration);
+    }
+    jobId.push(disable, remove);
+    $.ajax({
+      url: form.attr('action'),
+      type: 'POST',
+      data
+    }).then(() =&gt; {
+      checkSyncJob(jobId, notification);
+    }).catch(xhr =&gt; {
+      console.error(xhr);
+      notification.replace(new XWiki.widgets.Notification(l10n.get('error'), 'error'));
+      syncButton.prop('disabled', false);
+    });
+  });
 });</code>
     </property>
     <property>
@@ -232,6 +240,131 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
     </property>
     <property>
       <parse/>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>EntraID.Code.EntraSyncUsersSheet</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>e7e9f679-1e59-46a5-9c5e-40ed65e91c38</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#entra-sync {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>0</parse>
     </property>
     <property>
       <use>onDemand</use>

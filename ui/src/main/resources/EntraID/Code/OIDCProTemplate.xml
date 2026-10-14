@@ -1,0 +1,400 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.5" reference="EntraID.Code.OIDCProTemplate" locale="">
+  <web>EntraID.Code</web>
+  <name>OIDCProTemplate</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>EntraID.Code.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>OIDCProTemplate</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <attachment>
+    <filename>entra-id.svg</filename>
+    <mimetype>image/svg+xml</mimetype>
+    <charset>UTF-8</charset>
+    <author>xwiki:XWiki.Admin</author>
+    <version>1.1</version>
+    <comment/>
+    <content>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0idXVpZC1mOGQ0ZDM5Mi03YzEyLTRiZDktYmFmZi02NmZiZjc4MTRiOTEiIGRhdGEtbmFtZT0iTGF5ZXIgMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDE4IDE4Ij4KICA8cGF0aCBkPSJtMy44MDIsMTQuMDMyYy4zODguMjQyLDEuMDMzLjUxMSwxLjcxNS41MTEuNjIxLDAsMS4xOTgtLjE4LDEuNjc2LS40ODcsMCwwLC4wMDEsMCwuMDAyLS4wMDFsMS44MDUtMS4xMjh2NC4wNzNjLS4yODYsMC0uNTc0LS4wNzgtLjgyNC0uMjM0bC00LjM3NC0yLjczNFoiIGZpbGw9IiMyMjUwODYiLz4KICA8cGF0aCBkPSJtNy44NTMsMS41MDdMLjM1Myw5Ljk2N2MtLjU3OS42NTQtLjQyOCwxLjY0Mi4zMjMsMi4xMTEsMCwwLDIuNzc2LDEuNzM1LDMuMTI2LDEuOTU0LjM4OC4yNDIsMS4wMzMuNTExLDEuNzE1LjUxMS42MjEsMCwxLjE5OC0uMTgsMS42NzYtLjQ4NywwLDAsLjAwMSwwLC4wMDItLjAwMWwxLjgwNS0xLjEyOC00LjM2NC0yLjcyOCw0LjM2NS00LjkyNFYxczAsMCwwLDBjLS40MjQsMC0uODQ3LjE2OS0xLjE0Ny41MDdaIiBmaWxsPSIjNmRmIi8+CiAgPHBvbHlnb24gcG9pbnRzPSI0LjYzNiAxMC4xOTkgNC42ODggMTAuMjMxIDkgMTIuOTI3IDkuMDAxIDEyLjkyNyA5LjAwMSAxMi45MjcgOS4wMDEgNS4yNzYgOSA1LjI3NSA0LjYzNiAxMC4xOTkiIGZpbGw9IiNjYmY4ZmYiLz4KICA8cGF0aCBkPSJtMTcuMzI0LDEyLjA3OGMuNzUxLS40NjkuOTAyLTEuNDU3LjMyMy0yLjExMWwtNC45MjEtNS41NTFjLS4zOTctLjE4NS0uODQyLS4yOTEtMS4zMTMtLjI5MS0uOTI1LDAtMS43NTIuMzk5LTIuMzAyLDEuMDI2bC0uMTA5LjEyM2gwczQuMzY0LDQuOTI0LDQuMzY0LDQuOTI0aDBzMCwwLDAsMGwtNC4zNjUsMi43Mjh2NC4wNzNjLjI4NywwLC41NzMtLjA3OC44MjMtLjIzNGw3LjUtNC42ODhaIiBmaWxsPSIjMDc0NzkzIi8+CiAgPHBhdGggZD0ibTkuMDAxLDF2NC4yNzVzLjEwOS0uMTIzLjEwOS0uMTIzYy41NS0uNjI3LDEuMzc3LTEuMDI2LDIuMzAyLTEuMDI2LjQ3MiwwLC45MTYuMTA3LDEuMzEzLjI5MWwtMi41NzktMi45MDljLS4yOTktLjMzOC0uNzIzLS41MDctMS4xNDYtLjUwN1oiIGZpbGw9IiMwMjk0ZTQiLz4KICA8cG9seWdvbiBwb2ludHM9IjEzLjM2NSAxMC4xOTkgMTMuMzY1IDEwLjE5OSAxMy4zNjUgMTAuMTk5IDkuMDAxIDUuMjc2IDkuMDAxIDEyLjkyNiAxMy4zNjUgMTAuMTk5IiBmaWxsPSIjOTZiY2MyIi8+Cjwvc3ZnPg==</content>
+    <filesize>1303</filesize>
+  </attachment>
+  <object>
+    <name>EntraID.Code.OIDCProTemplate</name>
+    <number>0</number>
+    <className>OIDCPro.Code.OIDCProTemplateClass</className>
+    <guid>1ebb6ab9-e9f3-4e39-b47a-fd44f0aababe</guid>
+    <class>
+      <name>OIDCPro.Code.OIDCProTemplateClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <codeInsertionPoint>
+        <disabled>0</disabled>
+        <name>codeInsertionPoint</name>
+        <number>6</number>
+        <prettyName>codeInsertionPoint</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </codeInsertionPoint>
+      <customCode>
+        <contenttype>FullyRenderedText</contenttype>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>Text</editor>
+        <hint/>
+        <name>customCode</name>
+        <number>5</number>
+        <picker>1</picker>
+        <prettyName>customCode</prettyName>
+        <restricted>0</restricted>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </customCode>
+      <iconAttachment>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <hint>Name of an image attached to this template page.</hint>
+        <name>iconAttachment</name>
+        <number>4</number>
+        <picker>1</picker>
+        <prettyName>iconAttachment</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconAttachment>
+      <iconName>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <hint/>
+        <name>iconName</name>
+        <number>3</number>
+        <picker>1</picker>
+        <prettyName>iconName</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconName>
+      <layoutJson>
+        <contenttype>PureText</contenttype>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <hint/>
+        <name>layoutJson</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>layoutJson</prettyName>
+        <restricted>0</restricted>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </layoutJson>
+      <name>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <hint/>
+        <name>name</name>
+        <number>2</number>
+        <picker>1</picker>
+        <prettyName>name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+    </class>
+    <property>
+      <codeInsertionPoint>header</codeInsertionPoint>
+    </property>
+    <property>
+      <customCode>{{velocity}}
+#set ($discard = $xwiki.jsx.use('EntraID.Code.OIDCProTemplate'))
+#set ($discard = $xwiki.ssx.use('EntraID.Code.PropertiesEditor'))
+## The users can be synchronized only once the configuration is saved, and outside of the edit form.
+#set ($configurationName = "$!doc.getObject('XWiki.OIDC.ClientConfigurationClass').getValue('configurationName')")
+#set ($isWikiAdmin = $services.security.authorization.hasAccess('admin', $doc.documentReference.wikiReference))
+#if ($xcontext.action == 'view' &amp;&amp; !$doc.isNew() &amp;&amp; $configurationName != '' &amp;&amp; $isWikiAdmin)
+  #set ($entraSyncConfiguration = $configurationName)
+
+{{include reference="EntraID.Code.EntraSyncUsersSheet" /}}
+#end
+{{/velocity}}</customCode>
+    </property>
+    <property>
+      <iconAttachment>entra-id.svg</iconAttachment>
+    </property>
+    <property>
+      <iconName/>
+    </property>
+    <property>
+      <layoutJson>{
+  "id": "entraid",
+  "sections": [
+    {
+      "id": "EntraID",
+      "icon": "cog"
+    }
+  ],
+  "properties": [
+    {
+      "id": "configurationName",
+      "section": "EntraID",
+      "required": true
+    },
+    {
+      "id": "skipped",
+      "section": "EntraID"
+    },
+    {
+      "id": "enableUser",
+      "section": "EntraID"
+    },
+    {
+      "id": "scope",
+      "section": "EntraID"
+    },
+    {
+      "id": "groupsClaim",
+      "section": "EntraID"
+    },
+    {
+      "id": "groupsMapping",
+      "section": "EntraID",
+      "data": {
+        "entraid-propertize": {
+          "separator": ",",
+          "keyTip": "tip.key.groupMap",
+          "valueTip": "tip.value.groupMap",
+          "suggestGroups": true
+        }
+      }
+    },
+    {
+      "id": "allowedGroups",
+      "section": "EntraID",
+      "data": {
+        "selectize": {
+          "delimiter": ",",
+          "create": true,
+          "persist": false
+        }
+      }
+    },
+    {
+      "id": "forbiddenGroups",
+      "section": "EntraID",
+      "data": {
+        "selectize": {
+          "delimiter": ",",
+          "create": true,
+          "persist": false
+        }
+      }
+    },
+    {
+      "id": "userNameFormatter",
+      "section": "EntraID"
+    },
+    {
+      "id": "userMapping",
+      "section": "EntraID",
+      "data": {
+        "entraid-propertize": {
+          "separator": ",",
+          "keyTip": "tip.key.userMap",
+          "valueTip": "tip.value.userMap"
+        }
+      }
+    },
+    {
+      "id": "clientSecret",
+      "section": "EntraID"
+    },
+    {
+      "id": "clientId",
+      "section": "EntraID"
+    },
+    {
+      "id": "tenantId",
+      "section": "EntraID",
+      "xclass": "EntraID.Code.EntraIDConfigurationClass"
+    },
+    {
+      "id": "enableXWikiLoginGlobal",
+      "section": "EntraID",
+      "xclass": "EntraID.Code.EntraIDConfigurationClass"
+    },
+    {
+      "id": "xwikiLoginGroups",
+      "section": "EntraID",
+      "xclass": "EntraID.Code.EntraIDConfigurationClass"
+    }
+  ]
+}</layoutJson>
+    </property>
+    <property>
+      <name>entraid</name>
+    </property>
+  </object>
+  <object>
+    <name>EntraID.Code.OIDCProTemplate</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>b5d4fe2c-25d7-47a0-bb90-15c18932bbb6</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#set ($propertiesEditorDoc = $xwiki.getDocument('EntraID.Code.PropertiesEditor'))
+require.config({
+  paths: {
+    'entraid-properties-editor':
+      "$propertiesEditorDoc.getURL('jsx', "v=$escapetool.url($propertiesEditorDoc.version)")"
+  }
+});
+require(['jquery', 'entraid-properties-editor'], function($, propertiesEditor) {
+  // The configuration comes from the "entraid-propertize" data of the property, set in the layout of the template.
+  $('.oidcpro-property').each(function() {
+    const config = $(this).data('entraidPropertize');
+    if (config) {
+      propertiesEditor.propertize($(this).find('textarea').first(), config);
+    }
+  });
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>
