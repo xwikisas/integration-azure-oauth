@@ -65,6 +65,13 @@
       <artifactId>application-licensing-licensor-api</artifactId>
       <version>${licensing.version}</version>
     </dependency>
+    <!-- Provides the key/value input (xwikiPropertize) used to edit the user and groups mappings. -->
+    <dependency>
+      <groupId>com.xwiki.commons</groupId>
+      <artifactId>xwiki-pro-commons-webjar</artifactId>
+      <version>${xwikipro.commons.version}</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.contrib</groupId>
       <artifactId>authservice-backport-ui</artifactId>
