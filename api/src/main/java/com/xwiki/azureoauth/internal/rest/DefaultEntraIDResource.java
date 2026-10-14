@@ -20,6 +20,7 @@
 package com.xwiki.azureoauth.internal.rest;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,7 @@ import org.xwiki.velocity.tools.EscapeTool;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfigurationStore;
 import com.xwiki.azureoauth.internal.user.sync.EntraIDUsersSyncJob;
 import com.xwiki.azureoauth.rest.EntraIDResource;
 import com.xwiki.azureoauth.user.sync.EntraIDUsersSyncJobRequest;
@@ -60,6 +62,9 @@ public class DefaultEntraIDResource implements EntraIDResource
 {
     @Inject
     private Provider<XWikiContext> wikiContextProvider;
+
+    @Inject
+    private EntraIDClientConfigurationStore configurationStore;
 
     @Inject
     private ContextualAuthorizationManager contextualAuthorizationManager;
@@ -98,13 +103,25 @@ public class DefaultEntraIDResource implements EntraIDResource
             Map<String, String[]> parameters = wikiContextProvider.get().getRequest().getParameterMap();
             String disable = parameters.get("disable")[0];
             String remove = parameters.get("remove")[0];
+            String[] configurationParameter = parameters.get("configuration");
+            String configurationName = configurationParameter != null ? configurationParameter[0] : null;
             logger.debug("Requested actions: disabled [{}]; remove [{}]", disable, remove);
 
-            List<String> jobId = List.of("entra", "users", "sync", disable, remove);
+            List<String> jobId = new ArrayList<>(List.of("entra", "users", "sync"));
+            if (configurationName != null) {
+                if (this.configurationStore.getConfiguration(configurationName) == null) {
+                    logger.warn("No Entra ID client configuration named [{}] to synchronize the users of.",
+                        configurationName);
+                    return Response.status(Response.Status.NOT_FOUND).build();
+                }
+                jobId.add(configurationName);
+            }
+            jobId.add(disable);
+            jobId.add(remove);
             Job job = this.jobExecutor.getJob(jobId);
             if (job == null) {
-                EntraIDUsersSyncJobRequest entraIdUsersSyncJobRequest =
-                    new EntraIDUsersSyncJobRequest(jobId, Boolean.parseBoolean(disable), Boolean.parseBoolean(remove));
+                EntraIDUsersSyncJobRequest entraIdUsersSyncJobRequest = new EntraIDUsersSyncJobRequest(jobId,
+                    configurationName, Boolean.parseBoolean(disable), Boolean.parseBoolean(remove));
                 this.jobExecutor.execute(EntraIDUsersSyncJob.JOB_TYPE, entraIdUsersSyncJobRequest);
                 return Response.status(201).build();
             } else {

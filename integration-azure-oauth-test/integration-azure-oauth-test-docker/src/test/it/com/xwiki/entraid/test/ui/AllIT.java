@@ -19,8 +19,11 @@
  */
 package com.xwiki.entraid.test.ui;
 
+import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.TestClassOrder;
 import org.xwiki.test.docker.junit5.UITest;
 
 /**
@@ -29,11 +32,20 @@ import org.xwiki.test.docker.junit5.UITest;
  * @version $Id$
  */
 @UITest
+@TestClassOrder(ClassOrderer.OrderAnnotation.class)
 class AllIT
 {
     @Nested
+    @Order(1)
     @DisplayName("Entra ID UI")
     class NestedEntraIdIT extends EntraIdIT
+    {
+    }
+
+    @Nested
+    @Order(2)
+    @DisplayName("Entra ID client configurations")
+    class NestedEntraIDClientConfigurationsIT extends EntraIDClientConfigurationsIT
     {
     }
 }

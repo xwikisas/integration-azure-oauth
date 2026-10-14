@@ -35,6 +35,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSaveException;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.contrib.oidc.auth.store.OIDCClientConfiguration;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.model.reference.WikiReference;
@@ -52,13 +53,20 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.internal.event.XObjectAddedEvent;
 import com.xpn.xwiki.internal.event.XObjectUpdatedEvent;
+import com.xpn.xwiki.objects.BaseObject;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -130,6 +138,9 @@ class EntraIDObjectUpdateListenerTest
     @MockComponent
     private XWikiContext wikiContext;
 
+    private static final LocalDocumentReference ENTRA_ID_CLASS =
+        new LocalDocumentReference(SPACE, "EntraIDConfigurationClass");
+
     private XObjectUpdatedEvent event = new XObjectUpdatedEvent();
 
     private DocumentReference configReference = new DocumentReference(CONFIG_DOC, new WikiReference("mywiki"));
@@ -177,6 +188,70 @@ class EntraIDObjectUpdateListenerTest
             logCapture.getMessage(0));
         assertEquals("org.xwiki.configuration.ConfigurationSaveException: Mock test exception.",
             exception.getMessage());
+    }
+
+    @Test
+    void onEventDefaultConfigurationAdded() throws ConfigurationSaveException
+    {
+        objectUpdateListener.onEvent(new XObjectAddedEvent(), xWikiDocument, null);
+        verify(entraIDConfiguration, never()).setOIDCConfiguration(anyMap());
+    }
+
+    @Test
+    void onEventClientConfiguration() throws Exception
+    {
+        DocumentReference clientReference = new DocumentReference("mywiki", "OIDCPro", "Tenant");
+        XWikiDocument clientDocument = mock(XWikiDocument.class);
+        XWikiDocument storedDocument = mock(XWikiDocument.class);
+        XWikiDocument documentToSave = mock(XWikiDocument.class);
+        BaseObject entraIDObject = new BaseObject();
+        entraIDObject.setStringValue("tenantId", "new_value");
+        BaseObject oidcObject = new BaseObject();
+        oidcObject.setStringValue("provider", String.format(PROVIDER_ENDPOINT, "old_value"));
+        BaseObject oidcObjectToSave = mock(BaseObject.class);
+        when(clientDocument.getDocumentReference()).thenReturn(clientReference);
+        when(clientDocument.getXObject(ENTRA_ID_CLASS)).thenReturn(entraIDObject);
+        when(clientDocument.getXObject(OIDCClientConfiguration.CLASS_REFERENCE)).thenReturn(oidcObject);
+        when(xwiki.getDocument(clientReference, wikiContext)).thenReturn(storedDocument);
+        when(storedDocument.clone()).thenReturn(documentToSave);
+        when(documentToSave.getXObject(OIDCClientConfiguration.CLASS_REFERENCE)).thenReturn(oidcObjectToSave);
+
+        objectUpdateListener.onEvent(new XObjectAddedEvent(), clientDocument, null);
+
+        verify(oidcObjectToSave).set("provider", String.format(PROVIDER_ENDPOINT, "new_value"), wikiContext);
+        verify(xwiki).saveDocument(documentToSave, "Updated the OIDC endpoints of the Entra ID tenant.", true,
+            wikiContext);
+        verify(entraIDConfiguration, never()).setOIDCConfiguration(anyMap());
+    }
+
+    @Test
+    void onEventClientConfigurationUpToDate() throws XWikiException
+    {
+        XWikiDocument clientDocument = mock(XWikiDocument.class);
+        BaseObject entraIDObject = new BaseObject();
+        entraIDObject.setStringValue("tenantId", "new_value");
+        BaseObject oidcObject = new BaseObject();
+        oidcObject.setStringValue("provider", String.format(PROVIDER_ENDPOINT, "new_value"));
+        when(clientDocument.getDocumentReference()).thenReturn(new DocumentReference("mywiki", "OIDCPro", "Tenant"));
+        when(clientDocument.getXObject(ENTRA_ID_CLASS)).thenReturn(entraIDObject);
+        when(clientDocument.getXObject(OIDCClientConfiguration.CLASS_REFERENCE)).thenReturn(oidcObject);
+
+        objectUpdateListener.onEvent(event, clientDocument, null);
+
+        verify(xwiki, never()).saveDocument(any(XWikiDocument.class), anyString(), anyBoolean(), any());
+    }
+
+    @Test
+    void onEventClientConfigurationWithoutTenant() throws XWikiException
+    {
+        XWikiDocument clientDocument = mock(XWikiDocument.class);
+        when(clientDocument.getDocumentReference()).thenReturn(new DocumentReference("mywiki", "OIDCPro", "Tenant"));
+        when(clientDocument.getXObject(ENTRA_ID_CLASS)).thenReturn(new BaseObject());
+        when(clientDocument.getXObject(OIDCClientConfiguration.CLASS_REFERENCE)).thenReturn(new BaseObject());
+
+        objectUpdateListener.onEvent(event, clientDocument, null);
+
+        verify(xwiki, never()).saveDocument(any(XWikiDocument.class), anyString(), anyBoolean(), any());
     }
 
     @Test

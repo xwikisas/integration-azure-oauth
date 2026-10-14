@@ -51,10 +51,13 @@ public interface EntraIDResource extends XWikiRestComponent
     Response xwikiLogin(@PathParam("redirectDocument") String redirectDocument) throws XWikiRestException;
 
     /**
-     * Sync XWiki users with the users from Entra ID.
+     * Sync XWiki users with the users from Entra ID. The request parameters {@code disable} and {@code remove} select
+     * the actions to perform. The optional {@code configuration} parameter is the name of the Entra ID client
+     * configuration whose users are synced; when missing, the default configuration is used. Since 2.2.5, the job ID
+     * includes the configuration name when one is given: {@code entra/users/sync/<configuration>/<disable>/<remove>}.
      *
-     * @return status code 201 if a new job has been created, or status code 200 if a job with the same ID already
-     *     exists
+     * @return status code 201 if a new job has been created, status code 200 if a job with the same ID already
+     *     exists, or status code 404 if there is no Entra ID client configuration with the given name
      * @throws XWikiRestException with status code 401 if the user requesting is missing admin rights, or code 500
      *     if any error occurs
      * @since 2.1

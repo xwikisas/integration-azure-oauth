@@ -46,12 +46,14 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.PropertyInterface;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
 import com.xwiki.azureoauth.internal.EntraIDApiClient;
 import com.xwiki.azureoauth.user.ExternalUser;
 
 import static com.xwiki.azureoauth.internal.configuration.DefaultEntraIDConfiguration.OIDC_USER_CLASS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -208,6 +210,34 @@ class DefaultEntraIDUsersManagerTest
         Map<String, XWikiDocument> map = Map.of("subject1", userDoc1, "subject3", userDoc3);
         Map<String, XWikiDocument> resultMap = defaultEntraIDUsersManager.getXWikiUsersMap();
         assertEquals(map, resultMap);
+    }
+
+    @Test
+    void getEntraUsersMapForConfiguration() throws Exception
+    {
+        when(object1.getField("subject")).thenReturn(property1);
+        when(property1.toFormString()).thenReturn("subject1");
+        EntraIDClientConfiguration configuration = mock(EntraIDClientConfiguration.class);
+        when(configuration.matchesIssuer("https://login.microsoftonline.com/etc")).thenReturn(false);
+        when(configuration.matchesIssuer("issuer2")).thenReturn(false);
+        when(property4.toFormString()).thenReturn("https://login.microsoftonline.com/tenant/v2.0");
+        when(configuration.matchesIssuer("https://login.microsoftonline.com/tenant/v2.0")).thenReturn(true);
+
+        assertEquals(Map.of("subject1", userDoc1), defaultEntraIDUsersManager.getXWikiUsersMap(configuration));
+    }
+
+    @Test
+    void getEntraServerUsersForConfiguration() throws Exception
+    {
+        EntraIDClientConfiguration configuration = mock(EntraIDClientConfiguration.class);
+        when(entraIDApiClient.getUsers(configuration))
+            .thenReturn(new JSONArray("[{ \"id\": \"user1\", \"accountEnabled\": false }]"));
+
+        List<ExternalUser> externalUsers = defaultEntraIDUsersManager.getEntraServerUsers(configuration);
+
+        assertEquals(1, externalUsers.size());
+        assertEquals("user1", externalUsers.get(0).getId());
+        assertFalse(externalUsers.get(0).isEnabled());
     }
 
     @Test
