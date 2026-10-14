@@ -28,6 +28,7 @@ import org.xwiki.stability.Unstable;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
 
 /**
  * Expose the EntraID users which are already present on the XWiki instance, or the list which is provided by the
@@ -64,4 +65,25 @@ public interface EntraIDUsersManager
      * @throws Exception if there are any errors while getting the users.
      */
     List<ExternalUser> getEntraServerUsers() throws Exception;
+
+    /**
+     * Get a {@link Map} of internal users that are created from the tenant of the given configuration, with the user
+     * id (subject) as the key.
+     *
+     * @param configuration the Entra ID client configuration the users were created from
+     * @return the internal users that are created from the tenant of the given configuration
+     * @throws Exception if there are any errors while getting the users.
+     * @since 2.2.5
+     */
+    Map<String, XWikiDocument> getXWikiUsersMap(EntraIDClientConfiguration configuration) throws Exception;
+
+    /**
+     * Get a {@link List} of users present on the Entra ID server of the given configuration.
+     *
+     * @param configuration the Entra ID client configuration used to query the server
+     * @return the external users info stored in {@link ExternalUser}
+     * @throws Exception if there are any errors while getting the users.
+     * @since 2.2.5
+     */
+    List<ExternalUser> getEntraServerUsers(EntraIDClientConfiguration configuration) throws Exception;
 }

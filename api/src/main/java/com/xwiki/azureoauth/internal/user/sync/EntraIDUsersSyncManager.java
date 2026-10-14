@@ -36,6 +36,7 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
 import com.xwiki.azureoauth.user.EntraIDUsersManager;
 import com.xwiki.azureoauth.user.ExternalUser;
 
@@ -72,8 +73,28 @@ public class EntraIDUsersSyncManager
      */
     public void syncUsers(boolean disable, boolean remove) throws Exception
     {
-        Map<String, XWikiDocument> usersMap = usersManager.getXWikiUsersMap();
-        List<ExternalUser> externalUsers = usersManager.getEntraServerUsers();
+        syncUsers(usersManager.getXWikiUsersMap(), usersManager.getEntraServerUsers(), disable, remove);
+    }
+
+    /**
+     * Synchronize the state of the XWiki users created from the tenant of the given configuration with their state
+     * from the Microsoft server. The users created from other tenants are left untouched.
+     *
+     * @param configuration the Entra ID client configuration to synchronize the users of
+     * @param disable {@code true} if the sync should also sync disabled users, or {@code false} otherwise
+     * @param remove {@code true} if the sync should also sync removed users, or {@code false} otherwise
+     * @throws Exception if any error occurs during the sync
+     * @since 2.2.5
+     */
+    public void syncUsers(EntraIDClientConfiguration configuration, boolean disable, boolean remove) throws Exception
+    {
+        syncUsers(usersManager.getXWikiUsersMap(configuration), usersManager.getEntraServerUsers(configuration),
+            disable, remove);
+    }
+
+    private void syncUsers(Map<String, XWikiDocument> usersMap, List<ExternalUser> externalUsers, boolean disable,
+        boolean remove) throws Exception
+    {
         // We index the values in a map to improve performance.
         Map<String, ExternalUser> externalUsersById = externalUsers.stream()
             .collect(Collectors.toMap(ExternalUser::getId, Function.identity()));

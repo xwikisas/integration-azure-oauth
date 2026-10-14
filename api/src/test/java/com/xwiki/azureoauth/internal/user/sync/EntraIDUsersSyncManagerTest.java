@@ -39,9 +39,12 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
 import com.xwiki.azureoauth.user.EntraIDUsersManager;
 import com.xwiki.azureoauth.user.ExternalUser;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -121,6 +124,25 @@ class EntraIDUsersSyncManagerTest
         syncManager.syncUsers(true, false);
         verify(wiki, times(0)).deleteDocument(userDoc3, wikiContext);
         verify(objectUserClass2, times(1)).set("active", 0, wikiContext);
+    }
+
+    @Test
+    void syncUsersForConfiguration() throws Exception
+    {
+        EntraIDClientConfiguration configuration = mock(EntraIDClientConfiguration.class);
+        when(entraIdUsersManager.getXWikiUsersMap(configuration)).thenReturn(Map.of("subject1", userDoc1,
+            "subject3", userDoc3));
+        when(entraIdUsersManager.getEntraServerUsers(configuration))
+            .thenReturn(List.of(new ExternalUser("subject1", false)));
+        BaseObject objectUserClass1 = mock(BaseObject.class);
+        when(userDoc1.getXObject(userClassDocRef)).thenReturn(objectUserClass1);
+
+        syncManager.syncUsers(configuration, true, true);
+
+        verify(wiki).deleteDocument(userDoc3, wikiContext);
+        verify(objectUserClass1).set("active", 0, wikiContext);
+        verify(wiki, never()).deleteDocument(userDoc2, wikiContext);
+        verify(objectUserClass2, never()).set("active", 0, wikiContext);
     }
 
     @Test

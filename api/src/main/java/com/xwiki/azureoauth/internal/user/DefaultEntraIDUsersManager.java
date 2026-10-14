@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,6 +46,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
 import com.xwiki.azureoauth.internal.EntraIDApiClient;
 import com.xwiki.azureoauth.user.EntraIDUsersManager;
 import com.xwiki.azureoauth.user.ExternalUser;
@@ -86,19 +88,35 @@ public class DefaultEntraIDUsersManager implements EntraIDUsersManager
     @Override
     public Map<String, XWikiDocument> getXWikiUsersMap() throws QueryException, XWikiException
     {
-        List<XWikiDocument> users = getXWikiUsers();
-        Map<String, XWikiDocument> userMap = new HashMap<>();
+        return toUsersMap(getXWikiUsers());
+    }
 
-        for (XWikiDocument userDoc : users) {
-            BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
-            String subject = oidcObj.getField("subject").toFormString();
-            userMap.put(subject, userDoc);
-        }
-        return userMap;
+    @Override
+    public Map<String, XWikiDocument> getXWikiUsersMap(EntraIDClientConfiguration configuration)
+        throws QueryException, XWikiException
+    {
+        return toUsersMap(getXWikiUsers(configuration::matchesIssuer));
     }
 
     @Override
     public List<XWikiDocument> getXWikiUsers() throws XWikiException, QueryException
+    {
+        return getXWikiUsers(issuer -> issuer.contains(ENTRA_ISSUER));
+    }
+
+    @Override
+    public List<ExternalUser> getEntraServerUsers() throws Exception
+    {
+        return toExternalUsers(entraIDApiClient.getUsers());
+    }
+
+    @Override
+    public List<ExternalUser> getEntraServerUsers(EntraIDClientConfiguration configuration) throws Exception
+    {
+        return toExternalUsers(entraIDApiClient.getUsers(configuration));
+    }
+
+    private List<XWikiDocument> getXWikiUsers(Predicate<String> issuerFilter) throws XWikiException, QueryException
     {
         List<XWikiDocument> xwikiEntraUsers = new ArrayList<>();
         XWikiContext wikiContext = wikiContextProvider.get();
@@ -113,17 +131,27 @@ public class DefaultEntraIDUsersManager implements EntraIDUsersManager
             XWikiDocument userDoc = wiki.getDocument(userRef, wikiContext);
             BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
             String issuer = oidcObj.getField("issuer").toFormString();
-            if (issuer.contains(ENTRA_ISSUER)) {
+            if (issuerFilter.test(issuer)) {
                 xwikiEntraUsers.add(userDoc);
             }
         }
         return xwikiEntraUsers;
     }
 
-    @Override
-    public List<ExternalUser> getEntraServerUsers() throws Exception
+    private Map<String, XWikiDocument> toUsersMap(List<XWikiDocument> users)
     {
-        JSONArray users = entraIDApiClient.getUsers();
+        Map<String, XWikiDocument> userMap = new HashMap<>();
+
+        for (XWikiDocument userDoc : users) {
+            BaseObject oidcObj = userDoc.getXObject(documentReferenceResolver.resolve(OIDC_USER_CLASS));
+            String subject = oidcObj.getField("subject").toFormString();
+            userMap.put(subject, userDoc);
+        }
+        return userMap;
+    }
+
+    private List<ExternalUser> toExternalUsers(JSONArray users)
+    {
         List<ExternalUser> externalUsers = new ArrayList<>();
         for (int i = 0; i < users.length(); i++) {
             JSONObject user = users.getJSONObject(i);
