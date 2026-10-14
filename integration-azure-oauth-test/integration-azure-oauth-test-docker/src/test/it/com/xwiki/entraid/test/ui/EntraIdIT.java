@@ -20,6 +20,7 @@
 package com.xwiki.entraid.test.ui;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -210,6 +211,39 @@ class EntraIdIT
         // (secret, client id). Therefore, we only test that the job is started and the proper error message is
         // displayed.
         assertEquals("There was an error during the sync.", errorNotification.getText());
+    }
+
+    @Order(5)
+    @Test
+    void editMappings(TestUtils testUtils) throws Exception
+    {
+        testUtils.loginAsSuperAdmin();
+        goToAdministrationPage();
+
+        EntraIDConfigurationViewPage confViewPage = new EntraIDConfigurationViewPage();
+        confViewPage.addUserMapping("first_name", "given_name");
+        confViewPage.addGroupMapping(GROUP_NAME, "group_object_id");
+        confViewPage.addAllowedGroup("allowed_group");
+        confViewPage.saveConfiguration();
+
+        assertEquals("first_name=given_name", getOIDCConfigurationProperty(testUtils, "userMapping"));
+        assertEquals(String.format("XWiki.%s=group_object_id", GROUP_NAME),
+            getOIDCConfigurationProperty(testUtils, "groupsMapping"));
+        assertEquals("allowed_group", getOIDCConfigurationProperty(testUtils, "allowedGroups"));
+
+        // The saved entries are displayed back.
+        goToAdministrationPage();
+        confViewPage = new EntraIDConfigurationViewPage();
+        assertEquals(List.of("first_name=given_name"), confViewPage.getMappings("userMapping"));
+        assertEquals(List.of(String.format("XWiki.%s=group_object_id", GROUP_NAME)),
+            confViewPage.getMappings("groupsMapping"));
+    }
+
+    private String getOIDCConfigurationProperty(TestUtils testUtils, String propertyName) throws Exception
+    {
+        Property property = testUtils.rest().get(new ObjectPropertyReference(propertyName,
+            new ObjectReference(OIDC_CONFIGURATION_CLASSNAME + "[0]", ENTRAID_CONFIGURATION_REFERENCE)));
+        return property.getValue();
     }
 
     private void goToAdministrationPage()

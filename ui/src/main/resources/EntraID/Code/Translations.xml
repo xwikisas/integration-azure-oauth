@@ -72,6 +72,7 @@ EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups.hint=User groups allowed
 entra.administration.configuration.title=Configuration
 entra.administration.sync.title=Sync EntraID Users
 entra.administration.sync.description=Synchronize XWiki users with Microsoft Entra ID, ensuring that users deleted or disabled in Entra ID are also updated in XWiki.
+entra.administration.sync.configuration.description=Synchronize the XWiki users created from the tenant of this configuration with Microsoft Entra ID, ensuring that users deleted or disabled in Entra ID are also updated in XWiki.
 entra.administration.sync.checkbox.disable=Disable users
 entra.administration.sync.checkbox.remove=Remove users
 entra.administration.sync.button=Run sync
@@ -85,11 +86,44 @@ entra.properties.data.tip.key.groupMap=XWiki group...
 entra.properties.data.tip.value.groupMap=Group object ID...
 entra.properties.data.tip.key.userMap=XWiki user property...
 entra.properties.data.tip.value.userMap=Provider property...
-entra.properties.data.tip.value.forbiddenGroup=Forbidden groups...
-entra.properties.data.tip.value.allowedGroup=Allowed groups...
 
 entra.drawer.header.login=Log in with XWiki
-entra.drawer.header.switch=Switch to XWiki user</content>
+entra.drawer.header.switch=Switch to XWiki user
+
+# OIDC Pro template
+oidcpro.templates.entraid.name=Microsoft Entra ID
+oidcpro.templates.entraid.hint=Authenticate the users with Microsoft Entra ID, formerly known as Azure Active Directory. The endpoints are derived from the tenant.
+
+oidcpro.config.section.EntraID.label=Configuration
+
+oidcpro.config.template.entraid.property.skipped.label=Disable Entra ID authentication
+oidcpro.config.template.entraid.property.skipped.hint=Disable the Entra ID authentication.
+oidcpro.config.template.entraid.property.tenantId.label=Tenant ID
+oidcpro.config.template.entraid.property.tenantId.hint=Entra ID instance ID. The OIDC endpoints are derived from it when the configuration is saved.
+oidcpro.config.template.entraid.property.clientId.label=Client ID
+oidcpro.config.template.entraid.property.clientId.hint=The client identifier used by the authentication.
+oidcpro.config.template.entraid.property.clientSecret.label=Secret
+oidcpro.config.template.entraid.property.clientSecret.hint=The client secret registered on the provider.
+oidcpro.config.template.entraid.property.scope.label=Scope
+oidcpro.config.template.entraid.property.scope.hint=The scopes to use when redirecting to the provider.
+oidcpro.config.template.entraid.property.enableUser.label=Enable user profiles on first login
+oidcpro.config.template.entraid.property.enableUser.hint=If disabled, the users from Entra ID will have their accounts disabled at first login.
+oidcpro.config.template.entraid.property.userNameFormatter.label=User name format
+oidcpro.config.template.entraid.property.userNameFormatter.hint=The pattern to use to generate the unique identifier of the user.
+oidcpro.config.template.entraid.property.userMapping.label=User mapping
+oidcpro.config.template.entraid.property.userMapping.hint=Associate non-standard properties coming from the OpenID Connect provider with the XWiki user.
+oidcpro.config.template.entraid.property.groupsClaim.label=Groups claim
+oidcpro.config.template.entraid.property.groupsClaim.hint=Indicate the field containing the list of groups (in case it's not an OpenID Connect standard).
+oidcpro.config.template.entraid.property.groupsMapping.label=Groups mapping
+oidcpro.config.template.entraid.property.groupsMapping.hint=Associates the XWiki groups with Entra ID groups.
+oidcpro.config.template.entraid.property.allowedGroups.label=Allowed groups
+oidcpro.config.template.entraid.property.allowedGroups.hint=The groups the user need to belong to be allowed to authenticate.
+oidcpro.config.template.entraid.property.forbiddenGroups.label=Forbidden groups
+oidcpro.config.template.entraid.property.forbiddenGroups.hint=The groups that if a user belongs to, it will not be allowed to authenticate.
+oidcpro.config.template.entraid.property.enableXWikiLoginGlobal.label=Allow XWiki Login
+oidcpro.config.template.entraid.property.enableXWikiLoginGlobal.hint=Allow a guest user to login using the standard XWiki authenticator.
+oidcpro.config.template.entraid.property.xwikiLoginGroups.label=XWiki login user groups
+oidcpro.config.template.entraid.property.xwikiLoginGroups.hint=User groups allowed to log in with XWiki.</content>
   <object>
     <name>EntraID.Code.Translations</name>
     <number>0</number>

@@ -13,3 +13,4 @@ com.xwiki.azureoauth.internal.HttpClientBuilderFactory
 com.xwiki.azureoauth.internal.EntraIDApiClient
 com.xwiki.azureoauth.internal.user.sync.EntraIDUsersSyncJob
 com.xwiki.azureoauth.script.EntraIDScriptService
+com.xwiki.azureoauth.internal.configuration.DefaultEntraIDClientConfigurationStore
