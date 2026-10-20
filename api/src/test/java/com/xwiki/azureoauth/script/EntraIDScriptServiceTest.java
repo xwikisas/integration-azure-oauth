@@ -53,6 +53,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -129,25 +131,12 @@ class EntraIDScriptServiceTest
     }
 
     @Test
-    void isXWikiLoginEnabledByClientConfiguration() throws Exception
+    void isXWikiLoginEnabledIgnoresClientConfigurations() throws Exception
     {
-        EntraIDClientConfiguration inactive = mockConfiguration(false, true);
-        EntraIDClientConfiguration active = mockConfiguration(true, true);
-        when(clientConfigurationStore.getConfigurations()).thenReturn(List.of(inactive));
-        assertFalse(scriptService.isXWikiLoginEnabled());
-
-        when(clientConfigurationStore.getConfigurations()).thenReturn(List.of(inactive, active));
-        assertTrue(scriptService.isXWikiLoginEnabled());
-    }
-
-    @Test
-    void isXWikiLoginEnabledWhenConfigurationsFail() throws Exception
-    {
-        when(clientConfigurationStore.getConfigurations()).thenThrow(new RuntimeException("query error"));
+        when(entraIDConfiguration.isXWikiLoginGlobalEnabled()).thenReturn(false);
 
         assertFalse(scriptService.isXWikiLoginEnabled());
-        assertEquals("Failed to retrieve the Entra ID client configurations. Root cause is: "
-            + "[RuntimeException: query error]", logCapture.getMessage(0));
+        verify(clientConfigurationStore, never()).getConfigurations();
     }
 
     @Test
@@ -185,6 +174,19 @@ class EntraIDScriptServiceTest
     }
 
     @Test
+    void shouldDisplayXWikiLoginWhenConfigurationsFail() throws Exception
+    {
+        mockOIDCUser();
+        when(clientConfigurationStore.getConfigurations()).thenThrow(new RuntimeException("query error"));
+        when(entraIDConfiguration.getXWikiLoginGroups()).thenReturn("XWiki.DefaultGroup");
+        when(user.isUserInGroup("XWiki.DefaultGroup")).thenReturn(true);
+
+        assertTrue(scriptService.shouldDisplayXWikiLogin());
+        assertEquals("Failed to retrieve the Entra ID client configurations. Root cause is: "
+            + "[RuntimeException: query error]", logCapture.getMessage(0));
+    }
+
+    @Test
     void shouldDisplayXWikiLoginWithDefaultConfiguration() throws Exception
     {
         mockOIDCUser();
@@ -199,13 +201,5 @@ class EntraIDScriptServiceTest
         BaseObject oidcUserObject = new BaseObject();
         oidcUserObject.setStringValue("issuer", ISSUER);
         when(userDoc.getXObject(oidcUserClassReference)).thenReturn(oidcUserObject);
-    }
-
-    private EntraIDClientConfiguration mockConfiguration(boolean active, boolean xwikiLoginEnabled)
-    {
-        EntraIDClientConfiguration configuration = mock(EntraIDClientConfiguration.class);
-        when(configuration.isActive()).thenReturn(active);
-        when(configuration.isXWikiLoginGlobalEnabled()).thenReturn(xwikiLoginEnabled);
-        return configuration;
     }
 }

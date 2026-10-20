@@ -80,13 +80,12 @@ public class EntraIDScriptService implements ScriptService
     /**
      * Check if XWiki log in is enabled for guest users.
      *
-     * @return {@code true} if global log in is enabled by the default configuration or by any active Entra ID client
-     *     configuration, and {@code false} otherwise.
+     * @return {@code true} if global log in is enabled and {@code false} otherwise. Only the default configuration is
+     *     taken into account, so that adding an Entra ID client configuration can't enable it for guest users.
      */
     public boolean isXWikiLoginEnabled()
     {
-        return entraIDConfiguration.isXWikiLoginGlobalEnabled() || getClientConfigurations().stream()
-            .anyMatch(configuration -> configuration.isActive() && configuration.isXWikiLoginGlobalEnabled());
+        return entraIDConfiguration.isXWikiLoginGlobalEnabled();
     }
 
     /**

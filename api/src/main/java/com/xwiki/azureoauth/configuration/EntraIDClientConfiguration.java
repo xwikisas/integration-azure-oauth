@@ -61,8 +61,6 @@ public class EntraIDClientConfiguration
 
     private final boolean active;
 
-    private final boolean xwikiLoginGlobalEnabled;
-
     private final String xwikiLoginGroups;
 
     /**
@@ -83,8 +81,6 @@ public class EntraIDClientConfiguration
         this.tokenEndpoint = getStringValue(oidcObject, "tokenEndpoint");
         this.active = oidcObject == null || oidcObject.getIntValue("skipped", 0) != 1;
         this.tenantID = getStringValue(entraIDObject, "tenantId");
-        this.xwikiLoginGlobalEnabled =
-            entraIDObject == null || entraIDObject.getIntValue("enableXWikiLoginGlobal", 1) == 1;
         this.xwikiLoginGroups = getStringValue(entraIDObject, "xwikiLoginGroups");
     }
 
@@ -142,15 +138,6 @@ public class EntraIDClientConfiguration
     public boolean isActive()
     {
         return this.active;
-    }
-
-    /**
-     * @return {@code true} if guest users are allowed to log in with the standard XWiki authenticator, {@code false}
-     *     otherwise
-     */
-    public boolean isXWikiLoginGlobalEnabled()
-    {
-        return this.xwikiLoginGlobalEnabled;
     }
 
     /**

@@ -129,29 +129,17 @@ class EntraIDClientConfigurationsIT
 
     @Order(3)
     @Test
-    void xwikiLoginEnabledByConfiguration(TestUtils testUtils)
+    void xwikiLoginNotEnabledByConfiguration(TestUtils testUtils)
     {
+        // Only the default configuration decides whether guests may use the XWiki login, so that adding a client
+        // configuration can't enable it.
+        testUtils.updateObject(CONFIGURATION_REFERENCE, ENTRAID_CONFIGURATION_CLASSNAME, 0, "enableXWikiLoginGlobal",
+            1);
         EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
         testUtils.forceGuestUser();
         entraIDViewPage.goToHomePage();
         assertFalse(entraIDViewPage.isBypassLoginButtonDisplayed());
-
         testUtils.loginAsSuperAdmin();
-        testUtils.updateObject(CONFIGURATION_REFERENCE, ENTRAID_CONFIGURATION_CLASSNAME, 0, "enableXWikiLoginGlobal",
-            1);
-        testUtils.forceGuestUser();
-        entraIDViewPage.goToHomePage();
-        assertTrue(entraIDViewPage.isBypassLoginButtonDisplayed());
-
-        // A disabled configuration doesn't enable the XWiki login.
-        testUtils.loginAsSuperAdmin();
-        testUtils.updateObject(CONFIGURATION_REFERENCE, OIDC_CONFIGURATION_CLASSNAME, 0, "skipped", 1);
-        testUtils.forceGuestUser();
-        entraIDViewPage.goToHomePage();
-        assertFalse(entraIDViewPage.isBypassLoginButtonDisplayed());
-
-        testUtils.loginAsSuperAdmin();
-        testUtils.updateObject(CONFIGURATION_REFERENCE, OIDC_CONFIGURATION_CLASSNAME, 0, "skipped", 0);
     }
 
     @Order(4)

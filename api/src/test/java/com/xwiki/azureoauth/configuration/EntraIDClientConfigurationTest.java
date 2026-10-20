@@ -52,7 +52,6 @@ class EntraIDClientConfigurationTest
         oidcObject.setIntValue("skipped", 1);
         BaseObject entraIDObject = new BaseObject();
         entraIDObject.setStringValue("tenantId", "tenantID");
-        entraIDObject.setIntValue("enableXWikiLoginGlobal", 0);
         entraIDObject.setLargeStringValue("xwikiLoginGroups", "XWiki.GroupA,XWiki.GroupB");
 
         EntraIDClientConfiguration configuration =
@@ -65,7 +64,6 @@ class EntraIDClientConfigurationTest
         assertEquals("token", configuration.getTokenEndpoint());
         assertEquals("tenantID", configuration.getTenantID());
         assertFalse(configuration.isActive());
-        assertFalse(configuration.isXWikiLoginGlobalEnabled());
         assertEquals(List.of("XWiki.GroupA", "XWiki.GroupB"), configuration.getXWikiLoginGroups());
     }
 
@@ -77,7 +75,6 @@ class EntraIDClientConfigurationTest
         assertEquals("", configuration.getConfigurationName());
         assertEquals("", configuration.getTenantID());
         assertTrue(configuration.isActive());
-        assertTrue(configuration.isXWikiLoginGlobalEnabled());
         assertEquals(List.of(), configuration.getXWikiLoginGroups());
     }
 
