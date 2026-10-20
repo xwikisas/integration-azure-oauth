@@ -22,6 +22,7 @@ package com.xwiki.azureoauth.internal.configuration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -83,16 +84,16 @@ public class DefaultEntraIDClientConfigurationStore implements EntraIDClientConf
     }
 
     @Override
-    public EntraIDClientConfiguration getConfiguration(String configurationName) throws Exception
+    public Optional<EntraIDClientConfiguration> getConfiguration(String configurationName) throws Exception
     {
         if (StringUtils.isBlank(configurationName)) {
-            return null;
+            return Optional.empty();
         }
         XWikiDocument document = this.oidcConfigurationStore.getOIDCClientConfigurationDocument(configurationName);
         if (document == null || document.getXObject(CONFIG_CLASS) == null) {
-            return null;
+            return Optional.empty();
         }
-        return createConfiguration(document);
+        return Optional.of(createConfiguration(document));
     }
 
     @Override
@@ -105,10 +106,7 @@ public class DefaultEntraIDClientConfigurationStore implements EntraIDClientConf
             String configurationName = Objects.toString(name, null);
             // A configuration that can't be loaded must not prevent the others from being used.
             try {
-                EntraIDClientConfiguration configuration = getConfiguration(configurationName);
-                if (configuration != null) {
-                    configurations.add(configuration);
-                }
+                getConfiguration(configurationName).ifPresent(configurations::add);
             } catch (Exception e) {
                 this.logger.warn("Failed to load the Entra ID client configuration [{}].", configurationName, e);
             }

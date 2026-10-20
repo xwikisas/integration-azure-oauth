@@ -21,6 +21,7 @@ package com.xwiki.azureoauth.internal.rest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
@@ -188,7 +189,8 @@ class DefaultEntraIDResourceTest
     {
         when(request.getParameterMap()).thenReturn(Map.of("disable", new String[] { "true" }, "remove",
             new String[] { "false" }, "configuration", new String[] { "tenant" }));
-        when(configurationStore.getConfiguration("tenant")).thenReturn(mock(EntraIDClientConfiguration.class));
+        when(configurationStore.getConfiguration("tenant"))
+            .thenReturn(Optional.of(mock(EntraIDClientConfiguration.class)));
         List<String> jobId = List.of("entra", "users", "sync", "true", "false", "tenant");
         when(jobExecutor.getJob(jobId)).thenReturn(null);
 
@@ -224,7 +226,7 @@ class DefaultEntraIDResourceTest
             new String[] { "true" }, "configuration", new String[] { "multiTenant" }));
         EntraIDClientConfiguration configuration = mock(EntraIDClientConfiguration.class);
         when(configuration.getConfigurationName()).thenReturn("multiTenant");
-        when(configurationStore.getConfiguration("multiTenant")).thenReturn(configuration);
+        when(configurationStore.getConfiguration("multiTenant")).thenReturn(Optional.of(configuration));
 
         assertEquals(400, defaultEntraIDResource.syncUsers().getStatus());
         assertEquals("Requested actions: disabled [false]; remove [true]", logCapture.getMessage(0));

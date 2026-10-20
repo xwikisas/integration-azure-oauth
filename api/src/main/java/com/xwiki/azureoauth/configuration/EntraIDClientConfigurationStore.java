@@ -20,6 +20,7 @@
 package com.xwiki.azureoauth.configuration;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -47,11 +48,11 @@ public interface EntraIDClientConfigurationStore
      * it is the one trusted to provide that configuration.
      *
      * @param configurationName the name of the OIDC client configuration
-     * @return the Entra ID client configuration with the given name, or {@code null} if there is no such OIDC client
-     *     configuration or if it doesn't have an Entra ID configuration object
+     * @return the Entra ID client configuration with the given name, or an empty {@link Optional} if there is no such
+     *     OIDC client configuration or if it doesn't have an Entra ID configuration object
      * @throws Exception if the configuration can't be retrieved
      */
-    EntraIDClientConfiguration getConfiguration(String configurationName) throws Exception;
+    Optional<EntraIDClientConfiguration> getConfiguration(String configurationName) throws Exception;
 
     /**
      * Each configuration is retrieved with {@link #getConfiguration(String)}, so only the documents trusted by the OIDC

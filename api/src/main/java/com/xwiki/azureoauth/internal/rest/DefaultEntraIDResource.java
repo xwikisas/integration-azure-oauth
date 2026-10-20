@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -108,14 +109,15 @@ public class DefaultEntraIDResource implements EntraIDResource
             String configurationName = configurationParameter != null ? configurationParameter[0] : null;
             logger.debug("Requested actions: disabled [{}]; remove [{}]", disable, remove);
 
-            EntraIDClientConfiguration configuration = configurationName != null
+            Optional<EntraIDClientConfiguration> optionalConfiguration = configurationName != null
                 ? this.configurationStore.getConfiguration(configurationName)
-                : this.configurationStore.getDefaultConfiguration();
-            if (configuration == null) {
+                : Optional.of(this.configurationStore.getDefaultConfiguration());
+            if (optionalConfiguration.isEmpty()) {
                 logger.warn("No Entra ID client configuration named [{}] to synchronize the users of.",
                     configurationName);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
+            EntraIDClientConfiguration configuration = optionalConfiguration.get();
             if (Boolean.parseBoolean(remove) && !configuration.hasSpecificTenant()) {
                 logger.warn("Cannot remove the users of the Entra ID client configuration [{}] because it doesn't "
                     + "target a single tenant.", configuration.getConfigurationName());

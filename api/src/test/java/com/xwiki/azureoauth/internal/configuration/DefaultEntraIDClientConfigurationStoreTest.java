@@ -21,6 +21,7 @@ package com.xwiki.azureoauth.internal.configuration;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Provider;
 
@@ -51,7 +52,6 @@ import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
 import static com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSource.CONFIG_CLASS;
 import static com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSource.CONFIG_DOC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -123,7 +123,7 @@ class DefaultEntraIDClientConfigurationStoreTest
         XWikiDocument document = createConfigurationDocument(reference, "tenant", "tenantID");
         when(oidcConfigurationStore.getOIDCClientConfigurationDocument("tenant")).thenReturn(document);
 
-        EntraIDClientConfiguration configuration = store.getConfiguration("tenant");
+        EntraIDClientConfiguration configuration = store.getConfiguration("tenant").orElseThrow();
 
         assertEquals(reference, configuration.getDocumentReference());
         assertEquals("tenant", configuration.getConfigurationName());
@@ -136,9 +136,9 @@ class DefaultEntraIDClientConfigurationStoreTest
         XWikiDocument document = mock(XWikiDocument.class);
         when(oidcConfigurationStore.getOIDCClientConfigurationDocument("other")).thenReturn(document);
 
-        assertNull(store.getConfiguration("other"));
-        assertNull(store.getConfiguration("missing"));
-        assertNull(store.getConfiguration(""));
+        assertEquals(Optional.empty(), store.getConfiguration("other"));
+        assertEquals(Optional.empty(), store.getConfiguration("missing"));
+        assertEquals(Optional.empty(), store.getConfiguration(""));
     }
 
     @Test

@@ -20,6 +20,7 @@
 package com.xwiki.azureoauth.internal.user.sync;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -95,7 +96,7 @@ class EntraIDUsersSyncJobTest
     void runInternalForConfiguration() throws Exception
     {
         EntraIDClientConfiguration configuration = mock(EntraIDClientConfiguration.class);
-        when(configurationStore.getConfiguration("tenant")).thenReturn(configuration);
+        when(configurationStore.getConfiguration("tenant")).thenReturn(Optional.of(configuration));
         when(request.getConfigurationName()).thenReturn("tenant");
         when(request.shouldDisable()).thenReturn(true);
         when(request.shouldRemove()).thenReturn(false);
