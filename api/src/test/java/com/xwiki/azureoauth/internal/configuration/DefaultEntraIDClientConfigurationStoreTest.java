@@ -149,6 +149,7 @@ class DefaultEntraIDClientConfigurationStoreTest
         when(oidcConfigurationStore.getOIDCClientConfigurationDocument("tenant")).thenReturn(document);
         when(oidcConfigurationStore.getOIDCClientConfigurationDocument("broken"))
             .thenThrow(new RuntimeException("broken configuration"));
+        // The OIDC store returns no document for "untrusted", e.g. because its author doesn't have wiki admin right.
         when(query.execute()).thenReturn(Arrays.asList("tenant", "untrusted", "broken", null));
 
         List<EntraIDClientConfiguration> configurations = store.getConfigurations();

@@ -54,6 +54,9 @@ public interface EntraIDClientConfigurationStore
     EntraIDClientConfiguration getConfiguration(String configurationName) throws Exception;
 
     /**
+     * Each configuration is retrieved with {@link #getConfiguration(String)}, so only the documents trusted by the OIDC
+     * authenticator are taken into account: a document whose author doesn't have wiki admin right is ignored.
+     *
      * @return the Entra ID client configurations of the current wiki
      * @throws Exception if the configurations can't be retrieved
      */
