@@ -107,7 +107,7 @@ public class DefaultEntraIDResource implements EntraIDResource
             String configurationName = configurationParameter != null ? configurationParameter[0] : null;
             logger.debug("Requested actions: disabled [{}]; remove [{}]", disable, remove);
 
-            List<String> jobId = new ArrayList<>(List.of("entra", "users", "sync"));
+            List<String> jobId = new ArrayList<>(List.of("entra", "users", "sync", disable, remove));
             if (configurationName != null) {
                 if (this.configurationStore.getConfiguration(configurationName) == null) {
                     logger.warn("No Entra ID client configuration named [{}] to synchronize the users of.",
@@ -116,8 +116,6 @@ public class DefaultEntraIDResource implements EntraIDResource
                 }
                 jobId.add(configurationName);
             }
-            jobId.add(disable);
-            jobId.add(remove);
             Job job = this.jobExecutor.getJob(jobId);
             if (job == null) {
                 EntraIDUsersSyncJobRequest entraIdUsersSyncJobRequest = new EntraIDUsersSyncJobRequest(jobId,

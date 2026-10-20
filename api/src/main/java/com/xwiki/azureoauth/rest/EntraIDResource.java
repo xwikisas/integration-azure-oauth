@@ -54,7 +54,7 @@ public interface EntraIDResource extends XWikiRestComponent
      * Sync XWiki users with the users from Entra ID. The request parameters {@code disable} and {@code remove} select
      * the actions to perform. The optional {@code configuration} parameter is the name of the Entra ID client
      * configuration whose users are synced; when missing, the default configuration is used. Since 2.2.5, the job ID
-     * includes the configuration name when one is given: {@code entra/users/sync/<configuration>/<disable>/<remove>}.
+     * ends with the configuration name when one is given: {@code entra/users/sync/<disable>/<remove>/<configuration>}.
      *
      * @return status code 201 if a new job has been created, status code 200 if a job with the same ID already
      *     exists, or status code 404 if there is no Entra ID client configuration with the given name

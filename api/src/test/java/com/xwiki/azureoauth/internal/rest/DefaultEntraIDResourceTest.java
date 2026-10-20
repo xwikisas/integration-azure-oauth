@@ -184,7 +184,7 @@ class DefaultEntraIDResourceTest
         when(request.getParameterMap()).thenReturn(Map.of("disable", new String[] { "true" }, "remove",
             new String[] { "false" }, "configuration", new String[] { "tenant" }));
         when(configurationStore.getConfiguration("tenant")).thenReturn(mock(EntraIDClientConfiguration.class));
-        List<String> jobId = List.of("entra", "users", "sync", "tenant", "true", "false");
+        List<String> jobId = List.of("entra", "users", "sync", "true", "false", "tenant");
         when(jobExecutor.getJob(jobId)).thenReturn(null);
 
         assertEquals(201, defaultEntraIDResource.syncUsers().getStatus());
