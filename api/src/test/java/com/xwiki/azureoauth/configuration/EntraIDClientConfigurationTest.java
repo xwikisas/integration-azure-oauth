@@ -94,6 +94,16 @@ class EntraIDClientConfigurationTest
     }
 
     @Test
+    void matchesIssuerIgnoresTenantCase()
+    {
+        BaseObject entraIDObject = new BaseObject();
+        entraIDObject.setStringValue("tenantId", "9188040D-6C67-4C5B-B112-36A304B66DAD");
+        EntraIDClientConfiguration configuration = new EntraIDClientConfiguration(DOCUMENT, null, entraIDObject);
+
+        assertTrue(configuration.matchesIssuer(String.format(ISSUER, "9188040d-6c67-4c5b-b112-36a304b66dad")));
+    }
+
+    @Test
     void matchesIssuerWithMultiTenantAlias()
     {
         BaseObject entraIDObject = new BaseObject();

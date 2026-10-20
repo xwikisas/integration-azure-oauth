@@ -21,6 +21,7 @@ package com.xwiki.azureoauth.configuration;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -102,7 +103,8 @@ public class EntraIDClientConfiguration
     }
 
     /**
-     * @return the Entra ID tenant ID
+     * @return the Entra ID tenant ID, which must be the GUID of the tenant for its users to be matched (see
+     *     {@link #matchesIssuer(String)})
      */
     public String getTenantID()
     {
@@ -163,7 +165,9 @@ public class EntraIDClientConfiguration
         if (!hasSpecificTenant()) {
             return true;
         }
-        return issuer.contains(ENTRA_ISSUER_HOST + this.tenantID + '/');
+        // Entra ID issues the tenant GUID in lower case, while the configured one may be in upper case.
+        return issuer.toLowerCase(Locale.ROOT)
+            .contains(ENTRA_ISSUER_HOST + this.tenantID.toLowerCase(Locale.ROOT) + '/');
     }
 
     /**
@@ -173,7 +177,8 @@ public class EntraIDClientConfiguration
      */
     public boolean hasSpecificTenant()
     {
-        return StringUtils.isNotBlank(this.tenantID) && !MULTI_TENANT_ALIASES.contains(this.tenantID.toLowerCase());
+        return StringUtils.isNotBlank(this.tenantID)
+            && !MULTI_TENANT_ALIASES.contains(this.tenantID.toLowerCase(Locale.ROOT));
     }
 
     private static String getStringValue(BaseObject object, String property)
