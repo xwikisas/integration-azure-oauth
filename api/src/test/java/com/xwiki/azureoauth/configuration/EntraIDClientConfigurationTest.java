@@ -90,6 +90,7 @@ class EntraIDClientConfigurationTest
         assertFalse(configuration.matchesIssuer(String.format(ISSUER, "tenantB")));
         assertFalse(configuration.matchesIssuer("https://accounts.example.com/tenantA/"));
         assertFalse(configuration.matchesIssuer(null));
+        assertTrue(configuration.hasSpecificTenant());
     }
 
     @Test
@@ -101,5 +102,15 @@ class EntraIDClientConfigurationTest
 
         assertTrue(configuration.matchesIssuer(String.format(ISSUER, "anyTenant")));
         assertFalse(configuration.matchesIssuer("https://accounts.example.com/"));
+        assertFalse(configuration.hasSpecificTenant());
+    }
+
+    @Test
+    void matchesIssuerWithBlankTenant()
+    {
+        EntraIDClientConfiguration configuration = new EntraIDClientConfiguration(DOCUMENT, null, new BaseObject());
+
+        assertTrue(configuration.matchesIssuer(String.format(ISSUER, "anyTenant")));
+        assertFalse(configuration.hasSpecificTenant());
     }
 }

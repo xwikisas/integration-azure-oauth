@@ -88,6 +88,9 @@ class DefaultEntraIDResourceTest
     private EntraIDClientConfigurationStore configurationStore;
 
     @Mock
+    private EntraIDClientConfiguration defaultConfiguration;
+
+    @Mock
     private EntraIDUsersSyncJob job;
 
     @Mock
@@ -100,8 +103,10 @@ class DefaultEntraIDResourceTest
     private DocumentReference user;
 
     @BeforeEach
-    void setup()
+    void setup() throws Exception
     {
+        when(configurationStore.getDefaultConfiguration()).thenReturn(defaultConfiguration);
+        when(defaultConfiguration.hasSpecificTenant()).thenReturn(true);
         when(wikiContextProvider.get()).thenReturn(wikiContext);
         when(wikiContext.getWiki()).thenReturn(wiki);
         when(wikiContext.getRequest()).thenReturn(request);
@@ -209,6 +214,22 @@ class DefaultEntraIDResourceTest
         assertEquals("Requested actions: disabled [true]; remove [false]", logCapture.getMessage(0));
         assertEquals("No Entra ID client configuration named [missing] to synchronize the users of.",
             logCapture.getMessage(1));
+        verify(jobExecutor, never()).execute(any(), any());
+    }
+
+    @Test
+    void syncUsersRemoveWithoutSpecificTenant() throws Exception
+    {
+        when(request.getParameterMap()).thenReturn(Map.of("disable", new String[] { "false" }, "remove",
+            new String[] { "true" }, "configuration", new String[] { "multiTenant" }));
+        EntraIDClientConfiguration configuration = mock(EntraIDClientConfiguration.class);
+        when(configuration.getConfigurationName()).thenReturn("multiTenant");
+        when(configurationStore.getConfiguration("multiTenant")).thenReturn(configuration);
+
+        assertEquals(400, defaultEntraIDResource.syncUsers().getStatus());
+        assertEquals("Requested actions: disabled [false]; remove [true]", logCapture.getMessage(0));
+        assertEquals("Cannot remove the users of the Entra ID client configuration [multiTenant] because it doesn't "
+            + "target a single tenant.", logCapture.getMessage(1));
         verify(jobExecutor, never()).execute(any(), any());
     }
 
