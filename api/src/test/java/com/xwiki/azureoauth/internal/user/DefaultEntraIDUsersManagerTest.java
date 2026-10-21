@@ -47,6 +47,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.PropertyInterface;
 import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfigurationStore;
 import com.xwiki.azureoauth.internal.EntraIDApiClient;
 import com.xwiki.azureoauth.user.ExternalUser;
 
@@ -69,6 +70,12 @@ class DefaultEntraIDUsersManagerTest
 
     @MockComponent
     private EntraIDApiClient entraIDApiClient;
+
+    @MockComponent
+    private EntraIDClientConfigurationStore configurationStore;
+
+    @Mock
+    private EntraIDClientConfiguration defaultConfiguration;
 
     @MockComponent
     @Named("current")
@@ -151,8 +158,9 @@ class DefaultEntraIDUsersManagerTest
     private XWiki wiki;
 
     @BeforeEach
-    void setup() throws XWikiException, QueryException
+    void setup() throws Exception
     {
+        when(configurationStore.getDefaultConfiguration()).thenReturn(defaultConfiguration);
         when(wikiContextProvider.get()).thenReturn(wikiContext);
         when(wikiContext.getWiki()).thenReturn(wiki);
         when(
@@ -189,7 +197,7 @@ class DefaultEntraIDUsersManagerTest
                 + "{ \"id\": \"user3\", \"accountEnabled\": true }]";
 
         JSONArray jsonArray = new JSONArray(jsonBody);
-        when(entraIDApiClient.getUsers()).thenReturn(jsonArray);
+        when(entraIDApiClient.getUsers(defaultConfiguration)).thenReturn(jsonArray);
         List<ExternalUser> externalUsers = defaultEntraIDUsersManager.getEntraServerUsers();
         assertEquals("user1", externalUsers.get(0).getId());
         assertFalse(externalUsers.get(1).isEnabled());
@@ -199,18 +207,15 @@ class DefaultEntraIDUsersManagerTest
     @Test
     void getEntraUsersMapTest() throws Exception
     {
-
         when(object1.getField("subject")).thenReturn(property1);
-        when(object2.getField("subject")).thenReturn(property2);
-        when(object3.getField("subject")).thenReturn(property3);
         when(property1.toFormString()).thenReturn("subject1");
-        when(property2.toFormString()).thenReturn("subject2");
-        when(property3.toFormString()).thenReturn("subject3");
+        when(property4.toFormString()).thenReturn("https://login.microsoftonline.com/tenant/v2.0");
+        when(defaultConfiguration.matchesIssuer("https://login.microsoftonline.com/tenant/v2.0")).thenReturn(true);
 
-        Map<String, XWikiDocument> map = Map.of("subject1", userDoc1, "subject3", userDoc3);
-        Map<String, XWikiDocument> resultMap = defaultEntraIDUsersManager.getXWikiUsersMap();
-        assertEquals(map, resultMap);
+        // Only the users of the default configuration's tenant are returned.
+        assertEquals(Map.of("subject1", userDoc1), defaultEntraIDUsersManager.getXWikiUsersMap());
     }
+
 
     @Test
     void getEntraUsersMapForConfiguration() throws Exception

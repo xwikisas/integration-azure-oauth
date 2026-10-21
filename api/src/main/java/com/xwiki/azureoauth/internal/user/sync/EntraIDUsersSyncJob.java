@@ -86,11 +86,9 @@ public class EntraIDUsersSyncJob extends AbstractJob<EntraIDUsersSyncJobRequest,
                 if (configurationName == null) {
                     syncManager.syncUsers(request.shouldDisable(), request.shouldRemove());
                 } else {
-                    EntraIDClientConfiguration configuration = configurationStore.getConfiguration(configurationName);
-                    if (configuration == null) {
-                        throw new IllegalArgumentException(
-                            String.format("No Entra ID client configuration named [%s].", configurationName));
-                    }
+                    EntraIDClientConfiguration configuration = configurationStore.getConfiguration(configurationName)
+                        .orElseThrow(() -> new IllegalArgumentException(
+                            String.format("No Entra ID client configuration named [%s].", configurationName)));
                     syncManager.syncUsers(configuration, request.shouldDisable(), request.shouldRemove());
                 }
                 progressManager.endStep(this);

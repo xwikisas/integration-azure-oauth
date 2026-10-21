@@ -25,7 +25,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,7 +34,6 @@ import org.json.JSONObject;
 import org.xwiki.component.annotation.Component;
 
 import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
-import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 
 /**
  * Client for interacting with Microsoft Entra ID, including access token acquisition and retrieval of identity data via
@@ -53,38 +51,18 @@ public class EntraIDApiClient
     @Inject
     private HttpClientBuilderFactory httpClientBuilderFactory;
 
-    @Inject
-    private EntraIDConfiguration configuration;
-
-    /**
-     * Get the users from the Entra ID application as a {@link Map} formed of the user ID as a key and whether the
-     * account is enabled or not as a value.
-     *
-     * @return a {@link JSONArray} consisting of the user ID and whether the account is enabled or not.
-     * @throws Exception if any error occurs
-     */
-    public JSONArray getUsers() throws Exception
-    {
-        return getUsers(configuration.getTokenEndpoint(), configuration.getClientID(), configuration.getSecret());
-    }
-
     /**
      * Get the users from the Entra ID application of the given configuration.
      *
      * @param clientConfiguration the configuration of the Entra ID application to query
      * @return a {@link JSONArray} consisting of the user ID and whether the account is enabled or not.
      * @throws Exception if any error occurs
-     * @since 2.2.5
+     * @since 2.3.0
      */
     public JSONArray getUsers(EntraIDClientConfiguration clientConfiguration) throws Exception
     {
-        return getUsers(clientConfiguration.getTokenEndpoint(), clientConfiguration.getClientID(),
+        String accessToken = getAccessToken(clientConfiguration.getTokenEndpoint(), clientConfiguration.getClientID(),
             clientConfiguration.getSecret());
-    }
-
-    private JSONArray getUsers(String tokenEndpoint, String clientID, String secret) throws Exception
-    {
-        String accessToken = getAccessToken(tokenEndpoint, clientID, secret);
         HttpRequest request =
             HttpRequest.newBuilder().uri(URI.create(USERS_API)).header("Authorization", "Bearer " + accessToken).GET()
                 .build();

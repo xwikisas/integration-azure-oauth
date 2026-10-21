@@ -47,6 +47,7 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfigurationStore;
 import com.xwiki.azureoauth.internal.EntraIDApiClient;
 import com.xwiki.azureoauth.user.EntraIDUsersManager;
 import com.xwiki.azureoauth.user.ExternalUser;
@@ -69,6 +70,9 @@ public class DefaultEntraIDUsersManager implements EntraIDUsersManager
     private EntraIDApiClient entraIDApiClient;
 
     @Inject
+    private EntraIDClientConfigurationStore configurationStore;
+
+    @Inject
     @Named("current")
     private DocumentReferenceResolver<String> documentReferenceResolver;
 
@@ -86,9 +90,9 @@ public class DefaultEntraIDUsersManager implements EntraIDUsersManager
     private QueryFilter documentReferenceFilter;
 
     @Override
-    public Map<String, XWikiDocument> getXWikiUsersMap() throws QueryException, XWikiException
+    public Map<String, XWikiDocument> getXWikiUsersMap() throws Exception
     {
-        return toUsersMap(getXWikiUsers());
+        return getXWikiUsersMap(configurationStore.getDefaultConfiguration());
     }
 
     @Override
@@ -107,7 +111,7 @@ public class DefaultEntraIDUsersManager implements EntraIDUsersManager
     @Override
     public List<ExternalUser> getEntraServerUsers() throws Exception
     {
-        return toExternalUsers(entraIDApiClient.getUsers());
+        return getEntraServerUsers(configurationStore.getDefaultConfiguration());
     }
 
     @Override

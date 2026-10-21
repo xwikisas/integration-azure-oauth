@@ -20,6 +20,7 @@
 package com.xwiki.azureoauth.internal.user.sync;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -95,20 +96,20 @@ class EntraIDUsersSyncJobTest
     void runInternalForConfiguration() throws Exception
     {
         EntraIDClientConfiguration configuration = mock(EntraIDClientConfiguration.class);
-        when(configurationStore.getConfiguration("tenant")).thenReturn(configuration);
+        when(configurationStore.getConfiguration("tenant")).thenReturn(Optional.of(configuration));
         when(request.getConfigurationName()).thenReturn("tenant");
         when(request.shouldDisable()).thenReturn(true);
         when(request.shouldRemove()).thenReturn(false);
-        when(request.getId()).thenReturn(List.of("entra", "users", "sync", "tenant", "true", "false"));
+        when(request.getId()).thenReturn(List.of("entra", "users", "sync", "true", "false", "tenant"));
         syncJob.initialize(request);
 
         syncJob.runInternal();
 
         verify(syncManager).syncUsers(configuration, true, false);
         verify(syncManager, never()).syncUsers(true, false);
-        assertEquals("Started EntraID user sync job with ID: [[entra, users, sync, tenant, true, false]]",
+        assertEquals("Started EntraID user sync job with ID: [[entra, users, sync, true, false, tenant]]",
             logCapture.getMessage(0));
-        assertEquals("Finished EntraID user sync job with ID: [[entra, users, sync, tenant, true, false]]",
+        assertEquals("Finished EntraID user sync job with ID: [[entra, users, sync, true, false, tenant]]",
             logCapture.getMessage(1));
     }
 
@@ -116,17 +117,17 @@ class EntraIDUsersSyncJobTest
     void runInternalForMissingConfiguration()
     {
         when(request.getConfigurationName()).thenReturn("missing");
-        when(request.getId()).thenReturn(List.of("entra", "users", "sync", "missing", "true", "false"));
+        when(request.getId()).thenReturn(List.of("entra", "users", "sync", "true", "false", "missing"));
         syncJob.initialize(request);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> syncJob.runInternal());
 
         assertEquals("java.lang.IllegalArgumentException: No Entra ID client configuration named [missing].",
             exception.getMessage());
-        assertEquals("Started EntraID user sync job with ID: [[entra, users, sync, missing, true, false]]",
+        assertEquals("Started EntraID user sync job with ID: [[entra, users, sync, true, false, missing]]",
             logCapture.getMessage(0));
         assertEquals("Failed to synchronize EntraID users.", logCapture.getMessage(1));
-        assertEquals("Finished EntraID user sync job with ID: [[entra, users, sync, missing, true, false]]",
+        assertEquals("Finished EntraID user sync job with ID: [[entra, users, sync, true, false, missing]]",
             logCapture.getMessage(2));
     }
 

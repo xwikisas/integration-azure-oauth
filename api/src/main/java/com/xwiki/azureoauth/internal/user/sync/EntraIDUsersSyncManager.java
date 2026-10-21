@@ -37,6 +37,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfigurationStore;
 import com.xwiki.azureoauth.user.EntraIDUsersManager;
 import com.xwiki.azureoauth.user.ExternalUser;
 
@@ -64,8 +65,12 @@ public class EntraIDUsersSyncManager
     @Inject
     private EntraIDUsersManager usersManager;
 
+    @Inject
+    private EntraIDClientConfigurationStore configurationStore;
+
     /**
-     * Synchronize the state of the XWiki users created from Entra ID with their state from the Microsoft server.
+     * Synchronize the state of the XWiki users created from the tenant of the default configuration with their state
+     * from the Microsoft server.
      *
      * @param disable {@code true} if the sync should also sync disabled users, or {@code false} otherwise
      * @param remove {@code true} if the sync should also sync removed users, or {@code false} otherwise
@@ -73,21 +78,30 @@ public class EntraIDUsersSyncManager
      */
     public void syncUsers(boolean disable, boolean remove) throws Exception
     {
-        syncUsers(usersManager.getXWikiUsersMap(), usersManager.getEntraServerUsers(), disable, remove);
+        syncUsers(configurationStore.getDefaultConfiguration(), disable, remove);
     }
 
     /**
      * Synchronize the state of the XWiki users created from the tenant of the given configuration with their state
-     * from the Microsoft server. The users created from other tenants are left untouched.
+     * from the Microsoft server. The users created from other tenants are left untouched. Removing users is refused
+     * when the configuration doesn't target a single tenant, since its users can't be told apart from the users of
+     * other tenants.
      *
      * @param configuration the Entra ID client configuration to synchronize the users of
      * @param disable {@code true} if the sync should also sync disabled users, or {@code false} otherwise
      * @param remove {@code true} if the sync should also sync removed users, or {@code false} otherwise
      * @throws Exception if any error occurs during the sync
-     * @since 2.2.5
+     * @throws IllegalArgumentException if users should be removed and the configuration doesn't target a single
+     *     tenant
+     * @since 2.3.0
      */
     public void syncUsers(EntraIDClientConfiguration configuration, boolean disable, boolean remove) throws Exception
     {
+        if (remove && !configuration.hasSpecificTenant()) {
+            throw new IllegalArgumentException(String.format(
+                "Cannot remove the users of the Entra ID client configuration [%s] because it doesn't target a "
+                    + "single tenant.", configuration.getConfigurationName()));
+        }
         syncUsers(usersManager.getXWikiUsersMap(configuration), usersManager.getEntraServerUsers(configuration),
             disable, remove);
     }

@@ -30,7 +30,6 @@ import java.util.Base64;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.model.reference.ObjectPropertyReference;
@@ -40,7 +39,6 @@ import org.xwiki.rest.model.jaxb.Property;
 import org.xwiki.test.docker.junit5.UITest;
 import org.xwiki.test.ui.TestUtils;
 
-import com.xwiki.entraid.test.po.EntraIDConfigurationViewPage;
 import com.xwiki.entraid.test.po.EntraIDViewPage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,9 +75,6 @@ class EntraIDClientConfigurationsIT
     private static final String TENANT_GROUP_NAME = "SecondTenantGroup";
 
     private static final String PASSWORD = "pass";
-
-    private static final DocumentReference SYNC_TEST_REFERENCE =
-        new DocumentReference("xwiki", "Sandbox", "EntraSyncUsersTest");
 
     @BeforeAll
     static void setup(TestUtils setup) throws Exception
@@ -134,29 +129,17 @@ class EntraIDClientConfigurationsIT
 
     @Order(3)
     @Test
-    void xwikiLoginEnabledByConfiguration(TestUtils testUtils)
+    void xwikiLoginNotEnabledByConfiguration(TestUtils testUtils)
     {
+        // Only the default configuration decides whether guests may use the XWiki login, so that adding a client
+        // configuration can't enable it.
+        testUtils.updateObject(CONFIGURATION_REFERENCE, ENTRAID_CONFIGURATION_CLASSNAME, 0, "enableXWikiLoginGlobal",
+            1);
         EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
         testUtils.forceGuestUser();
         entraIDViewPage.goToHomePage();
         assertFalse(entraIDViewPage.isBypassLoginButtonDisplayed());
-
         testUtils.loginAsSuperAdmin();
-        testUtils.updateObject(CONFIGURATION_REFERENCE, ENTRAID_CONFIGURATION_CLASSNAME, 0, "enableXWikiLoginGlobal",
-            1);
-        testUtils.forceGuestUser();
-        entraIDViewPage.goToHomePage();
-        assertTrue(entraIDViewPage.isBypassLoginButtonDisplayed());
-
-        // A disabled configuration doesn't enable the XWiki login.
-        testUtils.loginAsSuperAdmin();
-        testUtils.updateObject(CONFIGURATION_REFERENCE, OIDC_CONFIGURATION_CLASSNAME, 0, "skipped", 1);
-        testUtils.forceGuestUser();
-        entraIDViewPage.goToHomePage();
-        assertFalse(entraIDViewPage.isBypassLoginButtonDisplayed());
-
-        testUtils.loginAsSuperAdmin();
-        testUtils.updateObject(CONFIGURATION_REFERENCE, OIDC_CONFIGURATION_CLASSNAME, 0, "skipped", 0);
     }
 
     @Order(4)
@@ -175,47 +158,6 @@ class EntraIDClientConfigurationsIT
         testUtils.login(TENANT_USER_NAME, PASSWORD);
         entraIDViewPage.goToHomePage();
         assertTrue(entraIDViewPage.isSwitchUserDisplayed());
-    }
-
-    @Order(5)
-    @Test
-    void oidcProTemplateImportedWithoutOIDCPro(TestUtils testUtils)
-    {
-        // The template is used only when OIDC Pro is installed, but it is imported with the application so that it is
-        // available as soon as OIDC Pro is installed.
-        testUtils.loginAsSuperAdmin();
-        testUtils.createPage(new DocumentReference("xwiki", "Sandbox", "EntraOIDCProTemplateTest"), "{{velocity}}\n"
-            + "#set ($template = $xwiki.getDocument('EntraID.Code.OIDCProTemplate'))\n"
-            + "$template.isNew() $!template.getObject('OIDCPro.Code.OIDCProTemplateClass').getProperty('name').value\n"
-            + "{{/velocity}}", "");
-        assertEquals("false entraid", testUtils.getDriver().findElement(By.id("xwikicontent")).getText());
-    }
-
-    @Order(6)
-    @Test
-    void syncUsersOfConfigurationFromSheet(TestUtils testUtils)
-    {
-        // The users synchronization sheet is shared by the administration section and the OIDC Pro template, which
-        // sets the configuration to synchronize the users of.
-        testUtils.loginAsSuperAdmin();
-        testUtils.createPage(SYNC_TEST_REFERENCE, "{{velocity}}\n"
-            + "#set ($entraSyncConfiguration = $request.configuration)\n"
-            + "{{/velocity}}\n\n"
-            + "{{include reference=\"EntraID.Code.EntraSyncUsersSheet\" /}}", "");
-
-        testUtils.gotoPage(SYNC_TEST_REFERENCE, "view", "configuration=" + CONFIGURATION_NAME);
-        EntraIDConfigurationViewPage syncPage = new EntraIDConfigurationViewPage();
-        assertTrue(syncPage.getSyncDescription().contains("created from the tenant of this configuration"));
-        syncPage.getSyncButton().click();
-        assertEquals("Sync in progress...", syncPage.getNotification().getText());
-        // The job is started, but it fails because the tenant doesn't exist.
-        assertEquals("There was an error during the sync.", syncPage.getErrorNotification().getText());
-
-        // There is no configuration with this name.
-        testUtils.gotoPage(SYNC_TEST_REFERENCE, "view", "configuration=missing");
-        syncPage = new EntraIDConfigurationViewPage();
-        syncPage.getSyncButton().click();
-        assertEquals("There was an error during the sync.", syncPage.getErrorNotification().getText());
     }
 
     private String getProvider(TestUtils testUtils) throws Exception

@@ -340,6 +340,12 @@ require(['jquery', 'entraid-properties-editor', 'xwiki-selectize'], function($, 
     <property>
       <code>label .xHint {
   text-transform: none !important;
+}
+
+#entra-sync {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }</code>
     </property>
     <property>

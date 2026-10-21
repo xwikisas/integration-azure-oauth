@@ -52,7 +52,6 @@ class EntraIDClientConfigurationTest
         oidcObject.setIntValue("skipped", 1);
         BaseObject entraIDObject = new BaseObject();
         entraIDObject.setStringValue("tenantId", "tenantID");
-        entraIDObject.setIntValue("enableXWikiLoginGlobal", 0);
         entraIDObject.setLargeStringValue("xwikiLoginGroups", "XWiki.GroupA,XWiki.GroupB");
 
         EntraIDClientConfiguration configuration =
@@ -65,7 +64,6 @@ class EntraIDClientConfigurationTest
         assertEquals("token", configuration.getTokenEndpoint());
         assertEquals("tenantID", configuration.getTenantID());
         assertFalse(configuration.isActive());
-        assertFalse(configuration.isXWikiLoginGlobalEnabled());
         assertEquals(List.of("XWiki.GroupA", "XWiki.GroupB"), configuration.getXWikiLoginGroups());
     }
 
@@ -77,7 +75,6 @@ class EntraIDClientConfigurationTest
         assertEquals("", configuration.getConfigurationName());
         assertEquals("", configuration.getTenantID());
         assertTrue(configuration.isActive());
-        assertTrue(configuration.isXWikiLoginGlobalEnabled());
         assertEquals(List.of(), configuration.getXWikiLoginGroups());
     }
 
@@ -93,6 +90,17 @@ class EntraIDClientConfigurationTest
         assertFalse(configuration.matchesIssuer(String.format(ISSUER, "tenantB")));
         assertFalse(configuration.matchesIssuer("https://accounts.example.com/tenantA/"));
         assertFalse(configuration.matchesIssuer(null));
+        assertTrue(configuration.hasSpecificTenant());
+    }
+
+    @Test
+    void matchesIssuerIgnoresTenantCase()
+    {
+        BaseObject entraIDObject = new BaseObject();
+        entraIDObject.setStringValue("tenantId", "9188040D-6C67-4C5B-B112-36A304B66DAD");
+        EntraIDClientConfiguration configuration = new EntraIDClientConfiguration(DOCUMENT, null, entraIDObject);
+
+        assertTrue(configuration.matchesIssuer(String.format(ISSUER, "9188040d-6c67-4c5b-b112-36a304b66dad")));
     }
 
     @Test
@@ -104,5 +112,15 @@ class EntraIDClientConfigurationTest
 
         assertTrue(configuration.matchesIssuer(String.format(ISSUER, "anyTenant")));
         assertFalse(configuration.matchesIssuer("https://accounts.example.com/"));
+        assertFalse(configuration.hasSpecificTenant());
+    }
+
+    @Test
+    void matchesIssuerWithBlankTenant()
+    {
+        EntraIDClientConfiguration configuration = new EntraIDClientConfiguration(DOCUMENT, null, new BaseObject());
+
+        assertTrue(configuration.matchesIssuer(String.format(ISSUER, "anyTenant")));
+        assertFalse(configuration.hasSpecificTenant());
     }
 }

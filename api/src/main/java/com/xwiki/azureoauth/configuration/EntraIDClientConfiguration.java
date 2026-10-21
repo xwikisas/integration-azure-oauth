@@ -21,6 +21,7 @@ package com.xwiki.azureoauth.configuration;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +35,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * and an Entra ID configuration object.
  *
  * @version $Id$
- * @since 2.2.5
+ * @since 2.3.0
  */
 @Unstable
 public class EntraIDClientConfiguration
@@ -43,7 +44,8 @@ public class EntraIDClientConfiguration
 
     /**
      * The tenant aliases used by multi-tenant applications. The users authenticated through them are issued by their
-     * own tenant, so the configured tenant can't be used to find them.
+     * own tenant, so the configured tenant can't be used to find them: such a configuration matches the users of any
+     * tenant. For this reason, the users sync can't remove the users of such a configuration.
      */
     private static final Set<String> MULTI_TENANT_ALIASES = Set.of("common", "organizations", "consumers");
 
@@ -60,8 +62,6 @@ public class EntraIDClientConfiguration
     private final String tokenEndpoint;
 
     private final boolean active;
-
-    private final boolean xwikiLoginGlobalEnabled;
 
     private final String xwikiLoginGroups;
 
@@ -83,8 +83,6 @@ public class EntraIDClientConfiguration
         this.tokenEndpoint = getStringValue(oidcObject, "tokenEndpoint");
         this.active = oidcObject == null || oidcObject.getIntValue("skipped", 0) != 1;
         this.tenantID = getStringValue(entraIDObject, "tenantId");
-        this.xwikiLoginGlobalEnabled =
-            entraIDObject == null || entraIDObject.getIntValue("enableXWikiLoginGlobal", 1) == 1;
         this.xwikiLoginGroups = getStringValue(entraIDObject, "xwikiLoginGroups");
     }
 
@@ -105,7 +103,8 @@ public class EntraIDClientConfiguration
     }
 
     /**
-     * @return the Entra ID tenant ID
+     * @return the Entra ID tenant ID, which must be the GUID of the tenant for its users to be matched (see
+     *     {@link #matchesIssuer(String)})
      */
     public String getTenantID()
     {
@@ -145,15 +144,6 @@ public class EntraIDClientConfiguration
     }
 
     /**
-     * @return {@code true} if guest users are allowed to log in with the standard XWiki authenticator, {@code false}
-     *     otherwise
-     */
-    public boolean isXWikiLoginGlobalEnabled()
-    {
-        return this.xwikiLoginGlobalEnabled;
-    }
-
-    /**
      * @return the groups whose members are allowed to switch to the standard XWiki authenticator
      */
     public List<String> getXWikiLoginGroups()
@@ -172,10 +162,23 @@ public class EntraIDClientConfiguration
         if (issuer == null || !issuer.contains(ENTRA_ISSUER_HOST)) {
             return false;
         }
-        if (StringUtils.isBlank(this.tenantID) || MULTI_TENANT_ALIASES.contains(this.tenantID.toLowerCase())) {
+        if (!hasSpecificTenant()) {
             return true;
         }
-        return issuer.contains(ENTRA_ISSUER_HOST + this.tenantID + '/');
+        // Entra ID issues the tenant GUID in lower case, while the configured one may be in upper case.
+        return issuer.toLowerCase(Locale.ROOT)
+            .contains(ENTRA_ISSUER_HOST + this.tenantID.toLowerCase(Locale.ROOT) + '/');
+    }
+
+    /**
+     * @return {@code true} if this configuration targets a single tenant, {@code false} if its tenant is blank or a
+     *     multi-tenant alias, in which case it matches the users of any tenant
+     * @see #matchesIssuer(String)
+     */
+    public boolean hasSpecificTenant()
+    {
+        return StringUtils.isNotBlank(this.tenantID)
+            && !MULTI_TENANT_ALIASES.contains(this.tenantID.toLowerCase(Locale.ROOT));
     }
 
     private static String getStringValue(BaseObject object, String property)

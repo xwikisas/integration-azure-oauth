@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,6 +45,7 @@ import org.xwiki.velocity.tools.EscapeTool;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
 import com.xwiki.azureoauth.configuration.EntraIDClientConfigurationStore;
 import com.xwiki.azureoauth.internal.user.sync.EntraIDUsersSyncJob;
 import com.xwiki.azureoauth.rest.EntraIDResource;
@@ -107,17 +109,25 @@ public class DefaultEntraIDResource implements EntraIDResource
             String configurationName = configurationParameter != null ? configurationParameter[0] : null;
             logger.debug("Requested actions: disabled [{}]; remove [{}]", disable, remove);
 
-            List<String> jobId = new ArrayList<>(List.of("entra", "users", "sync"));
+            Optional<EntraIDClientConfiguration> optionalConfiguration = configurationName != null
+                ? this.configurationStore.getConfiguration(configurationName)
+                : Optional.of(this.configurationStore.getDefaultConfiguration());
+            if (optionalConfiguration.isEmpty()) {
+                logger.warn("No Entra ID client configuration named [{}] to synchronize the users of.",
+                    configurationName);
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            EntraIDClientConfiguration configuration = optionalConfiguration.get();
+            if (Boolean.parseBoolean(remove) && !configuration.hasSpecificTenant()) {
+                logger.warn("Cannot remove the users of the Entra ID client configuration [{}] because it doesn't "
+                    + "target a single tenant.", configuration.getConfigurationName());
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+
+            List<String> jobId = new ArrayList<>(List.of("entra", "users", "sync", disable, remove));
             if (configurationName != null) {
-                if (this.configurationStore.getConfiguration(configurationName) == null) {
-                    logger.warn("No Entra ID client configuration named [{}] to synchronize the users of.",
-                        configurationName);
-                    return Response.status(Response.Status.NOT_FOUND).build();
-                }
                 jobId.add(configurationName);
             }
-            jobId.add(disable);
-            jobId.add(remove);
             Job job = this.jobExecutor.getJob(jobId);
             if (job == null) {
                 EntraIDUsersSyncJobRequest entraIdUsersSyncJobRequest = new EntraIDUsersSyncJobRequest(jobId,
