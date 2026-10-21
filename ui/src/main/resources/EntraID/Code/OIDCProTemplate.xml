@@ -120,7 +120,7 @@
         <contenttype>PureText</contenttype>
         <customDisplay/>
         <disabled>0</disabled>
-        <editor>---</editor>
+        <editor>PureText</editor>
         <hint/>
         <name>layoutJson</name>
         <number>1</number>

@@ -91,7 +91,7 @@
       <enableXWikiLoginGlobal>1</enableXWikiLoginGlobal>
     </property>
     <property>
-      <tenantId/>
+      <tenantId>gfdgd</tenantId>
     </property>
     <property>
       <xwikiLoginGroups/>
@@ -373,7 +373,7 @@
       <afterLogoutURL>
         <disabled>0</disabled>
         <name>afterLogoutURL</name>
-        <number>32</number>
+        <number>37</number>
         <prettyName>URL after Logout</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
@@ -395,7 +395,7 @@
       <authorizationEndpoint>
         <disabled>0</disabled>
         <name>authorizationEndpoint</name>
-        <number>12</number>
+        <number>17</number>
         <prettyName>Authorization OIDC endpoint</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
@@ -406,7 +406,7 @@
         <disabled>0</disabled>
         <editor>PureText</editor>
         <name>claims</name>
-        <number>28</number>
+        <number>33</number>
         <prettyName>Claims</prettyName>
         <restricted>0</restricted>
         <rows>25</rows>
@@ -417,7 +417,7 @@
       <clientId>
         <disabled>0</disabled>
         <name>clientId</name>
-        <number>16</number>
+        <number>21</number>
         <prettyName>Client ID</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
@@ -426,11 +426,12 @@
       <clientSecret>
         <disabled>0</disabled>
         <name>clientSecret</name>
-        <number>17</number>
+        <number>22</number>
         <prettyName>Secret</prettyName>
         <size>255</size>
+        <storageType>Clear</storageType>
         <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+        <classType>com.xpn.xwiki.objects.classes.PasswordClass</classType>
       </clientSecret>
       <configurationName>
         <disabled>0</disabled>
@@ -441,13 +442,22 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </configurationName>
+      <discoveryEndpoint>
+        <disabled>0</disabled>
+        <name>discoveryEndpoint</name>
+        <number>16</number>
+        <prettyName>Discovery OIDC endpoint</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </discoveryEndpoint>
       <enableUser>
         <defaultValue>1</defaultValue>
         <disabled>0</disabled>
         <displayFormType>select</displayFormType>
         <displayType>select</displayType>
         <name>enableUser</name>
-        <number>31</number>
+        <number>36</number>
         <prettyName>Should user profiles be enabled on first login ?</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
@@ -518,7 +528,7 @@
         <disabled>0</disabled>
         <editor>PureText</editor>
         <name>idTokenClaims</name>
-        <number>26</number>
+        <number>31</number>
         <prettyName>ID Token Claims</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
@@ -529,34 +539,53 @@
       <logoutEndpoint>
         <disabled>0</disabled>
         <name>logoutEndpoint</name>
-        <number>15</number>
+        <number>20</number>
         <prettyName>Logout OIDC endpoint</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </logoutEndpoint>
       <logoutEndpointMethod>
+        <cache>0</cache>
+        <defaultValue>GET</defaultValue>
         <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
         <name>logoutEndpointMethod</name>
-        <number>21</number>
+        <number>26</number>
         <prettyName>Logout endpoint method</prettyName>
-        <size>255</size>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+        <values>GET|POST</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </logoutEndpointMethod>
       <logoutMechanism>
         <disabled>0</disabled>
         <name>logoutMechanism</name>
-        <number>22</number>
+        <number>27</number>
         <prettyName>Logout mechanism</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </logoutMechanism>
+      <provider>
+        <disabled>0</disabled>
+        <name>provider</name>
+        <number>15</number>
+        <prettyName>OIDC provider</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </provider>
       <responseType>
         <disabled>0</disabled>
         <name>responseType</name>
-        <number>25</number>
+        <number>30</number>
         <prettyName>Response type</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
@@ -565,7 +594,7 @@
       <scope>
         <disabled>0</disabled>
         <name>scope</name>
-        <number>24</number>
+        <number>29</number>
         <prettyName>Scope</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
@@ -577,17 +606,18 @@
         <displayFormType>select</displayFormType>
         <displayType>select</displayType>
         <name>skipLogoutIdToken</name>
-        <number>34</number>
+        <number>39</number>
         <prettyName>Skip ID Token at logout</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </skipLogoutIdToken>
       <skipped>
+        <defaultValue>0</defaultValue>
         <disabled>0</disabled>
         <displayFormType>select</displayFormType>
         <displayType>select</displayType>
         <name>skipped</name>
-        <number>23</number>
+        <number>27</number>
         <prettyName>Is authentication skipped ?</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
@@ -595,7 +625,7 @@
       <tokenEndpoint>
         <disabled>0</disabled>
         <name>tokenEndpoint</name>
-        <number>13</number>
+        <number>18</number>
         <prettyName>Token OIDC endpoint</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
@@ -610,7 +640,7 @@
         <largeStorage>0</largeStorage>
         <multiSelect>0</multiSelect>
         <name>tokenEndpointMethod</name>
-        <number>18</number>
+        <number>23</number>
         <prettyName>Token endpoint authentication method</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
@@ -629,7 +659,7 @@
         <largeStorage>0</largeStorage>
         <multiSelect>0</multiSelect>
         <name>tokenStorageScope</name>
-        <number>33</number>
+        <number>38</number>
         <prettyName>Store tokens</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
@@ -639,12 +669,23 @@
         <values>NONE|USER|WIKI</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tokenStorageScope>
+      <tryLocal>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>select</displayType>
+        <name>tryLocal</name>
+        <number>28</number>
+        <prettyName>Is standard authenticator allowed?</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </tryLocal>
       <userInfoClaims>
         <contenttype>PureText</contenttype>
         <disabled>0</disabled>
         <editor>PureText</editor>
         <name>userInfoClaims</name>
-        <number>27</number>
+        <number>32</number>
         <prettyName>User info Claims</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
@@ -655,7 +696,7 @@
       <userInfoEndpoint>
         <disabled>0</disabled>
         <name>userInfoEndpoint</name>
-        <number>14</number>
+        <number>19</number>
         <prettyName>User info OIDC endpoint</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
@@ -666,7 +707,7 @@
         <disabled>0</disabled>
         <editor>PureText</editor>
         <name>userInfoEndpointHeaders</name>
-        <number>20</number>
+        <number>25</number>
         <prettyName>User info endpoint headers</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
@@ -677,7 +718,7 @@
       <userInfoEndpointMethod>
         <disabled>0</disabled>
         <name>userInfoEndpointMethod</name>
-        <number>19</number>
+        <number>24</number>
         <prettyName>User information endpoint method</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
@@ -686,7 +727,7 @@
       <userInfoRefreshRate>
         <disabled>0</disabled>
         <name>userInfoRefreshRate</name>
-        <number>29</number>
+        <number>34</number>
         <numberType>integer</numberType>
         <prettyName>User info refresh rate</prettyName>
         <size>5</size>
@@ -698,7 +739,7 @@
         <displayFormType>select</displayFormType>
         <displayType>select</displayType>
         <name>userInfoSkip</name>
-        <number>30</number>
+        <number>35</number>
         <prettyName>Is user info skipped ?</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
@@ -708,7 +749,7 @@
         <disabled>0</disabled>
         <editor>PureText</editor>
         <name>userMapping</name>
-        <number>10</number>
+        <number>14</number>
         <prettyName>User mapping</prettyName>
         <restricted>0</restricted>
         <rows>10</rows>
@@ -716,15 +757,51 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </userMapping>
+      <userNameForbiddenPattern>
+        <disabled>0</disabled>
+        <name>userNameForbiddenPattern</name>
+        <number>12</number>
+        <prettyName>XWiki username forbidden pattern</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </userNameForbiddenPattern>
+      <userNameForbiddenReplacement>
+        <disabled>0</disabled>
+        <name>userNameForbiddenReplacement</name>
+        <number>13</number>
+        <prettyName>XWiki username forbidden replacement</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </userNameForbiddenReplacement>
       <userNameFormatter>
         <disabled>0</disabled>
         <name>userNameFormatter</name>
-        <number>9</number>
+        <number>11</number>
         <prettyName>XWiki username formatter</prettyName>
         <size>255</size>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </userNameFormatter>
+      <userSubjectForbiddenPattern>
+        <disabled>0</disabled>
+        <name>userSubjectForbiddenPattern</name>
+        <number>9</number>
+        <prettyName>Subject forbidden pattern</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </userSubjectForbiddenPattern>
+      <userSubjectForbiddenReplacement>
+        <disabled>0</disabled>
+        <name>userSubjectForbiddenReplacement</name>
+        <number>10</number>
+        <prettyName>Subject forbidden replacement</prettyName>
+        <size>255</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </userSubjectForbiddenReplacement>
       <userSubjectFormatter>
         <disabled>0</disabled>
         <name>userSubjectFormatter</name>
@@ -734,15 +811,6 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </userSubjectFormatter>
-      <xwikiProvider>
-        <disabled>0</disabled>
-        <name>xwikiProvider</name>
-        <number>11</number>
-        <prettyName>XWiki provider</prettyName>
-        <size>255</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </xwikiProvider>
     </class>
     <property>
       <afterLogoutURL/>
@@ -764,6 +832,9 @@
     </property>
     <property>
       <configurationName>EntraID</configurationName>
+    </property>
+    <property>
+      <discoveryEndpoint/>
     </property>
     <property>
       <enableUser>1</enableUser>
@@ -796,6 +867,9 @@
       <logoutMechanism/>
     </property>
     <property>
+      <provider/>
+    </property>
+    <property>
       <responseType>code</responseType>
     </property>
     <property>
@@ -815,6 +889,9 @@
     </property>
     <property>
       <tokenStorageScope>NONE</tokenStorageScope>
+    </property>
+    <property>
+      <tryLocal/>
     </property>
     <property>
       <userInfoClaims/>
@@ -838,7 +915,19 @@
       <userMapping/>
     </property>
     <property>
+      <userNameForbiddenPattern/>
+    </property>
+    <property>
+      <userNameForbiddenReplacement/>
+    </property>
+    <property>
       <userNameFormatter>${oidc.idtoken.upn._clean._lowerCase}</userNameFormatter>
+    </property>
+    <property>
+      <userSubjectForbiddenPattern/>
+    </property>
+    <property>
+      <userSubjectForbiddenReplacement/>
     </property>
     <property>
       <userSubjectFormatter>${oidc.idtoken.oid}</userSubjectFormatter>
