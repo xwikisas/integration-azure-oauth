@@ -25,7 +25,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,7 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.xwiki.component.annotation.Component;
 
-import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
 
 /**
  * Client for interacting with Microsoft Entra ID, including access token acquisition and retrieval of identity data via
@@ -52,19 +51,18 @@ public class EntraIDApiClient
     @Inject
     private HttpClientBuilderFactory httpClientBuilderFactory;
 
-    @Inject
-    private EntraIDConfiguration configuration;
-
     /**
-     * Get the users from the Entra ID application as a {@link Map} formed of the user ID as a key and whether the
-     * account is enabled or not as a value.
+     * Get the users from the Entra ID application of the given configuration.
      *
+     * @param clientConfiguration the configuration of the Entra ID application to query
      * @return a {@link JSONArray} consisting of the user ID and whether the account is enabled or not.
      * @throws Exception if any error occurs
+     * @since 2.3.0
      */
-    public JSONArray getUsers() throws Exception
+    public JSONArray getUsers(EntraIDClientConfiguration clientConfiguration) throws Exception
     {
-        String accessToken = getAccessToken();
+        String accessToken = getAccessToken(clientConfiguration.getTokenEndpoint(), clientConfiguration.getClientID(),
+            clientConfiguration.getSecret());
         HttpRequest request =
             HttpRequest.newBuilder().uri(URI.create(USERS_API)).header("Authorization", "Bearer " + accessToken).GET()
                 .build();
@@ -79,14 +77,12 @@ public class EntraIDApiClient
         return json.getJSONArray("value");
     }
 
-    private String getAccessToken() throws Exception
+    private String getAccessToken(String url, String clientID, String secret) throws Exception
     {
-        String url = configuration.getTokenEndpoint();
-
         StringBuilder sb = new StringBuilder();
-        sb.append("client_id=").append(URLEncoder.encode(configuration.getClientID(), StandardCharsets.UTF_8));
+        sb.append("client_id=").append(URLEncoder.encode(clientID, StandardCharsets.UTF_8));
         sb.append("&scope=").append(URLEncoder.encode("https://graph.microsoft.com/.default", StandardCharsets.UTF_8));
-        sb.append("&client_secret=").append(URLEncoder.encode(configuration.getSecret(), StandardCharsets.UTF_8));
+        sb.append("&client_secret=").append(URLEncoder.encode(secret, StandardCharsets.UTF_8));
         sb.append("&grant_type=client_credentials");
 
         HttpRequest request =

@@ -21,6 +21,7 @@ package com.xwiki.azureoauth.internal.rest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Provider;
 import javax.ws.rs.WebApplicationException;
@@ -28,6 +29,7 @@ import javax.ws.rs.WebApplicationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.xwiki.job.JobException;
 import org.xwiki.job.JobExecutor;
@@ -45,14 +47,21 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.web.XWikiRequest;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfigurationStore;
 import com.xwiki.azureoauth.internal.user.sync.EntraIDUsersSyncJob;
 import com.xwiki.azureoauth.user.sync.EntraIDUsersSyncJobRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ComponentTest
@@ -76,6 +85,12 @@ class DefaultEntraIDResourceTest
     @MockComponent
     private JobExecutor jobExecutor;
 
+    @MockComponent
+    private EntraIDClientConfigurationStore configurationStore;
+
+    @Mock
+    private EntraIDClientConfiguration defaultConfiguration;
+
     @Mock
     private EntraIDUsersSyncJob job;
 
@@ -89,8 +104,10 @@ class DefaultEntraIDResourceTest
     private DocumentReference user;
 
     @BeforeEach
-    void setup()
+    void setup() throws Exception
     {
+        when(configurationStore.getDefaultConfiguration()).thenReturn(defaultConfiguration);
+        when(defaultConfiguration.hasSpecificTenant()).thenReturn(true);
         when(wikiContextProvider.get()).thenReturn(wikiContext);
         when(wikiContext.getWiki()).thenReturn(wiki);
         when(wikiContext.getRequest()).thenReturn(request);
@@ -165,6 +182,57 @@ class DefaultEntraIDResourceTest
         assertEquals("Requested actions: disabled [true]; remove [true]", logCapture.getMessage(0));
         assertEquals("Failed to synchronize users with EntraID. Root cause is: [JobException: Job execution error]",
             logCapture.getMessage(1));
+    }
+
+    @Test
+    void syncUsersForConfiguration() throws Exception
+    {
+        when(request.getParameterMap()).thenReturn(Map.of("disable", new String[] { "true" }, "remove",
+            new String[] { "false" }, "configuration", new String[] { "tenant" }));
+        when(configurationStore.getConfiguration("tenant"))
+            .thenReturn(Optional.of(mock(EntraIDClientConfiguration.class)));
+        List<String> jobId = List.of("entra", "users", "sync", "true", "false", "tenant");
+        when(jobExecutor.getJob(jobId)).thenReturn(null);
+
+        assertEquals(201, defaultEntraIDResource.syncUsers().getStatus());
+        assertEquals("Requested actions: disabled [true]; remove [false]", logCapture.getMessage(0));
+
+        ArgumentCaptor<EntraIDUsersSyncJobRequest> requestCaptor =
+            ArgumentCaptor.forClass(EntraIDUsersSyncJobRequest.class);
+        verify(jobExecutor).execute(eq(EntraIDUsersSyncJob.JOB_TYPE), requestCaptor.capture());
+        assertEquals(jobId, requestCaptor.getValue().getId());
+        assertEquals("tenant", requestCaptor.getValue().getConfigurationName());
+        assertTrue(requestCaptor.getValue().shouldDisable());
+        assertFalse(requestCaptor.getValue().shouldRemove());
+    }
+
+    @Test
+    void syncUsersForMissingConfiguration() throws Exception
+    {
+        when(request.getParameterMap()).thenReturn(Map.of("disable", new String[] { "true" }, "remove",
+            new String[] { "false" }, "configuration", new String[] { "missing" }));
+
+        assertEquals(404, defaultEntraIDResource.syncUsers().getStatus());
+        assertEquals("Requested actions: disabled [true]; remove [false]", logCapture.getMessage(0));
+        assertEquals("No Entra ID client configuration named [missing] to synchronize the users of.",
+            logCapture.getMessage(1));
+        verify(jobExecutor, never()).execute(any(), any());
+    }
+
+    @Test
+    void syncUsersRemoveWithoutSpecificTenant() throws Exception
+    {
+        when(request.getParameterMap()).thenReturn(Map.of("disable", new String[] { "false" }, "remove",
+            new String[] { "true" }, "configuration", new String[] { "multiTenant" }));
+        EntraIDClientConfiguration configuration = mock(EntraIDClientConfiguration.class);
+        when(configuration.getConfigurationName()).thenReturn("multiTenant");
+        when(configurationStore.getConfiguration("multiTenant")).thenReturn(Optional.of(configuration));
+
+        assertEquals(400, defaultEntraIDResource.syncUsers().getStatus());
+        assertEquals("Requested actions: disabled [false]; remove [true]", logCapture.getMessage(0));
+        assertEquals("Cannot remove the users of the Entra ID client configuration [multiTenant] because it doesn't "
+            + "target a single tenant.", logCapture.getMessage(1));
+        verify(jobExecutor, never()).execute(any(), any());
     }
 
     @Test

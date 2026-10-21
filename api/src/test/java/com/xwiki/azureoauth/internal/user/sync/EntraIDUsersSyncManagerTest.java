@@ -39,9 +39,16 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfigurationStore;
 import com.xwiki.azureoauth.user.EntraIDUsersManager;
 import com.xwiki.azureoauth.user.ExternalUser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,6 +66,9 @@ class EntraIDUsersSyncManagerTest
 
     @MockComponent
     private EntraIDUsersManager entraIdUsersManager;
+
+    @MockComponent
+    private EntraIDClientConfigurationStore configurationStore;
 
     @MockComponent
     private Provider<XWikiContext> wikiContextProvider;
@@ -91,17 +101,22 @@ class EntraIDUsersSyncManagerTest
     @Mock
     private BaseObject objectUserClass2;
 
+    @Mock
+    private EntraIDClientConfiguration defaultConfiguration;
+
     @BeforeEach
     void setUp() throws Exception
     {
         when(wikiContextProvider.get()).thenReturn(wikiContext);
         when(wikiContext.getWiki()).thenReturn(wiki);
         when(wikiManager.getCurrentWikiId()).thenReturn("testWiki");
-        when(entraIdUsersManager.getXWikiUsersMap()).thenReturn(
+        when(configurationStore.getDefaultConfiguration()).thenReturn(defaultConfiguration);
+        when(defaultConfiguration.hasSpecificTenant()).thenReturn(true);
+        when(entraIdUsersManager.getXWikiUsersMap(defaultConfiguration)).thenReturn(
             Map.of("subject1", userDoc1, "subject2", userDoc2, "subject3", userDoc3));
         List<ExternalUser> externalUsers =
             List.of(new ExternalUser("subject1", true), new ExternalUser("subject2", false));
-        when(entraIdUsersManager.getEntraServerUsers()).thenReturn(externalUsers);
+        when(entraIdUsersManager.getEntraServerUsers(defaultConfiguration)).thenReturn(externalUsers);
 
         when(documentReferenceResolver.resolve("XWiki.XWikiUsers")).thenReturn(userClassDocRef);
         when(userDoc2.getXObject(userClassDocRef)).thenReturn(objectUserClass2);
@@ -124,10 +139,56 @@ class EntraIDUsersSyncManagerTest
     }
 
     @Test
+    void syncUsersForConfiguration() throws Exception
+    {
+        EntraIDClientConfiguration configuration = mock(EntraIDClientConfiguration.class);
+        when(configuration.hasSpecificTenant()).thenReturn(true);
+        when(entraIdUsersManager.getXWikiUsersMap(configuration)).thenReturn(Map.of("subject1", userDoc1,
+            "subject3", userDoc3));
+        when(entraIdUsersManager.getEntraServerUsers(configuration))
+            .thenReturn(List.of(new ExternalUser("subject1", false)));
+        BaseObject objectUserClass1 = mock(BaseObject.class);
+        when(userDoc1.getXObject(userClassDocRef)).thenReturn(objectUserClass1);
+
+        syncManager.syncUsers(configuration, true, true);
+
+        verify(wiki).deleteDocument(userDoc3, wikiContext);
+        verify(objectUserClass1).set("active", 0, wikiContext);
+        verify(wiki, never()).deleteDocument(userDoc2, wikiContext);
+        verify(objectUserClass2, never()).set("active", 0, wikiContext);
+    }
+
+    @Test
     void syncUsersTestRemove() throws Exception
     {
         syncManager.syncUsers(false, true);
         verify(wiki, times(1)).deleteDocument(userDoc3, wikiContext);
         verify(objectUserClass2, times(0)).set("active", 0, wikiContext);
+    }
+
+    @Test
+    void syncUsersRefusesRemoveWithoutSpecificTenant() throws Exception
+    {
+        when(defaultConfiguration.hasSpecificTenant()).thenReturn(false);
+        when(defaultConfiguration.getConfigurationName()).thenReturn("multiTenant");
+
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> syncManager.syncUsers(true, true));
+
+        assertEquals("Cannot remove the users of the Entra ID client configuration [multiTenant] because it doesn't "
+            + "target a single tenant.", exception.getMessage());
+        verify(wiki, never()).deleteDocument(any(), any());
+        verify(objectUserClass2, never()).set("active", 0, wikiContext);
+    }
+
+    @Test
+    void syncUsersDisablesWithoutSpecificTenant() throws Exception
+    {
+        when(defaultConfiguration.hasSpecificTenant()).thenReturn(false);
+
+        syncManager.syncUsers(true, false);
+
+        verify(wiki, never()).deleteDocument(any(), any());
+        verify(objectUserClass2).set("active", 0, wikiContext);
     }
 }

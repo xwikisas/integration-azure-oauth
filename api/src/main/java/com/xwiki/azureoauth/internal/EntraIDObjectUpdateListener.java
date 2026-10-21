@@ -19,6 +19,7 @@
  */
 package com.xwiki.azureoauth.internal;
 
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -34,6 +36,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSaveException;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.contrib.oidc.auth.store.OIDCClientConfiguration;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.WikiReference;
@@ -46,10 +49,13 @@ import org.xwiki.wiki.descriptor.WikiDescriptorManager;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.internal.event.XObjectAddedEvent;
 import com.xpn.xwiki.internal.event.XObjectUpdatedEvent;
+import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseObjectReference;
 import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
 
+import static com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSource.CONFIG_CLASS;
 import static com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSource.CONFIG_DOC;
 
 /**
@@ -102,29 +108,74 @@ public class EntraIDObjectUpdateListener extends AbstractEventListener implement
      */
     public EntraIDObjectUpdateListener()
     {
-        super(HINT, new XObjectUpdatedEvent(CLASS_MATCHER));
+        super(HINT, new XObjectAddedEvent(CLASS_MATCHER), new XObjectUpdatedEvent(CLASS_MATCHER));
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        if (event instanceof XObjectUpdatedEvent) {
-            XWikiDocument document = (XWikiDocument) source;
-            if (document != null && isEntraIDConfigObject(document)) {
-                try {
-                    EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
-                    String oldTenantID = entraIDConfiguration.getOIDCTenantID();
-                    String tenantID = entraIDConfiguration.getTenantID();
-                    if (!tenantID.equals(oldTenantID)) {
-                        entraIDConfiguration.setOIDCConfiguration(
-                            azureOIDCMigratorProvider.get().getEndpoints(tenantID));
-                    }
-                } catch (ConfigurationSaveException e) {
-                    logger.error("There was an error while trying to update OIDC endpoints. Root cause is: [{}]",
-                        ExceptionUtils.getRootCauseMessage(e));
-                    throw new RuntimeException(e);
-                }
+        XWikiDocument document = (XWikiDocument) source;
+        if (document == null) {
+            return;
+        }
+        if (isEntraIDConfigObject(document)) {
+            if (event instanceof XObjectUpdatedEvent) {
+                updateDefaultConfiguration();
             }
+        } else {
+            updateClientConfiguration(document);
+        }
+    }
+
+    private void updateDefaultConfiguration()
+    {
+        try {
+            EntraIDConfiguration entraIDConfiguration = entraIDConfigurationProvider.get();
+            String oldTenantID = entraIDConfiguration.getOIDCTenantID();
+            String tenantID = entraIDConfiguration.getTenantID();
+            if (!tenantID.equals(oldTenantID)) {
+                entraIDConfiguration.setOIDCConfiguration(azureOIDCMigratorProvider.get().getEndpoints(tenantID));
+            }
+        } catch (ConfigurationSaveException e) {
+            logger.error("There was an error while trying to update OIDC endpoints. Root cause is: [{}]",
+                ExceptionUtils.getRootCauseMessage(e));
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Any document holding both an Entra ID configuration object and an OIDC client configuration object is an Entra
+     * ID client configuration, whose endpoints are derived from its tenant.
+     */
+    private void updateClientConfiguration(XWikiDocument document)
+    {
+        BaseObject entraIDObject = document.getXObject(CONFIG_CLASS);
+        BaseObject oidcObject = document.getXObject(OIDCClientConfiguration.CLASS_REFERENCE);
+        if (entraIDObject == null || oidcObject == null) {
+            return;
+        }
+        String tenantID = entraIDObject.getStringValue("tenantId");
+        if (StringUtils.isBlank(tenantID)) {
+            return;
+        }
+        Map<String, Object> endpoints = azureOIDCMigratorProvider.get().getEndpoints(tenantID);
+        if (Objects.equals(endpoints.get(OIDCClientConfiguration.FIELD_PROVIDER),
+            oidcObject.getStringValue(OIDCClientConfiguration.FIELD_PROVIDER)))
+        {
+            return;
+        }
+        XWikiContext xcontext = xcontextProvider.get();
+        try {
+            // The event source must not be modified, so the stored document is updated instead.
+            XWikiDocument documentToSave =
+                xcontext.getWiki().getDocument(document.getDocumentReference(), xcontext).clone();
+            BaseObject oidcObjectToSave = documentToSave.getXObject(OIDCClientConfiguration.CLASS_REFERENCE);
+            endpoints.forEach((property, value) -> oidcObjectToSave.set(property, value, xcontext));
+            xcontext.getWiki().saveDocument(documentToSave, "Updated the OIDC endpoints of the Entra ID tenant.",
+                true, xcontext);
+        } catch (XWikiException e) {
+            logger.error("Failed to update the OIDC endpoints of the Entra ID client configuration [{}]. "
+                + "Root cause is: [{}]", document.getDocumentReference(), ExceptionUtils.getRootCauseMessage(e));
         }
     }
 

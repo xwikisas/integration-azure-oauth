@@ -33,7 +33,7 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
-import com.xwiki.azureoauth.configuration.EntraIDConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -59,8 +59,8 @@ public class EntraIDApiClientTest
     @MockComponent
     private HttpClientBuilderFactory httpClientBuilderFactory;
 
-    @MockComponent
-    private EntraIDConfiguration configuration;
+    @Mock
+    private EntraIDClientConfiguration configuration;
 
     @Mock
     private HttpResponse<String> httpResponse;
@@ -83,7 +83,7 @@ public class EntraIDApiClientTest
     {
         when(httpResponse.statusCode()).thenReturn(500);
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            entraIDApiClient.getUsers();
+            entraIDApiClient.getUsers(configuration);
         });
         assertEquals("Failed to get token", exception.getMessage());
     }
@@ -102,7 +102,7 @@ public class EntraIDApiClientTest
         when(httpClient.send(eq(request), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponse2);
         when(httpResponse2.statusCode()).thenReturn(500);
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            entraIDApiClient.getUsers();
+            entraIDApiClient.getUsers(configuration);
         });
 
         assertEquals("Graph request did not return a valid response.", exception.getMessage());
@@ -117,7 +117,7 @@ public class EntraIDApiClientTest
             + "{ \"id\": \"user3\", \"accountEnabled\": true }]}";
 
         when(httpResponse.body()).thenReturn(jsonBody);
-        JSONArray jsonArray = entraIDApiClient.getUsers();
+        JSONArray jsonArray = entraIDApiClient.getUsers(configuration);
         assertEquals("user1", jsonArray.getJSONObject(0).optString("id"));
         assertFalse(jsonArray.getJSONObject(1).optBoolean("accountEnabled"));
         assertEquals("user3", jsonArray.getJSONObject(2).optString("id"));

@@ -37,6 +37,8 @@ public class EntraIDUsersSyncJobRequest extends AbstractRequest
 
     private boolean remove;
 
+    private String configurationName;
+
     /**
      * Default constructor.
      */
@@ -57,6 +59,32 @@ public class EntraIDUsersSyncJobRequest extends AbstractRequest
         setId(jobId);
         this.disable = disable;
         this.remove = remove;
+    }
+
+    /**
+     * Creates a request for syncing the users of a specific Entra ID client configuration.
+     *
+     * @param jobId the ID of the request.
+     * @param configurationName the name of the Entra ID client configuration whose users are synced, or {@code null}
+     *     for the default configuration
+     * @param disable {@code true} if the sync should also sync disabled users, or {@code false} otherwise
+     * @param remove {@code true} if the sync should also sync removed users, or {@code false} otherwise
+     * @since 2.3.0
+     */
+    public EntraIDUsersSyncJobRequest(List<String> jobId, String configurationName, boolean disable, boolean remove)
+    {
+        this(jobId, disable, remove);
+        this.configurationName = configurationName;
+    }
+
+    /**
+     * @return the name of the Entra ID client configuration whose users are synced, or {@code null} for the default
+     *     configuration
+     * @since 2.3.0
+     */
+    public String getConfigurationName()
+    {
+        return configurationName;
     }
 
     /**

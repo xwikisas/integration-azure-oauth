@@ -55,7 +55,10 @@ public class EntraIDConfigurationSource extends AbstractWikisConfigurationSource
     public static final LocalDocumentReference CONFIG_DOC =
         new LocalDocumentReference(SPACE, "EntraOIDCClientConfiguration");
 
-    private static final LocalDocumentReference CONFIG_CLASS =
+    /**
+     * Entra ID configuration class.
+     */
+    public static final LocalDocumentReference CONFIG_CLASS =
         new LocalDocumentReference(SPACE, "EntraIDConfigurationClass");
 
     @Override

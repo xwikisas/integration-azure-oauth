@@ -29,6 +29,8 @@ import org.xwiki.job.AbstractJob;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.JobGroupPath;
 
+import com.xwiki.azureoauth.configuration.EntraIDClientConfiguration;
+import com.xwiki.azureoauth.configuration.EntraIDClientConfigurationStore;
 import com.xwiki.azureoauth.user.sync.EntraIDUsersSyncJobRequest;
 import com.xwiki.azureoauth.user.sync.EntraIDUsersSyncJobStatus;
 
@@ -50,6 +52,9 @@ public class EntraIDUsersSyncJob extends AbstractJob<EntraIDUsersSyncJobRequest,
 
     @Inject
     private EntraIDUsersSyncManager syncManager;
+
+    @Inject
+    private EntraIDClientConfigurationStore configurationStore;
 
     @Override
     public JobGroupPath getGroupPath()
@@ -77,7 +82,15 @@ public class EntraIDUsersSyncJob extends AbstractJob<EntraIDUsersSyncJobRequest,
                 logger.debug("Started EntraID user sync job with ID: [{}]", this.status.getJobID());
                 this.progressManager.pushLevelProgress(1, this);
                 progressManager.startStep(this);
-                syncManager.syncUsers(request.shouldDisable(), request.shouldRemove());
+                String configurationName = request.getConfigurationName();
+                if (configurationName == null) {
+                    syncManager.syncUsers(request.shouldDisable(), request.shouldRemove());
+                } else {
+                    EntraIDClientConfiguration configuration = configurationStore.getConfiguration(configurationName)
+                        .orElseThrow(() -> new IllegalArgumentException(
+                            String.format("No Entra ID client configuration named [%s].", configurationName)));
+                    syncManager.syncUsers(configuration, request.shouldDisable(), request.shouldRemove());
+                }
                 progressManager.endStep(this);
             }
         } catch (Exception e) {
