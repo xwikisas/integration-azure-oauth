@@ -146,9 +146,9 @@ class EntraIDClientConfigurationsIT
     @Test
     void switchUserToXWikiLoginByConfiguration(TestUtils testUtils)
     {
-        EntraIDViewPage entraIDViewPage = new EntraIDViewPage();
+        // Logging in leaves the browser on a blank page, so go to the home page before using the page object.
         testUtils.login(TENANT_USER_NAME, PASSWORD);
-        entraIDViewPage.goToHomePage();
+        EntraIDViewPage entraIDViewPage = EntraIDViewPage.gotoHomePage();
         assertFalse(entraIDViewPage.isSwitchUserDisplayed());
 
         // The groups allowed to switch are taken from the configuration of the user's tenant.

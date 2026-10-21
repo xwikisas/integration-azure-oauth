@@ -33,6 +33,18 @@ public class EntraIDViewPage extends ViewPage
 {
     /**
      * Go to XWiki Main WebHome.
+     *
+     * @return the home page
+     * @since 2.3.0
+     */
+    public static EntraIDViewPage gotoHomePage()
+    {
+        getUtil().gotoPage("Main", "WebHome");
+        return new EntraIDViewPage();
+    }
+
+    /**
+     * Go to XWiki Main WebHome.
      */
     public void goToHomePage()
     {

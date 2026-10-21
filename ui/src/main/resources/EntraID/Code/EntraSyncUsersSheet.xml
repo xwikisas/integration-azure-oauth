@@ -214,13 +214,12 @@ require(['jquery', 'xwiki-meta', 'xwiki-job-runner', 'xwiki-l10n!entra-sync-noti
     const syncButton = $(this).prop('disabled', true);
     const notification = new XWiki.widgets.Notification(l10n.get('inprogress'), 'inprogress');
     const data = {disable, remove};
-    // Keep the same job ID as the REST resource.
-    const jobId = ['entra', 'users', 'sync'];
+    // Keep the same job ID as the REST resource, which puts the configuration name at the end.
+    const jobId = ['entra', 'users', 'sync', disable, remove];
     if (configuration !== undefined) {
       data.configuration = String(configuration);
       jobId.push(data.configuration);
     }
-    jobId.push(disable, remove);
     $.ajax({
       url: form.attr('action'),
       type: 'POST',

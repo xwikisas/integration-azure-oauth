@@ -48,4 +48,11 @@ class AllIT
     class NestedEntraIDClientConfigurationsIT extends EntraIDClientConfigurationsIT
     {
     }
+
+    @Nested
+    @Order(3)
+    @DisplayName("Entra ID template for OIDC Pro")
+    class NestedOIDCProTemplateIT extends OIDCProTemplateIT
+    {
+    }
 }

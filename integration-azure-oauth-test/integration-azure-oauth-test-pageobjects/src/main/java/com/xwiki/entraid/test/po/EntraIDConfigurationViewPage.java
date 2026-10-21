@@ -135,7 +135,10 @@ public class EntraIDConfigurationViewPage extends ViewPage
     {
         WebElement container = getPropertyInput(propertyName).findElement(By.xpath(".."));
         int entriesCount = getMappingEntries(propertyName).size();
-        container.findElement(By.className("addProperty")).click();
+        WebElement addButton = container.findElement(By.className("addProperty"));
+        // Keep the button away from the floating edit buttons, which would get the click otherwise.
+        getDriver().executeScript("arguments[0].scrollIntoView({block: 'center'});", addButton);
+        addButton.click();
         getDriver().waitUntilCondition(driver -> getMappingEntries(propertyName).size() > entriesCount);
         List<WebElement> entries = getMappingEntries(propertyName);
         return entries.get(entries.size() - 1);

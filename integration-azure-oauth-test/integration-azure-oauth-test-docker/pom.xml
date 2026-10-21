@@ -79,6 +79,13 @@
       <version>${platform.version}</version>
       <type>xar</type>
     </dependency>
+    <!-- Test the Entra ID template provided for OIDC Pro. -->
+    <dependency>
+      <groupId>com.xwiki.oidcpro</groupId>
+      <artifactId>oidc-pro-ui</artifactId>
+      <version>${oidcpro.version}</version>
+      <type>xar</type>
+    </dependency>
     <!-- Test only dependencies. -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
