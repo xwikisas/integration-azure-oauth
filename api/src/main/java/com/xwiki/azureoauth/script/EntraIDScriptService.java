@@ -85,8 +85,7 @@ public class EntraIDScriptService implements ScriptService
      */
     public boolean isXWikiLoginEnabled()
     {
-        return entraIDConfiguration.isXWikiLoginGlobalEnabled() || getClientConfigurations().stream()
-            .anyMatch(configuration -> configuration.isActive() && configuration.isXWikiLoginGlobalEnabled());
+        return entraIDConfiguration.isXWikiLoginGlobalEnabled();
     }
 
     /**
