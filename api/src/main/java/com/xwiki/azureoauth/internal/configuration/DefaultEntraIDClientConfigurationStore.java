@@ -50,7 +50,7 @@ import static com.xwiki.azureoauth.internal.configuration.EntraIDConfigurationSo
  * Default implementation of {@link EntraIDClientConfigurationStore}.
  *
  * @version $Id$
- * @since 2.2.5
+ * @since 2.3.0
  */
 @Component
 @Singleton

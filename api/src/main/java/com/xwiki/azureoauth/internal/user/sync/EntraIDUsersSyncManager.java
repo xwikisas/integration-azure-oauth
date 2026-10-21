@@ -93,7 +93,7 @@ public class EntraIDUsersSyncManager
      * @throws Exception if any error occurs during the sync
      * @throws IllegalArgumentException if users should be removed and the configuration doesn't target a single
      *     tenant
-     * @since 2.2.5
+     * @since 2.3.0
      */
     public void syncUsers(EntraIDClientConfiguration configuration, boolean disable, boolean remove) throws Exception
     {

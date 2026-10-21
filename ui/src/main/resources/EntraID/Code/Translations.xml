@@ -65,7 +65,7 @@ XWiki.OIDC.ClientConfigurationClass_userNameFormatter.hint=The pattern to use to
 XWiki.OIDC.ClientConfigurationClass_userMapping.hint=Associate non-standard properties coming from the OpenID Connect provider with the XWiki user.
 XWiki.OIDC.ClientConfigurationClass_clientSecret.hint=The client secret registered on the provider.
 XWiki.OIDC.ClientConfigurationClass_clientId.hint=The client identifier used by the authentication.
-EntraID.Code.EntraIDConfigurationClass_tenantId.hint=Entra ID instance ID.
+EntraID.Code.EntraIDConfigurationClass_tenantId.hint=Entra ID instance ID. When using a multi-tenant alias (common, organizations or consumers), the users sync can't remove the users deleted from Entra ID, since they can't be told apart from the users of other tenants.
 EntraID.Code.EntraIDConfigurationClass_enableXWikiLoginGlobal.hint=Allow a guest user to login using the standard XWiki authenticator.
 EntraID.Code.EntraIDConfigurationClass_xwikiLoginGroups.hint=User groups allowed to log in with XWiki.
 

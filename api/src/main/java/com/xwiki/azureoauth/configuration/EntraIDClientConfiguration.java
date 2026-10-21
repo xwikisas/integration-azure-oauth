@@ -35,7 +35,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * and an Entra ID configuration object.
  *
  * @version $Id$
- * @since 2.2.5
+ * @since 2.3.0
  */
 @Unstable
 public class EntraIDClientConfiguration
@@ -45,7 +45,7 @@ public class EntraIDClientConfiguration
     /**
      * The tenant aliases used by multi-tenant applications. The users authenticated through them are issued by their
      * own tenant, so the configured tenant can't be used to find them: such a configuration matches the users of any
-     * tenant.
+     * tenant. For this reason, the users sync can't remove the users of such a configuration.
      */
     private static final Set<String> MULTI_TENANT_ALIASES = Set.of("common", "organizations", "consumers");
 

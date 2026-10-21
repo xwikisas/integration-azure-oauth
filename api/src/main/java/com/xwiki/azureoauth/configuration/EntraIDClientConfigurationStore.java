@@ -31,7 +31,7 @@ import org.xwiki.stability.Unstable;
  * an Entra ID client configuration.
  *
  * @version $Id$
- * @since 2.2.5
+ * @since 2.3.0
  */
 @Role
 @Unstable

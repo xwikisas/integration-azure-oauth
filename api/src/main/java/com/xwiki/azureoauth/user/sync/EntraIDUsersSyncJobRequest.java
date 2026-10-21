@@ -69,7 +69,7 @@ public class EntraIDUsersSyncJobRequest extends AbstractRequest
      *     for the default configuration
      * @param disable {@code true} if the sync should also sync disabled users, or {@code false} otherwise
      * @param remove {@code true} if the sync should also sync removed users, or {@code false} otherwise
-     * @since 2.2.5
+     * @since 2.3.0
      */
     public EntraIDUsersSyncJobRequest(List<String> jobId, String configurationName, boolean disable, boolean remove)
     {
@@ -80,7 +80,7 @@ public class EntraIDUsersSyncJobRequest extends AbstractRequest
     /**
      * @return the name of the Entra ID client configuration whose users are synced, or {@code null} for the default
      *     configuration
-     * @since 2.2.5
+     * @since 2.3.0
      */
     public String getConfigurationName()
     {

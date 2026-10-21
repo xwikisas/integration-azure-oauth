@@ -53,7 +53,7 @@ public interface EntraIDResource extends XWikiRestComponent
     /**
      * Sync XWiki users with the users from Entra ID. The request parameters {@code disable} and {@code remove} select
      * the actions to perform. The optional {@code configuration} parameter is the name of the Entra ID client
-     * configuration whose users are synced; when missing, the default configuration is used. Since 2.2.5, the job ID
+     * configuration whose users are synced; when missing, the default configuration is used. Since 2.3.0, the job ID
      * ends with the configuration name when one is given: {@code entra/users/sync/<disable>/<remove>/<configuration>}.
      * Removing users is refused for a configuration that doesn't target a single tenant (blank tenant or multi-tenant
      * alias), since its users can't be told apart from the users of other tenants.

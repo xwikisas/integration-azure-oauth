@@ -47,10 +47,10 @@ public interface EntraIDUsersManager
      *
      * @return the internal users that are created from the tenant of the default configuration
      * @throws Exception if there are any errors while getting the users.
-     * @deprecated since 2.2.5, use {@link #getXWikiUsersMap(EntraIDClientConfiguration)} instead, since the users can
+     * @deprecated since 2.3.0, use {@link #getXWikiUsersMap(EntraIDClientConfiguration)} instead, since the users can
      *     be created from several tenants
      */
-    @Deprecated(since = "2.2.5")
+    @Deprecated(since = "2.3.0")
     Map<String, XWikiDocument> getXWikiUsersMap() throws Exception;
 
     /**
@@ -67,9 +67,9 @@ public interface EntraIDUsersManager
      *
      * @return the external users info stored in {@link ExternalUser}
      * @throws Exception if there are any errors while getting the users.
-     * @deprecated since 2.2.5, use {@link #getEntraServerUsers(EntraIDClientConfiguration)} instead
+     * @deprecated since 2.3.0, use {@link #getEntraServerUsers(EntraIDClientConfiguration)} instead
      */
-    @Deprecated(since = "2.2.5")
+    @Deprecated(since = "2.3.0")
     List<ExternalUser> getEntraServerUsers() throws Exception;
 
     /**
@@ -79,7 +79,7 @@ public interface EntraIDUsersManager
      * @param configuration the Entra ID client configuration the users were created from
      * @return the internal users that are created from the tenant of the given configuration
      * @throws Exception if there are any errors while getting the users.
-     * @since 2.2.5
+     * @since 2.3.0
      */
     Map<String, XWikiDocument> getXWikiUsersMap(EntraIDClientConfiguration configuration) throws Exception;
 
@@ -89,7 +89,7 @@ public interface EntraIDUsersManager
      * @param configuration the Entra ID client configuration used to query the server
      * @return the external users info stored in {@link ExternalUser}
      * @throws Exception if there are any errors while getting the users.
-     * @since 2.2.5
+     * @since 2.3.0
      */
     List<ExternalUser> getEntraServerUsers(EntraIDClientConfiguration configuration) throws Exception;
 }
