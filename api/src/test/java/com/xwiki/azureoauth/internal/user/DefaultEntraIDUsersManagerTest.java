@@ -216,6 +216,7 @@ class DefaultEntraIDUsersManagerTest
         assertEquals(Map.of("subject1", userDoc1), defaultEntraIDUsersManager.getXWikiUsersMap());
     }
 
+
     @Test
     void getEntraUsersMapForConfiguration() throws Exception
     {

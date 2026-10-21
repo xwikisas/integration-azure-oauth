@@ -43,6 +43,7 @@ public class EntraIDConfigurationViewPage extends ViewPage
         return getDriver().findElement(By.className("entra-sync-action"));
     }
 
+
     public WebElement getDisableCheck()
     {
         return getDriver().findElement(By.cssSelector("#entra-sync input[name='disable']"));

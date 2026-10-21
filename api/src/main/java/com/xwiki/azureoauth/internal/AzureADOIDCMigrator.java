@@ -111,7 +111,7 @@ public class AzureADOIDCMigrator
             } else if (!tenantID.equals(entraIDConfiguration.getOIDCTenantID())) {
                 // The OIDC configuration doesn't have the provider endpoint yet, so it still uses the separate
                 // endpoints set by previous versions, which need to be replaced.
-                // TODO: Remove this migration step once users have updated the application to a version above 2.3.0.
+                // TODO: Remove this migration step once users have updated the application to a version above 2.2.3.
                 configurationMap.putAll(getEndpoints(tenantID));
             }
             if (!configurationMap.isEmpty()) {
