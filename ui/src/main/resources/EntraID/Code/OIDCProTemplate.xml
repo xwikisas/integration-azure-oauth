@@ -71,81 +71,56 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </codeInsertionPoint>
       <customCode>
-        <contenttype>FullyRenderedText</contenttype>
-        <customDisplay/>
         <disabled>0</disabled>
         <editor>Text</editor>
-        <hint/>
         <name>customCode</name>
         <number>5</number>
-        <picker>1</picker>
         <prettyName>customCode</prettyName>
         <restricted>0</restricted>
         <rows>5</rows>
         <size>40</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </customCode>
       <iconAttachment>
-        <customDisplay/>
         <disabled>0</disabled>
         <hint>Name of an image attached to this template page.</hint>
         <name>iconAttachment</name>
         <number>4</number>
-        <picker>1</picker>
         <prettyName>iconAttachment</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </iconAttachment>
       <iconName>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>iconName</name>
         <number>3</number>
-        <picker>1</picker>
         <prettyName>iconName</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </iconName>
       <layoutJson>
         <contenttype>PureText</contenttype>
-        <customDisplay/>
         <disabled>0</disabled>
         <editor>PureText</editor>
-        <hint/>
         <name>layoutJson</name>
         <number>1</number>
-        <picker>1</picker>
         <prettyName>layoutJson</prettyName>
         <restricted>0</restricted>
         <rows>5</rows>
         <size>40</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </layoutJson>
       <name>
-        <customDisplay/>
         <disabled>0</disabled>
-        <hint/>
         <name>name</name>
         <number>2</number>
-        <picker>1</picker>
         <prettyName>name</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>

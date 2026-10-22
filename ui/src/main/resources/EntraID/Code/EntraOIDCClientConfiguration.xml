@@ -91,10 +91,38 @@
       <enableXWikiLoginGlobal>1</enableXWikiLoginGlobal>
     </property>
     <property>
-      <tenantId>gfdgd</tenantId>
+      <tenantId/>
     </property>
     <property>
       <xwikiLoginGroups/>
+    </property>
+  </object>
+  <object>
+    <name>EntraID.Code.EntraOIDCClientConfiguration</name>
+    <number>0</number>
+    <className>OIDCPro.Code.OIDCProTemplateBinderClass</className>
+    <guid>3f1c2a8e-6d4b-4e7a-9b15-8c2d7e0f4a61</guid>
+    <class>
+      <name>OIDCPro.Code.OIDCProTemplateBinderClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <templateName>
+        <disabled>0</disabled>
+        <name>templateName</name>
+        <number>1</number>
+        <prettyName>templateName</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </templateName>
+    </class>
+    <property>
+      <templateName>entraid</templateName>
     </property>
   </object>
   <object>
@@ -564,15 +592,6 @@
         <values>GET|POST</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </logoutEndpointMethod>
-      <logoutMechanism>
-        <disabled>0</disabled>
-        <name>logoutMechanism</name>
-        <number>27</number>
-        <prettyName>Logout mechanism</prettyName>
-        <size>255</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </logoutMechanism>
       <provider>
         <disabled>0</disabled>
         <name>provider</name>
